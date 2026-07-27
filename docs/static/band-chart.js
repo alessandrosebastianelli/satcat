@@ -54,7 +54,7 @@ var rectPlugin = {
   },
 };
 
-function renderSpectralBandChart(container, datasets, options) {
+function _renderSpectralBandChartInner(container, datasets, options) {
   options = options || {};
   container.innerHTML = '<canvas></canvas>';
   var canvas = container.querySelector('canvas');
@@ -192,4 +192,19 @@ function renderSpectralBandChart(container, datasets, options) {
   canvas.addEventListener('mouseleave', function () { tooltipEl.style.display = 'none'; });
 
   return chart;
+}
+
+/** Public entry point — wraps the real renderer so that any exception
+ * (a bad data shape, a Chart.js internal error, whatever) shows up as
+ * visible text in the chart's own box instead of silently leaving it
+ * blank with the failure only logged to the console. */
+function renderSpectralBandChart(container, datasets, options) {
+  try {
+    return _renderSpectralBandChartInner(container, datasets, options);
+  } catch (err) {
+    console.error('[satcat] band chart render error:', err);
+    container.innerHTML = '<p class="hint" style="color:var(--danger)">Chart failed to render: ' +
+      String(err && err.message ? err.message : err).replace(/</g, '&lt;') + '</p>';
+    return null;
+  }
 }
