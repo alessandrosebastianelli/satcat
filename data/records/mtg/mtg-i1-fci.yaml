@@ -20,16 +20,16 @@ bands:
   wavelength_or_frequency: 590-610 nm
   spatial_resolution: 1 km (0.5 km HR channel)
   wavelength_nm: 600
-  resolution_m: 1.0
+  resolution_m: 1000.0
 - name: IR 10.5 (thermal window)
   wavelength_or_frequency: 10300-10800 nm
   spatial_resolution: 2 km
-  resolution_m: 2.0
+  resolution_m: 2000.0
   wavelength_nm: 10300.0
 - name: WV 6.3 (water vapour)
   wavelength_or_frequency: 5800-6400 nm
   spatial_resolution: 2 km
-  resolution_m: 2.0
+  resolution_m: 2000.0
   wavelength_nm: 5800.0
 spatial_resolution_summary: 1-2 km at nadir (0.5 km for the high-resolution visible channel)
 temporal_resolution: 10 minutes (full disc), 2.5 minutes (rapid scan over Europe)

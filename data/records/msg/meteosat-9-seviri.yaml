@@ -21,16 +21,16 @@ bands:
   wavelength_or_frequency: 560-710 nm
   spatial_resolution: 3 km (1 km HRV)
   wavelength_nm: 635
-  resolution_m: 3.0
+  resolution_m: 3000.0
 - name: IR 10.8 (thermal window)
   wavelength_or_frequency: 9800-11800 nm
   spatial_resolution: 3 km
-  resolution_m: 3.0
+  resolution_m: 3000.0
   wavelength_nm: 9800.0
 - name: WV 6.2 (water vapour)
   wavelength_or_frequency: 5350-7150 nm
   spatial_resolution: 3 km
-  resolution_m: 3.0
+  resolution_m: 3000.0
   wavelength_nm: 5350.0
 spatial_resolution_summary: 3 km at nadir (1 km for the HRV broadband channel)
 temporal_resolution: 15 minutes (full disc)
