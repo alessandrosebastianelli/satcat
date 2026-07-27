@@ -74,9 +74,13 @@ function renderDataset(d, catalog) {
 
   var mapSection = '';
   if (d.bbox_west != null && d.bbox_south != null && d.bbox_east != null && d.bbox_north != null) {
-    mapSection = '<div id="coverage-map" class="coverage-map" data-west="' + d.bbox_west + '" data-south="' + d.bbox_south +
-      '" data-east="' + d.bbox_east + '" data-north="' + d.bbox_north + '"></div>' +
-      '<p class="map-caption">Spatial coverage shown above' + (d.geographic_coverage ? ' (' + d.geographic_coverage + ')' : '') +
+    mapSection = '<div class="chart-wrap chart-wrap-medium" id="coverage-map-wrap">' +
+      '<div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="coverage-map-expand">\u26f6 Expand</button></div>' +
+      '<div id="coverage-map" class="chart-canvas-container" data-west="' + d.bbox_west + '" data-south="' + d.bbox_south +
+      '" data-east="' + d.bbox_east + '" data-north="' + d.bbox_north + '"></div></div>' +
+      '<p class="map-caption">Bounding box: ' + d.bbox_west + '\u00b0, ' + d.bbox_south + '\u00b0 (SW) to ' +
+      d.bbox_east + '\u00b0, ' + d.bbox_north + '\u00b0 (NE)' +
+      (d.geographic_coverage ? ' \u2014 ' + d.geographic_coverage : '') +
       ' \u00b7 data available ' + (d.temporal_range_start || '?') + '\u2013' + (d.temporal_range_end || 'present') + '</p>';
   }
 
@@ -170,6 +174,24 @@ function renderDataset(d, catalog) {
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 18 }).addTo(map);
         L.rectangle(bounds, { color: '#3fb7e0', weight: 2, fillOpacity: 0.15 }).addTo(map);
         map.fitBounds(bounds, { padding: [20, 20] });
+
+        var coordBadge = document.createElement('div');
+        coordBadge.className = 'coord-badge';
+        coordBadge.textContent = '\u2014, \u2014';
+        mapEl.appendChild(coordBadge);
+        map.on('mousemove', function (e) {
+          coordBadge.textContent = e.latlng.lat.toFixed(4) + '\u00b0N  ' + e.latlng.lng.toFixed(4) + '\u00b0E';
+        });
+
+        var mapExpandBtn = document.getElementById('coverage-map-expand');
+        var mapWrap = document.getElementById('coverage-map-wrap');
+        if (mapExpandBtn && mapWrap) {
+          mapExpandBtn.addEventListener('click', function () {
+            mapWrap.classList.toggle('chart-expanded');
+            mapExpandBtn.textContent = mapWrap.classList.contains('chart-expanded') ? '\u2921 Collapse' : '\u26f6 Expand';
+            setTimeout(function () { map.invalidateSize(); }, 50);
+          });
+        }
       } else {
         mapEl.outerHTML = '<p class="hint">Map unavailable \u2014 Leaflet failed to load from the CDN (network/firewall?).</p>';
       }
