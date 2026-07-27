@@ -167,6 +167,13 @@ function _renderSpectralBandChartInner(container, datasets, options) {
   chart.$manualResize = function () {
     var size = sizeCanvas();
     chart.resize(size.w, size.h);
+    // Setting canvas.width/height (done inside sizeCanvas) always clears the
+    // canvas's drawn content, even when the value doesn't actually change —
+    // that's standard <canvas> behaviour, not a Chart.js quirk. If the size
+    // Chart.js sees is unchanged from before, resize() treats it as a no-op
+    // and skips redrawing, leaving the just-cleared canvas blank forever.
+    // Force an explicit draw so this can never happen.
+    chart.draw();
   };
   [0, 100, 300].forEach(function (delay) {
     setTimeout(function () { chart.$manualResize(); }, delay);
