@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Dataset - Satellite Data Catalog</title>
 <link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <script>(function(){var t=localStorage.getItem('satcat-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
@@ -20,10 +21,11 @@
   <p>Loading…</p>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
 <script src="static/config.js"></script>
 <script src="static/catalog.js"></script>
 <script src="static/band-chart.js"></script>
-<script src="static/coverage-map.js"></script>
 <script>
 document.getElementById('theme-toggle').addEventListener('click', function () {
   var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -162,10 +164,15 @@ function renderDataset(d, catalog) {
   try {
     var mapEl = document.getElementById('coverage-map');
     if (mapEl) {
-      renderCoverageBox(mapEl, {
-        west: parseFloat(mapEl.dataset.west), south: parseFloat(mapEl.dataset.south),
-        east: parseFloat(mapEl.dataset.east), north: parseFloat(mapEl.dataset.north),
-      });
+      if (typeof L !== 'undefined') {
+        var bounds = [[parseFloat(mapEl.dataset.south), parseFloat(mapEl.dataset.west)], [parseFloat(mapEl.dataset.north), parseFloat(mapEl.dataset.east)]];
+        var map = L.map(mapEl, { scrollWheelZoom: false });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors', maxZoom: 18 }).addTo(map);
+        L.rectangle(bounds, { color: '#3fb7e0', weight: 2, fillOpacity: 0.15 }).addTo(map);
+        map.fitBounds(bounds, { padding: [20, 20] });
+      } else {
+        mapEl.outerHTML = '<p class="hint">Map unavailable \u2014 Leaflet failed to load from cdnjs.cloudflare.com (network/firewall?).</p>';
+      }
     }
   } catch (e) { console.error('[satcat] map failed:', e); }
 
@@ -173,14 +180,18 @@ function renderDataset(d, catalog) {
   try {
     var chartWrapEl = document.getElementById('own-band-chart');
     if (chartWrapEl) {
-      renderSpectralBandChart(chartWrapEl, [{ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable }], { singleColor: '#3fb7e0' });
-      var expandBtn = document.getElementById('own-band-chart-expand');
-      var wrap = document.getElementById('own-band-chart-wrap');
-      if (expandBtn && wrap) {
-        expandBtn.addEventListener('click', function () {
-          wrap.classList.toggle('chart-expanded');
-          expandBtn.textContent = wrap.classList.contains('chart-expanded') ? '\u2921 Collapse' : '\u26f6 Expand';
-        });
+      if (typeof Chart !== 'undefined') {
+        renderSpectralBandChart(chartWrapEl, [{ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable }], { singleColor: '#3fb7e0' });
+        var expandBtn = document.getElementById('own-band-chart-expand');
+        var wrap = document.getElementById('own-band-chart-wrap');
+        if (expandBtn && wrap) {
+          expandBtn.addEventListener('click', function () {
+            wrap.classList.toggle('chart-expanded');
+            expandBtn.textContent = wrap.classList.contains('chart-expanded') ? '\u2921 Collapse' : '\u26f6 Expand';
+          });
+        }
+      } else {
+        document.getElementById('own-band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from cdnjs.cloudflare.com (network/firewall?).</p>';
       }
     }
   } catch (e) { console.error('[satcat] band chart failed:', e); }

@@ -66,10 +66,11 @@ then open `http://localhost:8000/docs/index.html`. Works fully offline —
 needs no external library.
 
 ## Charts and maps
-The band chart and coverage map are plain JavaScript + SVG
-(`docs/static/band-chart.js`, `docs/static/coverage-map.js`) — no external
-library, no CDN, no map tiles fetched from anywhere. The map isn't a
-photographic map (no coastlines) — it's a lat/lon grid with the bounding
-box highlighted, which is enough to see roughly where a mission covers
-without depending on any external tile server. Both work identically
-online or fully offline.
+The band chart (Chart.js) and coverage map (Leaflet + OpenStreetMap tiles)
+are loaded from `cdnjs.cloudflare.com` — a different provider than
+`cdn.jsdelivr.net`, which is what got blocked on the network this was
+built against. If cdnjs is blocked too, both widgets show a small
+"unavailable" notice instead of breaking the rest of the page — but the
+actual map tiles come from `tile.openstreetmap.org` regardless of where
+Leaflet itself loads from, so that's a second, independent thing that
+could be blocked even if cdnjs works fine for the library files.
