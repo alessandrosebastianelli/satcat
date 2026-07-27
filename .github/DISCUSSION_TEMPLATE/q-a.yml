@@ -1,0 +1,16 @@
+labels: ["question"]
+body:
+  - type: input
+    id: dataset
+    attributes:
+      label: Dataset ID
+      description: The record's id (e.g. sentinel-1-c-sar) — makes your question searchable/linkable from that dataset's page.
+      placeholder: e.g. sentinel-1-c-sar
+    validations:
+      required: false
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+    validations:
+      required: true

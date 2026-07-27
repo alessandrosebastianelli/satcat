@@ -1,0 +1,26 @@
+name: Request a missing dataset
+description: Ask for a satellite mission/sensor that isn't in the catalog yet.
+title: "[Request] "
+labels: ["dataset-request"]
+body:
+  - type: input
+    id: mission
+    attributes:
+      label: Mission / sensor name
+      placeholder: e.g. RADARSAT Constellation Mission
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Why you need it, what you already know about it, links if you have any.
+    validations:
+      required: false
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd be willing to open the Pull Request myself if pointed to the schema
+          required: false
