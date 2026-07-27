@@ -24,37 +24,6 @@ function _bandWidthNm(b, centerNm) {
   return centerNm * 0.06;
 }
 
-var rectPlugin = {
-  id: 'bandRects',
-  afterDatasetsDraw: function (chart, args, pluginOpts) {
-    var ctx = chart.ctx;
-    var xScale = chart.scales.x, yScale = chart.scales.y;
-    var BOX_H = 16; // fixed pixel height — a localized marker, not a bar from zero
-    var pts = (pluginOpts && pluginOpts.points) || [];
-    pts.forEach(function (p) {
-      var x0 = xScale.getPixelForValue(p.x0), x1 = xScale.getPixelForValue(p.x1);
-      var yCenter = yScale.getPixelForValue(p.resolution_m);
-      var w = Math.max(x1 - x0, 4);
-      var y0 = yCenter - BOX_H / 2;
-      ctx.save();
-      ctx.fillStyle = p.color + 'd9';
-      ctx.strokeStyle = p.color;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.rect(x0, y0, w, BOX_H);
-      ctx.fill();
-      ctx.stroke();
-      if (w > 34) {
-        ctx.fillStyle = '#0a1015';
-        ctx.font = '10px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(p.name, x0 + w / 2, yCenter + 3, w - 4);
-      }
-      ctx.restore();
-    });
-  },
-};
-
 function _renderSpectralBandChartInner(container, datasets, options) {
   options = options || {};
   container.innerHTML = '<canvas></canvas>';
@@ -79,6 +48,41 @@ function _renderSpectralBandChartInner(container, datasets, options) {
     container.innerHTML = '<p class="hint">No chartable bands (need wavelength/frequency + spatial resolution).</p>';
     return null;
   }
+
+  // Plugin defined HERE, inside the function, so its draw callback closes
+  // directly over the local `points` array above — no dependency on
+  // Chart.js's plugin-options resolution timing (which turned out to run
+  // the very first draw, during the Chart constructor itself, before any
+  // options assigned afterwards were available).
+  var rectPlugin = {
+    id: 'bandRects',
+    afterDatasetsDraw: function (chart) {
+      var ctx = chart.ctx;
+      var xScale = chart.scales.x, yScale = chart.scales.y;
+      var BOX_H = 16; // fixed pixel height — a localized marker, not a bar from zero
+      points.forEach(function (p) {
+        var x0 = xScale.getPixelForValue(p.x0), x1 = xScale.getPixelForValue(p.x1);
+        var yCenter = yScale.getPixelForValue(p.resolution_m);
+        var w = Math.max(x1 - x0, 4);
+        var y0 = yCenter - BOX_H / 2;
+        ctx.save();
+        ctx.fillStyle = p.color + 'd9';
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.rect(x0, y0, w, BOX_H);
+        ctx.fill();
+        ctx.stroke();
+        if (w > 34) {
+          ctx.fillStyle = '#0a1015';
+          ctx.font = '10px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(p.name, x0 + w / 2, yCenter + 3, w - 4);
+        }
+        ctx.restore();
+      });
+    },
+  };
 
   var xMin = Math.max(Math.min.apply(null, points.map(function (p) { return p.x0; })) * 0.85, 1);
   var xMax = Math.max.apply(null, points.map(function (p) { return p.x1; })) * 1.15;
@@ -150,12 +154,10 @@ function _renderSpectralBandChartInner(container, datasets, options) {
       plugins: {
         legend: { display: showLegend, position: 'top', labels: { boxWidth: 12, color: '#c5d2dd' } },
         tooltip: { enabled: false },
-        bandRects: { points: points },
       },
       events: [],
     },
   });
-
 
   // Re-measure and redraw a few times shortly after creation (covers cases
   // where the container's own size only settles a frame or two later, e.g.
