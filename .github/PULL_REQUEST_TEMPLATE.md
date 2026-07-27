@@ -16,8 +16,6 @@
 - [ ] Sources/links look legitimate (agency site, official docs)
 - [ ] `verification_status` — leave as `unverified`; flip to `verified` only
       after you've personally checked the technical details, in a follow-up edit
-- [ ] **`docs/catalog.json` is regenerated and included in this PR** — run
-      `python static_regen.py` locally and commit the result, otherwise the
-      public site won't reflect this change after merging
 
-Once merged, GitHub Pages republishes automatically — no other step needed.
+Once merged, GitHub Pages republishes automatically — no other step needed,
+new files are discovered automatically too.
