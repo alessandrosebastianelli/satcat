@@ -95,7 +95,17 @@ function _renderSpectralBandChartInner(container, datasets, options) {
   // something else (like clicking "Expand") triggered a resize. Instead,
   // we measure the container ourselves and size the canvas explicitly, so
   // there's no dependency on Chart.js's own timing.
+  // Inserting/touching an extra node here forces the browser to recompute
+  // layout before we measure the container — without it, the very first
+  // measurement can come back 0×0 on some pages/browsers even though the
+  // container does have real size a moment later. Kept invisible (not
+  // display:none, which would skip layout participation entirely).
+  var layoutNudge = document.createElement('div');
+  layoutNudge.className = 'chart-layout-nudge';
+  container.parentElement.insertBefore(layoutNudge, container);
+
   function sizeCanvas() {
+    layoutNudge.textContent = String(Date.now()); // touch it so it isn't optimized away
     var w = container.clientWidth || 600;
     var h = container.clientHeight || 300;
     canvas.width = w;
