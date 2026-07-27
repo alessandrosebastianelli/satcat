@@ -88,6 +88,24 @@ function renderSpectralBandChart(container, datasets, options) {
   });
   var showLegend = missions.length > 1;
 
+  // Chart.js's automatic responsive sizing depends on measuring the
+  // container via a ResizeObserver, which can miss the very first paint if
+  // the flex layout hasn't settled yet (this container sits inside a
+  // resizable/expandable box) — the chart would then stay blank until
+  // something else (like clicking "Expand") triggered a resize. Instead,
+  // we measure the container ourselves and size the canvas explicitly, so
+  // there's no dependency on Chart.js's own timing.
+  function sizeCanvas() {
+    var w = container.clientWidth || 600;
+    var h = container.clientHeight || 300;
+    canvas.width = w;
+    canvas.height = h;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    return { w: w, h: h };
+  }
+  sizeCanvas();
+
   var chart = new Chart(canvas, {
     type: 'scatter',
     data: {
@@ -101,7 +119,7 @@ function renderSpectralBandChart(container, datasets, options) {
     },
     plugins: [rectPlugin],
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       animation: false,
       scales: {
@@ -128,12 +146,19 @@ function renderSpectralBandChart(container, datasets, options) {
 
   chart.$bandPoints = points;
 
-  // Chart.js measures the container's size synchronously at creation time;
-  // if the flex layout hasn't settled yet (common right after innerHTML
-  // insertion), it can end up 0×0 and never redraw until something else
-  // triggers a resize (e.g. clicking "Expand"). Force one shortly after
-  // paint so it always renders correctly the first time.
-  requestAnimationFrame(function () { chart.resize(); });
+  // Re-measure and redraw a few times shortly after creation (covers cases
+  // where the container's own size only settles a frame or two later, e.g.
+  // web fonts loading and shifting layout) and expose a manual resize hook
+  // for the "Expand" button to call directly instead of relying on
+  // Chart.js's own (disabled) auto-resize.
+  chart.$manualResize = function () {
+    var size = sizeCanvas();
+    chart.resize(size.w, size.h);
+  };
+  [0, 100, 300].forEach(function (delay) {
+    setTimeout(function () { chart.$manualResize(); }, delay);
+  });
+  new ResizeObserver(function () { chart.$manualResize(); }).observe(container);
 
   // Custom hover tooltip (the bands aren't real Chart.js data points, so
   // Chart.js's own tooltip/interaction system doesn't know about them).
