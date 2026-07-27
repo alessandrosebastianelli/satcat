@@ -95,10 +95,6 @@ function renderSpectralBandChart(container, datasets, options) {
   // something else (like clicking "Expand") triggered a resize. Instead,
   // we measure the container ourselves and size the canvas explicitly, so
   // there's no dependency on Chart.js's own timing.
-  var debugEl = document.createElement('div');
-  debugEl.className = 'chart-debug-info';
-  container.parentElement.insertBefore(debugEl, container);
-
   function sizeCanvas() {
     var w = container.clientWidth || 600;
     var h = container.clientHeight || 300;
@@ -106,7 +102,6 @@ function renderSpectralBandChart(container, datasets, options) {
     canvas.height = h;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
-    debugEl.textContent = 'debug: container measured as ' + container.clientWidth + '\u00d7' + container.clientHeight + 'px at ' + new Date().toISOString().slice(11, 19);
     return { w: w, h: h };
   }
   sizeCanvas();
