@@ -26,12 +26,12 @@ function _bandWidthNm(b, centerNm) {
 
 var rectPlugin = {
   id: 'bandRects',
-  afterDatasetsDraw: function (chart) {
+  afterDatasetsDraw: function (chart, args, pluginOpts) {
     var ctx = chart.ctx;
     var xScale = chart.scales.x, yScale = chart.scales.y;
     var BOX_H = 16; // fixed pixel height — a localized marker, not a bar from zero
-    console.log('[satcat-chart] afterDatasetsDraw firing, canvas size:', chart.canvas.width, 'x', chart.canvas.height, '| points:', (chart.$bandPoints || []).length);
-    (chart.$bandPoints || []).forEach(function (p) {
+    var pts = (pluginOpts && pluginOpts.points) || [];
+    pts.forEach(function (p) {
       var x0 = xScale.getPixelForValue(p.x0), x1 = xScale.getPixelForValue(p.x1);
       var yCenter = yScale.getPixelForValue(p.resolution_m);
       var w = Math.max(x1 - x0, 4);
@@ -113,11 +113,9 @@ function _renderSpectralBandChartInner(container, datasets, options) {
     canvas.height = h;
     canvas.style.width = w + 'px';
     canvas.style.height = h + 'px';
-    console.log('[satcat-chart] sizeCanvas:', { clientWidth: container.clientWidth, clientHeight: container.clientHeight, used: { w: w, h: h } });
     return { w: w, h: h };
   }
   sizeCanvas();
-  console.log('[satcat-chart] points to draw:', points.length, points);
 
   var chart = new Chart(canvas, {
     type: 'scatter',
@@ -152,13 +150,12 @@ function _renderSpectralBandChartInner(container, datasets, options) {
       plugins: {
         legend: { display: showLegend, position: 'top', labels: { boxWidth: 12, color: '#c5d2dd' } },
         tooltip: { enabled: false },
+        bandRects: { points: points },
       },
       events: [],
     },
   });
 
-  chart.$bandPoints = points;
-  console.log('[satcat-chart] Chart.js instance created OK. canvas rect:', canvas.getBoundingClientRect());
 
   // Re-measure and redraw a few times shortly after creation (covers cases
   // where the container's own size only settles a frame or two later, e.g.
