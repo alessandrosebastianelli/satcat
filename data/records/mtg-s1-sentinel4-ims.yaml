@@ -1,0 +1,85 @@
+id: mtg-s1-sentinel4-ims
+mission_name: MTG-S1
+sensor_name: Sentinel-4/UVN + IRS (Infrared Sounder)
+agency: EUMETSAT / ESA / Copernicus
+mission_family: MTG
+status: Planned
+launch_year: null
+end_of_life_year: null
+short_description: >-
+  Meteosat Third Generation Sounder satellite, hosting the Copernicus
+  Sentinel-4 atmospheric composition instrument plus an infrared sounder.
+long_description: >-
+  MTG-S1 is the sounder counterpart to the MTG-I imaging satellites,
+  carrying two payloads: the Infrared Sounder (IRS), providing
+  hyperspectral vertical profiles of temperature and humidity for
+  improved short-term forecasting, and Sentinel-4/UVN, the Copernicus
+  atmospheric composition instrument monitoring trace gases (NO2, O3,
+  SO2, aerosols) hourly over Europe from geostationary orbit — the
+  geostationary counterpart to Sentinel-5P's polar-orbit coverage.
+instrument_type: Spectrometer (atmospheric)
+orbit_type: GEO
+bands: []
+spatial_resolution_summary: "~8 km (Sentinel-4/UVN, over Europe); vertical sounding for IRS (not a spatial-resolution product)"
+temporal_resolution: Hourly (Sentinel-4/UVN, daylight hours over Europe)
+radiometric_resolution: ""
+swath_width: "Regional (Europe) for Sentinel-4/UVN; full disc for IRS soundings"
+processing_level:
+  - L1
+  - L2
+derivable_products:
+  - Other
+measured_variables:
+  - Atmospheric gas concentration
+  - Aerosol/Air quality
+data_format:
+  - NetCDF
+geographic_coverage: Europe (Sentinel-4/UVN); full disc (IRS)
+bbox_west: -60
+bbox_south: -60
+bbox_east: 60
+bbox_north: 60
+temporal_range_start: null
+temporal_range_end: null
+data_latency: Near real-time (< 3h)
+access_url: https://www.eumetsat.int/meteosat-third-generation
+requires_registration: true
+license_cost: Free (Open Data - EUMETSAT/Copernicus, registration required)
+api_type:
+  - REST
+documentation_url: https://www.eumetsat.int/meteosat-third-generation
+download_snippet: ""
+gee_snippet: ""
+internal_contact: ""
+related_datasets:
+  - sentinel-5p-tropomi
+  - mtg-i1-fci
+internal_projects: ""
+notes: >-
+  Launch/operational status should be double-checked against EUMETSAT's
+  current mission timeline — the MTG sounder satellites have historically
+  followed the imager satellites with a delay; treat dates here as
+  provisional until verified.
+known_limitations: "Hourly-only coverage during European daylight hours for Sentinel-4/UVN, unlike Sentinel-5P's daily global polar-orbit coverage."
+example_use_cases: "Hourly air quality monitoring over Europe, complementing Sentinel-5P's daily global passes."
+links:
+  - label: EUMETSAT MTG mission page
+    url: https://www.eumetsat.int/meteosat-third-generation
+tags:
+  - geostationary
+  - air-quality
+  - EUMETSAT
+  - copernicus
+citation_doi: ""
+thumbnail_url: ""
+extra_sections: []
+qa: []
+changelog:
+  - date: "2026-01-15 10:00 UTC"
+    user: admin
+    note: "Record created (added by AI assistant, needs verification — launch date/status especially)"
+verification_status: unverified
+verified_by: ""
+verified_at: ""
+last_updated: "2026-01-15 10:00 UTC"
+last_updated_by: admin

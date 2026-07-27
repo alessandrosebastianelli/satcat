@@ -1,0 +1,67 @@
+id: landsat-6-etm
+mission_name: Landsat 6
+sensor_name: ETM (Enhanced Thematic Mapper)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1993
+end_of_life_year: 1993
+short_description: >-
+  Failed to reach orbit — included here only for archive completeness of
+  the Landsat series numbering.
+long_description: >-
+  Landsat 6 was lost due to a launch vehicle failure in October 1993 and
+  never reached orbit. It carried the Enhanced Thematic Mapper (ETM),
+  which added a 15 m panchromatic band to the TM design — a feature later
+  carried forward (in improved form) on Landsat 7's ETM+. No data exists
+  from this mission; the record exists purely to keep the family listing
+  complete and to explain the numbering gap between Landsat 5 and 7.
+instrument_type: Optical - Multispectral
+orbit_type: LEO - Sun-synchronous
+bands: []
+spatial_resolution_summary: "N/A — launch failure, no data collected"
+temporal_resolution: ""
+radiometric_resolution: ""
+swath_width: ""
+processing_level: []
+derivable_products: []
+measured_variables: []
+data_format: []
+geographic_coverage: ""
+temporal_range_start: null
+temporal_range_end: null
+data_latency: ""
+access_url: ""
+requires_registration: false
+license_cost: ""
+api_type: []
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-6
+download_snippet: ""
+gee_snippet: ""
+internal_contact: ""
+related_datasets:
+  - landsat-5-tm
+  - landsat-7-etm-plus
+internal_projects: ""
+notes: "Launch failure (Titan II booster), October 1993. No orbit achieved, no data exists."
+known_limitations: "No data — this record exists only to document the mission gap."
+example_use_cases: ""
+links:
+  - label: USGS Landsat 6 mission page
+    url: https://www.usgs.gov/landsat-missions/landsat-6
+tags:
+  - historical
+  - launch-failure
+citation_doi: ""
+thumbnail_url: ""
+extra_sections: []
+qa: []
+changelog:
+  - date: "2026-01-15 10:00 UTC"
+    user: admin
+    note: "Record created (added by AI assistant, needs verification)"
+verification_status: unverified
+verified_by: ""
+verified_at: ""
+last_updated: "2026-01-15 10:00 UTC"
+last_updated_by: admin

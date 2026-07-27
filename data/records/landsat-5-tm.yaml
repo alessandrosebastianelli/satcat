@@ -1,0 +1,124 @@
+id: landsat-5-tm
+mission_name: Landsat 5
+sensor_name: TM (Thematic Mapper)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1984
+end_of_life_year: 2013
+short_description: Longest-operating Earth observation satellite in history (29 years), same Thematic
+  Mapper instrument as Landsat 4.
+long_description: Landsat 5 holds the Guinness World Record for the longest-operating Earth observation
+  satellite, providing an uninterrupted 30 m archive from 1984 to 2013 — a backbone dataset for global
+  land change studies (deforestation, urban growth, agriculture) spanning nearly three decades with a
+  single consistent instrument design.
+instrument_type: Optical - Multispectral
+orbit_type: LEO - Sun-synchronous
+bands:
+- name: TM1 - Blue
+  wavelength_or_frequency: 450-520 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 485
+  bandwidth_nm: 70.0
+  resolution_m: 30.0
+- name: TM2 - Green
+  wavelength_or_frequency: 520-600 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 560
+  bandwidth_nm: 80.0
+  resolution_m: 30.0
+- name: TM3 - Red
+  wavelength_or_frequency: 630-690 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 660
+  bandwidth_nm: 60.0
+  resolution_m: 30.0
+- name: TM4 - NIR
+  wavelength_or_frequency: 760-900 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 830
+  bandwidth_nm: 140.0
+  resolution_m: 30.0
+- name: TM5 - SWIR1
+  wavelength_or_frequency: 1550-1750 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 1650
+  bandwidth_nm: 200.0
+  resolution_m: 30.0
+- name: TM6 - Thermal
+  wavelength_or_frequency: 10400-12500 nm
+  spatial_resolution: 120 m
+  bandwidth_nm: 2100.0
+  resolution_m: 120.0
+  wavelength_nm: 10400.0
+- name: TM7 - SWIR2
+  wavelength_or_frequency: 2080-2350 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 2215
+  bandwidth_nm: 270.0
+  resolution_m: 30.0
+spatial_resolution_summary: 30 m (VIS/NIR/SWIR), 120 m (thermal)
+temporal_resolution: 16 days
+radiometric_resolution: 8 bit
+swath_width: 185 km
+processing_level:
+- L1
+- L2
+derivable_products:
+- NDVI
+- Land Cover Classification
+- Land Surface Temperature
+measured_variables:
+- Surface reflectance
+- Land cover
+- Surface temperature (LST/SST)
+data_format:
+- GeoTIFF
+- COG
+geographic_coverage: Global, ~81°S to ~81°N (land areas)
+temporal_range_start: 1984
+temporal_range_end: 2013
+data_latency: Archive/reprocessed only
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- STAC API
+- Google Earth Engine
+- Direct FTP/HTTP
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-5
+download_snippet: ''
+gee_snippet: "var collection = ee.ImageCollection('LANDSAT/LT05/C02/T1_L2')\n  .filterBounds(ee.Geometry.Point([12.5,\
+  \ 41.9]))\n  .filterDate('1990-06-01', '1990-09-01');\nprint('Number of images:', collection.size());\n"
+internal_contact: ''
+related_datasets:
+- landsat-4-tm
+- landsat-7-etm
+internal_projects: ''
+notes: The single most important archive for consistent 1984-2013 30m land change analysis.
+known_limitations: 8-bit radiometric resolution; some scan-line/sensor degradation in later years.
+example_use_cases: Global deforestation/urbanization change detection 1984-2013.
+links:
+- label: USGS Landsat 5 mission page
+  url: https://www.usgs.gov/landsat-missions/landsat-5
+tags:
+- archive
+- TM
+- long-term-record
+citation_doi: ''
+thumbnail_url: ''
+extra_sections: []
+qa: []
+changelog:
+- date: 2026-01-15 10:00 UTC
+  user: admin
+  note: Record created (added by AI assistant, needs verification)
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-01-15 10:00 UTC
+last_updated_by: admin
+bbox_west: -180.0
+bbox_south: -81.0
+bbox_east: 180.0
+bbox_north: 81.0
