@@ -29,23 +29,25 @@ var rectPlugin = {
   afterDatasetsDraw: function (chart) {
     var ctx = chart.ctx;
     var xScale = chart.scales.x, yScale = chart.scales.y;
+    var BOX_H = 16; // fixed pixel height — a localized marker, not a bar from zero
     (chart.$bandPoints || []).forEach(function (p) {
       var x0 = xScale.getPixelForValue(p.x0), x1 = xScale.getPixelForValue(p.x1);
-      var y0 = yScale.getPixelForValue(p.resolution_m), y1 = yScale.getPixelForValue(0);
-      var w = Math.max(x1 - x0, 2), h = Math.max(y1 - y0, 2);
+      var yCenter = yScale.getPixelForValue(p.resolution_m);
+      var w = Math.max(x1 - x0, 4);
+      var y0 = yCenter - BOX_H / 2;
       ctx.save();
-      ctx.fillStyle = p.color + 'bf';
+      ctx.fillStyle = p.color + 'd9';
       ctx.strokeStyle = p.color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.rect(x0, y0, w, h);
+      ctx.rect(x0, y0, w, BOX_H);
       ctx.fill();
       ctx.stroke();
-      if (w > 30) {
+      if (w > 34) {
         ctx.fillStyle = '#0a1015';
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(p.name, x0 + w / 2, y0 + 13, w - 4);
+        ctx.fillText(p.name, x0 + w / 2, yCenter + 3, w - 4);
       }
       ctx.restore();
     });
@@ -126,6 +128,13 @@ function renderSpectralBandChart(container, datasets, options) {
 
   chart.$bandPoints = points;
 
+  // Chart.js measures the container's size synchronously at creation time;
+  // if the flex layout hasn't settled yet (common right after innerHTML
+  // insertion), it can end up 0×0 and never redraw until something else
+  // triggers a resize (e.g. clicking "Expand"). Force one shortly after
+  // paint so it always renders correctly the first time.
+  requestAnimationFrame(function () { chart.resize(); });
+
   // Custom hover tooltip (the bands aren't real Chart.js data points, so
   // Chart.js's own tooltip/interaction system doesn't know about them).
   var tooltipEl = document.createElement('div');
@@ -138,10 +147,11 @@ function renderSpectralBandChart(container, datasets, options) {
     var rect = canvas.getBoundingClientRect();
     var mx = evt.clientX - rect.left, my = evt.clientY - rect.top;
     var hit = null;
+    var BOX_H = 16;
     points.forEach(function (p) {
       var x0 = chart.scales.x.getPixelForValue(p.x0), x1 = chart.scales.x.getPixelForValue(p.x1);
-      var y0 = chart.scales.y.getPixelForValue(p.resolution_m), y1 = chart.scales.y.getPixelForValue(0);
-      if (mx >= x0 && mx <= x1 && my >= y0 && my <= y1) hit = p;
+      var yCenter = chart.scales.y.getPixelForValue(p.resolution_m);
+      if (mx >= x0 && mx <= x1 && my >= yCenter - BOX_H / 2 && my <= yCenter + BOX_H / 2) hit = p;
     });
     if (hit) {
       tooltipEl.style.display = 'block';

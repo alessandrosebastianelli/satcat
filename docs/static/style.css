@@ -172,8 +172,14 @@ button { cursor: pointer; }
 .verified-badge { border-color: var(--accent-2); color: var(--accent-2); }
 .unverified-badge { border-color: var(--muted); color: var(--muted); }
 
-.coverage-map { height: 220px; border-radius: 8px; margin-top: 12px; border: 1px solid var(--border); }
 .map-caption { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+#coverage-map { position: relative; }
+.coord-badge {
+  position: absolute; bottom: 8px; left: 8px; z-index: 1000;
+  background: rgba(13, 15, 14, 0.85); border: 1px solid var(--border);
+  font-size: 10px; font-family: ui-monospace, monospace; color: var(--muted);
+  padding: 3px 7px; border-radius: 4px; pointer-events: none;
+}
 .chart-wrap {
   background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
   padding: 16px; margin: 12px 0 28px; height: 320px;
@@ -187,7 +193,7 @@ button { cursor: pointer; }
 .chart-expand-btn { font-size: 0.78rem; padding: 3px 9px; }
 .chart-wrap.chart-expanded {
   position: fixed; top: 5vh; left: 5vw; width: 90vw; height: 88vh;
-  z-index: 50; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  z-index: 2000; box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 
 .band-tooltip {
