@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare instruments - Satellite Data Catalog</title>
+<link rel="stylesheet" href="static/style.css">
+<script>(function(){var t=localStorage.getItem('satcat-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav><button id="theme-toggle" class="icon-btn" type="button">🌓</button></nav>
+</header>
+<main class="container">
+  <a href="index.html" class="back-link">&larr; Back to catalog</a>
+  <h1>Compare instruments</h1>
+  <div class="pill-picker" id="pill-picker"></div>
+  <div class="compare-picker"><button type="button" class="btn-primary" id="update-compare-btn">Update comparison</button></div>
+  <div id="band-chart-section" style="display:none;">
+    <h2>Spectral band comparison</h2>
+    <div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="band-chart-expand">⛶ Expand</button></div>
+    <div class="chart-wrap" id="band-chart-wrap"><div id="band-chart"></div></div>
+  </div>
+  <div id="compare-table-container"><p class="result-count">Loading…</p></div>
+</main>
+
+<script src="static/config.js"></script>
+<script src="static/catalog.js"></script>
+<script src="static/band-chart.js"></script>
+<script>
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('satcat-theme', next);
+});
+
+var FIELDS = [
+  ["agency","Agency"],["status","Status"],["launch_year","Launch year"],
+  ["instrument_type","Instrument type"],["orbit_type","Orbit type"],
+  ["spatial_resolution_summary","Spatial resolution"],["temporal_resolution","Revisit time"],
+  ["radiometric_resolution","Radiometric resolution"],["swath_width","Swath"],
+  ["processing_level","Processing levels"],["measured_variables","Measured variables"],
+  ["derivable_products","Derivable products"],["data_format","Data formats"],
+  ["geographic_coverage","Geographic coverage"],["data_latency","Data latency"],
+  ["license_cost","License / cost"],["api_type","API type"],
+  ["requires_registration","Requires registration"],
+];
+
+function getIdsFromUrl() { return (new URLSearchParams(window.location.search).get('ids') || '').split(',').filter(Boolean); }
+
+function renderPicker(catalog, selectedIds) {
+  document.getElementById('pill-picker').innerHTML = catalog.map(function (d) {
+    var checked = selectedIds.indexOf(d.id) >= 0;
+    return '<label class="pill-option' + (checked?' checked':'') + '"><input type="checkbox" value="' + d.id + '" ' + (checked?'checked':'') + '> ' +
+      d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : '') + '</label>';
+  }).join('');
+  document.querySelectorAll('#pill-picker input').forEach(function (cb) {
+    cb.addEventListener('change', function () { cb.closest('.pill-option').classList.toggle('checked', cb.checked); });
+  });
+}
+
+function fmtValue(v) {
+  if (Array.isArray(v)) return v.length ? v.join(', ') : '—';
+  if (v === true) return 'Yes'; if (v === false) return 'No';
+  return (v === null || v === undefined || v === '') ? '—' : v;
+}
+
+function renderTable(selected) {
+  var container = document.getElementById('compare-table-container');
+  if (selected.length < 2) {
+    container.innerHTML = '<p class="result-count">Select at least two records above to compare them.</p>';
+    document.getElementById('band-chart-section').style.display = 'none';
+    return;
+  }
+  var html = '<div class="compare-table-wrap"><table class="compare-table"><thead><tr><th></th>';
+  selected.forEach(function (d) {
+    html += '<th><a href="dataset.html?id=' + encodeURIComponent(d.id) + '">' + d.mission_name +
+      (d.sensor_name ? '<br><span class="sensor">' + d.sensor_name + '</span>' : '') + '</a></th>';
+  });
+  html += '</tr></thead><tbody><tr><th>Short description</th>';
+  selected.forEach(function (d) { html += '<td>' + (d.short_description || '—') + '</td>'; });
+  html += '</tr>';
+  FIELDS.forEach(function (f) {
+    html += '<tr><th>' + f[1] + '</th>';
+    selected.forEach(function (d) { html += '<td>' + fmtValue(d[f[0]]) + '</td>'; });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  container.innerHTML = html;
+
+  var chartData = [];
+  selected.forEach(function (d) {
+    var chartable = (d.bands || []).filter(function (b) { return (b.wavelength_nm != null || b.frequency_ghz != null) && b.resolution_m != null; });
+    if (chartable.length) chartData.push({ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable });
+  });
+  var section = document.getElementById('band-chart-section');
+  if (!chartData.length) {
+    section.style.display = 'none';
+  } else {
+    section.style.display = 'block';
+    renderSpectralBandChart(document.getElementById('band-chart'), chartData, {});
+  }
+}
+
+loadCatalog().then(function (catalog) {
+  renderLoadErrorsBanner(document.querySelector('main.container'));
+  var selectedIds = getIdsFromUrl();
+  catalog.sort(function (a, b) { return a.mission_name.localeCompare(b.mission_name); });
+  renderPicker(catalog, selectedIds);
+  renderTable(catalog.filter(function (d) { return selectedIds.indexOf(d.id) >= 0; }));
+
+  document.getElementById('update-compare-btn').addEventListener('click', function () {
+    var checked = Array.from(document.querySelectorAll('#pill-picker input:checked')).map(function (cb) { return cb.value; });
+    var url = new URL(window.location.href);
+    url.searchParams.set('ids', checked.join(','));
+    window.location.href = url.toString();
+  });
+
+  var expandBtn = document.getElementById('band-chart-expand');
+  var wrap = document.getElementById('band-chart-wrap');
+  if (expandBtn && wrap) {
+    expandBtn.addEventListener('click', function () {
+      wrap.classList.toggle('chart-expanded');
+      expandBtn.textContent = wrap.classList.contains('chart-expanded') ? '⤡ Collapse' : '⛶ Expand';
+    });
+  }
+}).catch(function (err) {
+  document.getElementById('compare-table-container').innerHTML = '<p>Failed to load catalog.</p>';
+  console.error(err);
+});
+</script>
+</body>
+</html>

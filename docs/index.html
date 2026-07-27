@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satellite Data Catalog (public mirror)</title>
+<link rel="stylesheet" href="static/style.css">
+<script>(function(){var t=localStorage.getItem('satcat-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav>
+    <a href="families.html">Families</a>
+    <button id="theme-toggle" class="icon-btn" type="button">🌓</button>
+    <a id="repo-link" href="#" target="_blank">GitHub repo</a>
+    <a id="discussions-link" href="#" target="_blank">Discussions (Q&amp;A)</a>
+  </nav>
+</header>
+<main class="container">
+  <p class="mirror-notice">
+    This is a <strong>read-only</strong> public mirror — every page reads the catalog
+    records live from GitHub, so it's always up to date, with nothing to build or deploy.
+    To ask a question, use <a id="discussions-link2" href="#" target="_blank">Discussions</a>.
+    To request a missing dataset or propose a change, open an
+    <a id="issues-link" href="#" target="_blank">Issue</a> or a Pull Request.
+  </p>
+
+  <div class="search-bar">
+    <input type="text" id="q" placeholder="Search by mission, variable, product, notes...">
+    <select id="f-instrument"><option value="">All instrument types</option></select>
+    <select id="f-status"><option value="">All statuses</option></select>
+    <select id="f-variable"><option value="">All variables</option></select>
+  </div>
+
+  <div class="toolbar-row"><p class="result-count" id="result-count">Loading catalog…</p></div>
+  <div class="card-grid" id="results-container"></div>
+
+  <div id="compare-bar" class="compare-bar">
+    <span id="compare-bar-text"></span>
+    <button type="button" id="compare-bar-view" class="btn btn-small">View comparison</button>
+    <button type="button" id="compare-bar-clear" class="icon-btn">✕</button>
+  </div>
+</main>
+
+<script src="static/config.js"></script>
+<script src="static/catalog.js"></script>
+<script>
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('satcat-theme', next);
+});
+document.getElementById('repo-link').href = getRepoUrl();
+document.getElementById('discussions-link').href = getRepoUrl() + '/discussions';
+document.getElementById('discussions-link2').href = getRepoUrl() + '/discussions';
+document.getElementById('issues-link').href = getRepoUrl() + '/issues/new/choose';
+
+var CATALOG = [];
+
+function badgeStatus(s) { return 'status-' + (s || '').toLowerCase().replace(/ /g, '-'); }
+
+function cardHtml(d) {
+  var verifiedBadge = d.verification_status === 'verified'
+    ? '<span class="badge verified-badge">\u2714 verified</span>'
+    : '<span class="badge unverified-badge">\u25d0 unverified</span>';
+  var attentionBadge = d._missing.length ? '<span class="badge attention-badge">\u26a0 incomplete</span>' : '';
+  var sensor = d.sensor_name ? ' <span class="sensor">/ ' + d.sensor_name + '</span>' : '';
+  return '<div class="card-wrap">' +
+      '<label class="compare-check"><input type="checkbox" class="compare-checkbox" value="' + d.id + '"></label>' +
+      '<a class="card" href="dataset.html?id=' + encodeURIComponent(d.id) + '">' +
+        '<div class="card-body">' +
+          '<div class="card-header">' +
+            '<span class="badge ' + badgeStatus(d.status) + '">' + (d.status||'') + '</span>' +
+            '<span class="badge">' + (d.instrument_type||'') + '</span>' +
+            verifiedBadge + attentionBadge +
+          '</div>' +
+          '<h3>' + d.mission_name + sensor + '</h3>' +
+          '<p class="agency">' + (d.agency||'') + (d.launch_year ? ' \u00b7 since ' + d.launch_year : '') + '</p>' +
+          '<p class="short-desc">' + (d.short_description||'') + '</p>' +
+        '</div>' +
+      '</a>' +
+    '</div>';
+}
+
+function populateFilterOptions() {
+  var instruments = {}, statuses = {}, variables = {};
+  CATALOG.forEach(function (d) {
+    if (d.instrument_type) instruments[d.instrument_type] = true;
+    if (d.status) statuses[d.status] = true;
+    (d.measured_variables || []).forEach(function (v) { variables[v] = true; });
+  });
+  function fill(id, values) {
+    var sel = document.getElementById(id);
+    Object.keys(values).sort().forEach(function (v) {
+      var opt = document.createElement('option'); opt.value = v; opt.textContent = v; sel.appendChild(opt);
+    });
+  }
+  fill('f-instrument', instruments); fill('f-status', statuses); fill('f-variable', variables);
+}
+
+function render() {
+  var q = document.getElementById('q').value.trim().toLowerCase();
+  var fi = document.getElementById('f-instrument').value;
+  var fs = document.getElementById('f-status').value;
+  var fv = document.getElementById('f-variable').value;
+  var noFilters = !q && !fi && !fs && !fv;
+  var results = CATALOG.filter(function (d) {
+    if (fi && d.instrument_type !== fi) return false;
+    if (fs && d.status !== fs) return false;
+    if (fv && (d.measured_variables || []).indexOf(fv) === -1) return false;
+    if (q) {
+      var hay = [d.mission_name, d.sensor_name, d.short_description, d.long_description,
+        d.instrument_type, (d.measured_variables||[]).join(' '), (d.derivable_products||[]).join(' '),
+        (d.tags||[]).join(' '), d.notes].join(' ').toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+
+  var collectionsHtml = '';
+  if (noFilters) {
+    var byFamily = {};
+    var singles = [];
+    results.forEach(function (d) {
+      var fam = (d.mission_family || '').trim();
+      if (fam) { (byFamily[fam] = byFamily[fam] || []).push(d); }
+      else { singles.push(d); }
+    });
+    var collections = [];
+    var flat = [];
+    Object.keys(byFamily).forEach(function (fam) {
+      if (byFamily[fam].length >= 2) collections.push({ family: fam, members: byFamily[fam] });
+      else flat = flat.concat(byFamily[fam]);
+    });
+    flat = flat.concat(singles);
+    flat.sort(function (a, b) { return a.mission_name.localeCompare(b.mission_name); });
+    collections.sort(function (a, b) { return a.family.localeCompare(b.family); });
+    collectionsHtml = collections.map(collectionCardHtml).join('');
+    results = flat;
+  }
+
+  document.getElementById('result-count').textContent = results.length + ' record(s) found';
+  document.getElementById('results-container').innerHTML = collectionsHtml + (results.map(cardHtml).join('') ||
+    (collectionsHtml ? '' : '<p>No records found.</p>'));
+  wireCompareCheckboxes();
+}
+
+function collectionCardHtml(c) {
+  var years = c.members.map(function (m) { return m.launch_year; }).filter(Boolean).sort(function (a,b) {return a-b;});
+  var yearRange = years.length ? ('\u00b7 ' + years[0] + (years[years.length-1] !== years[0] ? ' \u2013 ' + years[years.length-1] : '')) : '';
+  var preview = c.members.slice(0, 4).map(function (m) { return '<span class="tag">' + m.mission_name + '</span>'; }).join('');
+  var more = c.members.length > 4 ? '<span class="tag">+' + (c.members.length - 4) + ' more</span>' : '';
+  return '<div class="card-wrap"><a class="card collection-card" href="families.html?name=' + encodeURIComponent(c.family) + '">' +
+    '<div class="card-body"><div class="card-header"><span class="badge collection-label">\ud83d\udce6 collection</span></div>' +
+    '<h3>' + c.family + '</h3>' +
+    '<p class="agency">' + c.members.length + ' missions ' + yearRange + '</p>' +
+    '<div class="tag-row">' + preview + more + '</div></div></a></div>';
+}
+
+function wireCompareCheckboxes() {
+  var cart = getCart();
+  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
+    cb.checked = cart.indexOf(cb.value) >= 0;
+    cb.addEventListener('change', function () { toggleCart(cb.value); });
+  });
+}
+function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (e) { return []; } }
+function setCart(c) { localStorage.setItem('satcat-compare', JSON.stringify(c)); renderCompareBar(); }
+function toggleCart(id) { var c = getCart(); var i = c.indexOf(id); if (i >= 0) c.splice(i, 1); else c.push(id); setCart(c); }
+function renderCompareBar() {
+  var c = getCart();
+  document.getElementById('compare-bar-text').textContent = c.length + (c.length === 1 ? ' record selected' : ' records selected');
+  document.getElementById('compare-bar').classList.toggle('visible', c.length > 0);
+  document.getElementById('compare-bar-view').disabled = c.length < 2;
+}
+document.getElementById('compare-bar-view').addEventListener('click', function () {
+  window.location.href = 'compare.html?ids=' + encodeURIComponent(getCart().join(','));
+});
+document.getElementById('compare-bar-clear').addEventListener('click', function () { setCart([]); });
+
+loadCatalog().then(function (data) {
+  CATALOG = data;
+  CATALOG.sort(function (a, b) { return a.mission_name.localeCompare(b.mission_name); });
+  populateFilterOptions();
+  render();
+  renderCompareBar();
+  renderLoadErrorsBanner(document.querySelector('main.container'));
+  ['q','f-instrument','f-status','f-variable'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', render);
+    document.getElementById(id).addEventListener('change', render);
+  });
+}).catch(function (err) {
+  document.getElementById('result-count').textContent = 'Failed to load catalog — check static/config.js has the right repo, and manifest.json lists valid files.';
+  console.error(err);
+});
+</script>
+</body>
+</html>

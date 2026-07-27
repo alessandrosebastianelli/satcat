@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Dataset - Satellite Data Catalog</title>
+<link rel="stylesheet" href="static/style.css">
+<script>(function(){var t=localStorage.getItem('satcat-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav>
+    <a href="families.html">Families</a>
+    <button id="theme-toggle" class="icon-btn" type="button">🌓</button>
+    <a id="repo-link" href="#" target="_blank">GitHub repo</a>
+  </nav>
+</header>
+<main class="container" id="content">
+  <p>Loading…</p>
+</main>
+
+<script src="static/config.js"></script>
+<script src="static/catalog.js"></script>
+<script src="static/band-chart.js"></script>
+<script src="static/coverage-map.js"></script>
+<script>
+document.getElementById('theme-toggle').addEventListener('click', function () {
+  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('satcat-theme', next);
+});
+document.getElementById('repo-link').href = getRepoUrl();
+
+function fmtList(v) { return (v && v.length) ? v.join(', ') : '—'; }
+function esc(s) { return (s === null || s === undefined) ? '' : String(s); }
+
+function renderDataset(d, catalog) {
+  document.getElementById('page-title').textContent = d.mission_name + ' - Satellite Data Catalog';
+  var repo = getRepoUrl();
+  var missingNotice = d._missing.length
+    ? '<p class="incomplete-notice">\u26a0 This record is missing: ' + d._missing.join(', ') +
+      '. <a href="' + repo + '/edit/main/data/records/' + d.id + '.yaml" target="_blank">Complete it on GitHub</a>.</p>'
+    : '';
+  var verifiedBadge = d.verification_status === 'verified'
+    ? '<span class="badge verified-badge">\u2714 verified</span>'
+    : '<span class="badge unverified-badge">\u25d0 unverified</span>';
+  var related = (d.related_datasets || []).map(function (rid) {
+    var r = catalog.find(function (x) { return x.id === rid; });
+    return r ? '<li><a href="dataset.html?id=' + encodeURIComponent(r.id) + '">' + r.mission_name + '</a></li>' : '';
+  }).join('');
+
+  var bandsTable = '';
+  if (d.bands.length) {
+    bandsTable = '<details class="bands-details" ' + (d.bands.length <= 6 ? 'open' : '') + '>' +
+      '<summary><h3 class="inline-h3">Bands / Channels (' + d.bands.length + ')</h3></summary>' +
+      '<table class="kv-table bands-table"><tr><th>Name</th><th>Wavelength / Frequency</th><th>Spatial resolution</th></tr>' +
+      d.bands.map(function (b) {
+        return '<tr><td>' + esc(b.name) + '</td><td>' + esc(b.wavelength_or_frequency) + '</td><td>' + esc(b.spatial_resolution) + '</td></tr>';
+      }).join('') + '</table></details>';
+  }
+
+  var chartSection = '';
+  var chartable = d.bands.filter(function (b) { return (b.wavelength_nm != null || b.frequency_ghz != null) && b.resolution_m != null; });
+  if (chartable.length) {
+    chartSection = '<section><h2>Spectral / band chart</h2>' +
+      '<div class="chart-wrap chart-wrap-medium" id="own-band-chart-wrap">' +
+      '<div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="own-band-chart-expand">\u26f6 Expand</button></div>' +
+      '<div id="own-band-chart"></div></div>' +
+      '<p class="hint">X: wavelength (nm, log scale \u2014 SAR/radar shown as equivalent wavelength). Y: spatial resolution (m). Box width = bandwidth.</p></section>';
+  }
+
+  var mapSection = '';
+  if (d.bbox_west != null && d.bbox_south != null && d.bbox_east != null && d.bbox_north != null) {
+    mapSection = '<div id="coverage-map" class="coverage-map" data-west="' + d.bbox_west + '" data-south="' + d.bbox_south +
+      '" data-east="' + d.bbox_east + '" data-north="' + d.bbox_north + '"></div>' +
+      '<p class="map-caption">Spatial coverage shown above' + (d.geographic_coverage ? ' (' + d.geographic_coverage + ')' : '') +
+      ' \u00b7 data available ' + (d.temporal_range_start || '?') + '\u2013' + (d.temporal_range_end || 'present') + '</p>';
+  }
+
+  var extraSections = (d.extra_sections || []).map(function (s) {
+    return '<section><h2>' + esc(s.title) + '</h2><div class="prose">' + esc(s.content) + '</div></section>';
+  }).join('');
+
+  var changelogSection = '';
+  if (d.changelog && d.changelog.length) {
+    changelogSection = '<section><h2>Change history</h2><ul class="changelog-list">' +
+      d.changelog.slice().reverse().map(function (e) {
+        return '<li><span class="qa-meta">' + e.date + ' \u2014 ' + e.user + '</span><br>' + e.note + '</li>';
+      }).join('') + '</ul></section>';
+  }
+
+  document.getElementById('content').innerHTML =
+    '<a href="index.html" class="back-link">&larr; Back to catalog</a>' +
+    '<div class="detail-header"><div>' +
+      (d.thumbnail_url ? '<img class="detail-thumb" src="' + d.thumbnail_url + '" alt="">' : '') +
+      '<h1>' + d.mission_name + (d.sensor_name ? ' <span class="sensor">/ ' + d.sensor_name + '</span>' : '') + '</h1>' +
+      '<p class="agency">' + (d.agency||'') +
+        (d.launch_year ? ' \u00b7 launched ' + d.launch_year : '') +
+        (d.end_of_life_year ? ' \u2013 ' + d.end_of_life_year : '') +
+        (d.mission_family ? ' \u00b7 <a href="families.html?name=' + encodeURIComponent(d.mission_family) + '">' + d.mission_family + ' family</a>' : '') +
+      '</p></div>' +
+      '<div><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span> ' + verifiedBadge +
+        ' <label class="pill-option compare-check-inline"><input type="checkbox" class="compare-checkbox" value="' + d.id + '"> Add to compare</label>' +
+        ' <a href="' + repo + '/edit/main/data/records/' + d.id + '.yaml" target="_blank" class="btn btn-small">\u270e Propose edit on GitHub</a></div>' +
+    '</div>' +
+    missingNotice +
+    '<p class="short-desc-big">' + (d.short_description||'') + '</p>' +
+    (d.long_description ? '<section><h2>Extended description</h2><div class="prose">' + d.long_description + '</div></section>' : '') +
+    '<section class="grid-2col"><div><h2>Technical characteristics</h2><table class="kv-table">' +
+      '<tr><th>Instrument type</th><td>' + (d.instrument_type||'—') + '</td></tr>' +
+      '<tr><th>Orbit type</th><td>' + (d.orbit_type||'—') + '</td></tr>' +
+      '<tr><th>Revisit time</th><td>' + (d.temporal_resolution||'—') + '</td></tr>' +
+      '<tr><th>Radiometric resolution</th><td>' + (d.radiometric_resolution||'—') + '</td></tr>' +
+      '<tr><th>Swath</th><td>' + (d.swath_width||'—') + '</td></tr>' +
+      '<tr><th>Spatial resolution (summary)</th><td>' + (d.spatial_resolution_summary||'—') + '</td></tr>' +
+      '</table>' + bandsTable + '</div>' +
+      '<div><h2>Data and products</h2><table class="kv-table">' +
+      '<tr><th>Processing levels</th><td>' + fmtList(d.processing_level) + '</td></tr>' +
+      '<tr><th>Measured variables</th><td>' + fmtList(d.measured_variables) + '</td></tr>' +
+      '<tr><th>Derivable products</th><td>' + fmtList(d.derivable_products) + '</td></tr>' +
+      '<tr><th>Data formats</th><td>' + fmtList(d.data_format) + '</td></tr>' +
+      '<tr><th>Geographic coverage</th><td>' + (d.geographic_coverage||'—') + '</td></tr>' +
+      '<tr><th>Data time range</th><td>' + (d.temporal_range_start||'?') + ' \u2013 ' + (d.temporal_range_end||'present') + '</td></tr>' +
+      '<tr><th>Data latency</th><td>' + (d.data_latency||'—') + '</td></tr>' +
+      '</table>' + mapSection + '</div></section>' +
+    chartSection +
+    '<section><h2>Data access</h2><table class="kv-table">' +
+      '<tr><th>Access URL</th><td>' + (d.access_url ? '<a href="' + d.access_url + '" target="_blank">' + d.access_url + '</a>' : '—') + '</td></tr>' +
+      '<tr><th>Registration required</th><td>' + (d.requires_registration ? 'Yes' : 'No') + '</td></tr>' +
+      '<tr><th>License / Cost</th><td>' + (d.license_cost||'—') + '</td></tr>' +
+      '<tr><th>API type</th><td>' + fmtList(d.api_type) + '</td></tr>' +
+      '<tr><th>Documentation</th><td>' + (d.documentation_url ? '<a href="' + d.documentation_url + '" target="_blank">' + d.documentation_url + '</a>' : '—') + '</td></tr>' +
+      '<tr><th>Citation / DOI</th><td>' + (d.citation_doi||'—') + '</td></tr></table>' +
+      (d.download_snippet ? '<h3>Download snippet</h3><pre class="code-block"><code>' + d.download_snippet + '</code></pre>' : '') +
+      (d.gee_snippet ? '<h3>Google Earth Engine script</h3><pre class="code-block"><code>' + d.gee_snippet + '</code></pre>' : '') +
+    '</section>' +
+    ((d.example_use_cases || d.known_limitations) ? '<section class="grid-2col">' +
+      (d.example_use_cases ? '<div><h2>Example use cases</h2><div class="prose">' + d.example_use_cases + '</div></div>' : '') +
+      (d.known_limitations ? '<div><h2>Known limitations</h2><div class="prose">' + d.known_limitations + '</div></div>' : '') +
+      '</section>' : '') +
+    '<section class="grid-2col"><div><h2>Internal context</h2><table class="kv-table">' +
+      '<tr><th>Internal contact</th><td>' + (d.internal_contact||'—') + '</td></tr>' +
+      '<tr><th>Internal projects using it</th><td>' + (d.internal_projects||'—') + '</td></tr></table>' +
+      (d.notes ? '<h3>Notes / lessons learned</h3><div class="prose">' + d.notes + '</div>' : '') + '</div>' +
+      '<div>' +
+      (d.links.length ? '<h2>Useful links</h2><ul class="link-list">' + d.links.map(function(l){return '<li><a href="'+l.url+'" target="_blank">'+(l.label||l.url)+'</a></li>';}).join('') + '</ul>' : '') +
+      (related ? '<h2>Related datasets</h2><ul class="link-list">' + related + '</ul>' : '') +
+      (d.tags.length ? '<h2>Tags</h2><div class="tag-row">' + d.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('') + '</div>' : '') +
+      '</div></section>' +
+    extraSections +
+    '<section id="qa"><h2>Questions &amp; Answers</h2>' +
+      '<p class="hint">Q&amp;A for this dataset happens on GitHub Discussions.</p>' +
+      '<a class="btn btn-small" target="_blank" href="' + repo + '/discussions?discussions_q=is%3Aopen+' + d.id + '">View discussions for ' + d.id + '</a> ' +
+      '<a class="btn btn-small" target="_blank" href="' + repo + '/discussions/new?category=q-a&title=' + encodeURIComponent(d.mission_name + ': ') + '&body=' + encodeURIComponent('Dataset: ' + d.id + '\n\n') + '">Start a new discussion</a>' +
+    '</section>' +
+    changelogSection +
+    '<footer class="meta-footer">Last updated: ' + (d.last_updated||'—') + (d.last_updated_by ? ' by ' + d.last_updated_by : '') +
+      ' · <a href="' + repo + '/commits/main/data/records/' + d.id + '.yaml" target="_blank">Full history on GitHub</a></footer>';
+
+  // Map
+  try {
+    var mapEl = document.getElementById('coverage-map');
+    if (mapEl) {
+      renderCoverageBox(mapEl, {
+        west: parseFloat(mapEl.dataset.west), south: parseFloat(mapEl.dataset.south),
+        east: parseFloat(mapEl.dataset.east), north: parseFloat(mapEl.dataset.north),
+      });
+    }
+  } catch (e) { console.error('[satcat] map failed:', e); }
+
+  // Band chart
+  try {
+    var chartWrapEl = document.getElementById('own-band-chart');
+    if (chartWrapEl) {
+      renderSpectralBandChart(chartWrapEl, [{ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable }], { singleColor: '#3fb7e0' });
+      var expandBtn = document.getElementById('own-band-chart-expand');
+      var wrap = document.getElementById('own-band-chart-wrap');
+      if (expandBtn && wrap) {
+        expandBtn.addEventListener('click', function () {
+          wrap.classList.toggle('chart-expanded');
+          expandBtn.textContent = wrap.classList.contains('chart-expanded') ? '\u2921 Collapse' : '\u26f6 Expand';
+        });
+      }
+    }
+  } catch (e) { console.error('[satcat] band chart failed:', e); }
+
+  // Compare cart
+  function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (er) { return []; } }
+  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
+    cb.checked = getCart().indexOf(cb.value) >= 0;
+    cb.addEventListener('change', function () {
+      var c = getCart(); var i = c.indexOf(cb.value);
+      if (i >= 0) c.splice(i, 1); else c.push(cb.value);
+      localStorage.setItem('satcat-compare', JSON.stringify(c));
+    });
+  });
+}
+
+var params = new URLSearchParams(window.location.search);
+var id = params.get('id');
+loadCatalog().then(function (catalog) {
+  renderLoadErrorsBanner(document.querySelector('main.container'));
+  var d = catalog.find(function (x) { return x.id === id; });
+  if (!d) {
+    document.getElementById('content').innerHTML = '<p>Record "' + esc(id) + '" not found.</p><a href="index.html">Back to catalog</a>';
+    return;
+  }
+  renderDataset(d, catalog);
+}).catch(function (err) {
+  document.getElementById('content').innerHTML = '<p>Failed to load catalog. Check static/config.js has the right repo.</p>';
+  console.error(err);
+});
+</script>
+</body>
+</html>
