@@ -1,0 +1,94 @@
+id: landsat-3-mss
+mission_name: Landsat 3
+sensor_name: MSS (Multispectral Scanner)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1978
+end_of_life_year: 1983
+short_description: Third Landsat satellite, added a thermal infrared band to the MSS instrument (later
+  disabled due to a technical issue).
+long_description: Landsat 3 continued the MSS-era archive and experimented with a fifth, thermal infrared
+  MSS band, which was disabled shortly after launch due to a data formatting problem — most Landsat 3
+  MSS data in the archive is therefore the standard 4-band set, same as Landsat 1/2.
+instrument_type: Optical - Multispectral
+orbit_type: LEO - Sun-synchronous
+bands:
+- name: MSS 4 - Green
+  wavelength_or_frequency: 500-600 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 550
+  resolution_m: 79.0
+- name: MSS 5 - Red
+  wavelength_or_frequency: 600-700 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 650
+  resolution_m: 79.0
+- name: MSS 6 - NIR
+  wavelength_or_frequency: 700-800 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 750
+  resolution_m: 79.0
+- name: MSS 7 - NIR
+  wavelength_or_frequency: 800-1100 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 950
+  resolution_m: 79.0
+spatial_resolution_summary: ~79 m (MSS); thermal band largely unusable
+temporal_resolution: 18 days
+radiometric_resolution: 6 bit
+swath_width: 185 km
+processing_level:
+- L1
+derivable_products:
+- Land Cover Classification
+measured_variables:
+- Land cover
+- Surface reflectance
+data_format:
+- GeoTIFF
+geographic_coverage: Global, ~81°S to ~81°N (land areas)
+temporal_range_start: 1978
+temporal_range_end: 1983
+data_latency: Archive/reprocessed only
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- Direct FTP/HTTP
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-3
+download_snippet: ''
+gee_snippet: "var collection = ee.ImageCollection('LANDSAT/LM03/C02/T1')\n  .filterBounds(ee.Geometry.Point([12.5,\
+  \ 41.9]))\n  .filterDate('1978-01-01', '1983-01-01');\nprint('Number of images:', collection.size());\n"
+internal_contact: ''
+related_datasets:
+- landsat-2-mss
+- landsat-4-tm
+internal_projects: ''
+notes: Thermal band 8 mostly non-functional; don't expect usable thermal data.
+known_limitations: Same MSS-era coarse resolution/radiometry as earlier Landsats.
+example_use_cases: Multi-decadal land cover baselines.
+links:
+- label: USGS Landsat 3 mission page
+  url: https://www.usgs.gov/landsat-missions/landsat-3
+tags:
+- historical
+- archive
+- MSS
+citation_doi: ''
+thumbnail_url: ''
+extra_sections: []
+qa: []
+changelog:
+- date: 2026-01-15 10:00 UTC
+  user: admin
+  note: Record created (added by AI assistant, needs verification)
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-01-15 10:00 UTC
+last_updated_by: admin
+bbox_west: -180.0
+bbox_south: -81.0
+bbox_east: 180.0
+bbox_north: 81.0

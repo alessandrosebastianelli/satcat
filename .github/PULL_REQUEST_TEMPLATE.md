@@ -2,18 +2,22 @@
 <!-- e.g. "Adds RADARSAT Constellation Mission" or "Fixes Sentinel-2 launch year" -->
 
 ## Checklist (for the admin reviewing this)
-- [ ] `id` is a unique slug and matches the filename (`data/records/<id>.yaml`)
-- [ ] `docs/catalog.json` is up to date with this change — either merge with
-      the Docker app running (it updates automatically), or run
-      `python static_regen.py` and commit the result
+- [ ] File is in the right place: `data/records/<family>/<id>.yaml` if it
+      belongs to a family (Landsat, Sentinel, MSG, MTG...), otherwise
+      directly in `data/records/<id>.yaml`
+- [ ] `id` is a unique slug and matches the filename
 - [ ] Required fields present: `id`, `mission_name`
-- [ ] Categorical fields (instrument_type, status, measured_variables, data_format,
-      api_type, processing_level) use values from the closed lists in `app/schema.py`
-      — not free text
-- [ ] Numeric band fields, if present, are actually numeric: `wavelength_nm` (optical)
-      or `frequency_ghz` (SAR/radar), plus `resolution_m` — needed for the band chart
+- [ ] Categorical fields (instrument_type, status, measured_variables,
+      data_format, api_type, processing_level) use values consistent with
+      other existing records — not arbitrary free text, so filters keep working
+- [ ] Numeric band fields, if present, are actually numeric: `wavelength_nm`
+      (optical) or `frequency_ghz` (SAR/radar), plus `resolution_m` — needed
+      for the band chart to plot that band
 - [ ] Sources/links look legitimate (agency site, official docs)
-- [ ] `verification_status` — leave as `unverified`; flip to `verified` only after
-      you've personally checked the technical details, in a follow-up edit
+- [ ] `verification_status` — leave as `unverified`; flip to `verified` only
+      after you've personally checked the technical details, in a follow-up edit
+- [ ] **`docs/catalog.json` is regenerated and included in this PR** — run
+      `python static_regen.py` locally and commit the result, otherwise the
+      public site won't reflect this change after merging
 
-Once merged, the public site rebuilds automatically within a couple of minutes.
+Once merged, GitHub Pages republishes automatically — no other step needed.

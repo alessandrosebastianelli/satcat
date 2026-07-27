@@ -5,11 +5,14 @@ bands, how to access the data, who on the team already knows them — built
 as a **static, zero-backend site** published on GitHub Pages.
 
 ## How it works
-- `data/records/*.yaml` — one file per mission/sensor, the source of truth.
-  Plain text, git-friendly, readable/editable by hand.
-- `docs/catalog.json` — all records combined into one JSON file. This is
-  what the site actually reads (plain `fetch()` + `JSON.parse`, no library
-  needed). Regenerate it after changing any record:
+- `data/records/` — one YAML file per mission/sensor, the source of truth.
+  Grouped into subfolders by family (`landsat/`, `sentinel/`, `msg/`,
+  `mtg/`); missions without a family (PRISMA, COSMO-SkyMed) sit directly
+  in `data/records/`. Plain text, git-friendly, readable/editable by hand.
+- `docs/catalog.json` — all records combined into one JSON file (found
+  recursively across subfolders). This is what the site actually reads
+  (plain `fetch()` + `JSON.parse`, no library needed). Regenerate it after
+  changing any record:
   ```bash
   python static_regen.py
   ```
@@ -22,10 +25,12 @@ as a **static, zero-backend site** published on GitHub Pages.
   any dataset page (pre-fills the dataset ID for you).
 - **Request a missing dataset** → open an **Issue** (template included).
 - **Add or edit a record** → open a **Pull Request** editing/adding the
-  YAML file. Each dataset page has a "Propose edit on GitHub" button that
-  opens GitHub's web editor directly — no git knowledge needed, GitHub
-  creates the fork+PR for you. See `.github/PULL_REQUEST_TEMPLATE.md` for
-  the review checklist.
+  YAML file (in the right subfolder — `data/records/<family>/<id>.yaml`,
+  or directly in `data/records/` if it doesn't belong to a family). Each
+  dataset page has a "Propose edit on GitHub" button that opens GitHub's
+  web editor directly — no git knowledge needed, GitHub creates the
+  fork+PR for you. See `.github/PULL_REQUEST_TEMPLATE.md` for the review
+  checklist.
 
 ## One-time setup (for whoever sets this up)
 1. Create the GitHub repo, push this project.

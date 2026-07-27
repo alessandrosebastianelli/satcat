@@ -27,10 +27,15 @@ OUT_PATH = os.path.join(os.path.dirname(__file__), "docs", "catalog.json")
 
 def main():
     records = []
-    for path in sorted(glob.glob(os.path.join(RECORDS_DIR, "*.yaml"))):
+    for path in sorted(glob.glob(os.path.join(RECORDS_DIR, "**", "*.yaml"), recursive=True)):
         with open(path, "r", encoding="utf-8") as f:
             raw = yaml.safe_load(f)
         if raw:
+            # Relative path from data/records/ (e.g. "landsat/landsat-8-oli-tirs.yaml"
+            # or just "prisma.yaml" for ungrouped records) — used by the site to build
+            # correct "edit on GitHub" / "history on GitHub" links now that records
+            # live in per-family subfolders instead of one flat folder.
+            raw["_relpath"] = os.path.relpath(path, RECORDS_DIR).replace(os.sep, "/")
             records.append(raw)
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:

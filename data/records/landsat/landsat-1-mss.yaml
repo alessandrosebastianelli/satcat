@@ -1,0 +1,99 @@
+id: landsat-1-mss
+mission_name: Landsat 1
+sensor_name: MSS (Multispectral Scanner)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1972
+end_of_life_year: 1978
+short_description: First Earth observation satellite of the Landsat program (originally named ERTS-1),
+  carrying the first Multispectral Scanner (MSS).
+long_description: Landsat 1 (launched as ERTS-1, Earth Resources Technology Satellite) was the first civilian
+  Earth observation satellite, opening the longest continuous archive of moderate-resolution land imagery
+  in existence. It carried a Return Beam Vidicon (RBV) camera and the MSS, with MSS becoming the primary
+  instrument for the whole early Landsat series. Its ~80 m resolution was groundbreaking for the time
+  and established many of the land-monitoring use cases (agriculture, forestry, geology) still core to
+  Landsat today.
+instrument_type: Optical - Multispectral
+orbit_type: LEO - Sun-synchronous
+bands:
+- name: MSS 4 - Green
+  wavelength_or_frequency: 500-600 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 550
+  resolution_m: 79.0
+- name: MSS 5 - Red
+  wavelength_or_frequency: 600-700 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 650
+  resolution_m: 79.0
+- name: MSS 6 - NIR
+  wavelength_or_frequency: 700-800 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 750
+  resolution_m: 79.0
+- name: MSS 7 - NIR
+  wavelength_or_frequency: 800-1100 nm
+  spatial_resolution: 79 m
+  wavelength_nm: 950
+  resolution_m: 79.0
+spatial_resolution_summary: ~79 m (MSS)
+temporal_resolution: 18 days
+radiometric_resolution: 6 bit
+swath_width: 185 km
+processing_level:
+- L1
+derivable_products:
+- Land Cover Classification
+measured_variables:
+- Land cover
+- Surface reflectance
+data_format:
+- GeoTIFF
+geographic_coverage: Global, ~81°S to ~81°N (land areas)
+temporal_range_start: 1972
+temporal_range_end: 1978
+data_latency: Archive/reprocessed only
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- Direct FTP/HTTP
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-1
+download_snippet: ''
+gee_snippet: "// Landsat 1 MSS collection on Google Earth Engine\nvar collection = ee.ImageCollection('LANDSAT/LM01/C02/T1')\n\
+  \  .filterBounds(ee.Geometry.Point([12.5, 41.9]))\n  .filterDate('1972-01-01', '1978-01-01');\nprint('Number\
+  \ of images:', collection.size());\n"
+internal_contact: ''
+related_datasets:
+- landsat-2-mss
+internal_projects: ''
+notes: Historical archive only, useful for long-term change detection baselines (e.g. comparing land cover
+  50+ years apart). Geolocation accuracy is much lower than modern Landsat — expect to co-register manually.
+known_limitations: Low radiometric resolution (6 bit) and coarse ~79 m pixels; RBV camera data has limited
+  availability compared to MSS.
+example_use_cases: Multi-decadal land cover change studies when paired with Landsat 8/9.
+links:
+- label: USGS Landsat 1 mission page
+  url: https://www.usgs.gov/landsat-missions/landsat-1
+tags:
+- historical
+- archive
+- MSS
+citation_doi: ''
+thumbnail_url: ''
+extra_sections: []
+qa: []
+changelog:
+- date: 2026-01-15 10:00 UTC
+  user: admin
+  note: Record created (added by AI assistant, needs verification)
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-01-15 10:00 UTC
+last_updated_by: admin
+bbox_west: -180.0
+bbox_south: -81.0
+bbox_east: 180.0
+bbox_north: 81.0

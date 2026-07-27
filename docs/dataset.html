@@ -40,7 +40,7 @@ function renderDataset(d, catalog) {
   var repo = getRepoUrl();
   var missingNotice = d._missing.length
     ? '<p class="incomplete-notice">\u26a0 This record is missing: ' + d._missing.join(', ') +
-      '. <a href="' + repo + '/edit/main/data/records/' + d.id + '.yaml" target="_blank">Complete it on GitHub</a>.</p>'
+      '. <a href="' + repo + '/edit/main/data/records/' + (d._relpath || (d.id + '.yaml')) + '" target="_blank">Complete it on GitHub</a>.</p>'
     : '';
   var verifiedBadge = d.verification_status === 'verified'
     ? '<span class="badge verified-badge">\u2714 verified</span>'
@@ -102,7 +102,7 @@ function renderDataset(d, catalog) {
       '</p></div>' +
       '<div><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span> ' + verifiedBadge +
         ' <label class="pill-option compare-check-inline"><input type="checkbox" class="compare-checkbox" value="' + d.id + '"> Add to compare</label>' +
-        ' <a href="' + repo + '/edit/main/data/records/' + d.id + '.yaml" target="_blank" class="btn btn-small">\u270e Propose edit on GitHub</a></div>' +
+        ' <a href="' + repo + '/edit/main/data/records/' + (d._relpath || (d.id + '.yaml')) + '" target="_blank" class="btn btn-small">\u270e Propose edit on GitHub</a></div>' +
     '</div>' +
     missingNotice +
     '<p class="short-desc-big">' + (d.short_description||'') + '</p>' +
@@ -156,7 +156,7 @@ function renderDataset(d, catalog) {
     '</section>' +
     changelogSection +
     '<footer class="meta-footer">Last updated: ' + (d.last_updated||'—') + (d.last_updated_by ? ' by ' + d.last_updated_by : '') +
-      ' · <a href="' + repo + '/commits/main/data/records/' + d.id + '.yaml" target="_blank">Full history on GitHub</a></footer>';
+      ' · <a href="' + repo + '/commits/main/data/records/' + (d._relpath || (d.id + '.yaml')) + '" target="_blank">Full history on GitHub</a></footer>';
 
   // Map
   try {
