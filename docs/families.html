@@ -16,6 +16,12 @@
   <h1>Mission families</h1>
   <p class="hint">Missions grouped by series/generation.</p>
   <div id="families-container"><p class="result-count">Loading…</p></div>
+
+  <div id="compare-bar" class="compare-bar">
+    <span id="compare-bar-text"></span>
+    <button type="button" id="compare-bar-view" class="btn btn-small">View comparison</button>
+    <button type="button" id="compare-bar-clear" class="icon-btn">✕</button>
+  </div>
 </main>
 
 <script src="static/config.js"></script>
@@ -31,11 +37,14 @@ function cardHtml(d) {
   var verifiedBadge = d.verification_status === 'verified'
     ? '<span class="badge verified-badge">\u2714 verified</span>'
     : '<span class="badge unverified-badge">\u25d0 unverified</span>';
-  return '<a class="card" href="dataset.html?id=' + encodeURIComponent(d.id) + '"><div class="card-body">' +
-    '<div class="card-header"><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span>' + verifiedBadge + '</div>' +
+  var attentionBadge = (d._missing && d._missing.length) ? '<span class="badge attention-badge">\u26a0 incomplete</span>' : '';
+  return '<div class="card-wrap">' +
+    '<label class="compare-check"><input type="checkbox" class="compare-checkbox" value="' + d.id + '"></label>' +
+    '<a class="card" href="dataset.html?id=' + encodeURIComponent(d.id) + '"><div class="card-body">' +
+    '<div class="card-header"><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span>' + verifiedBadge + attentionBadge + '</div>' +
     '<h3>' + d.mission_name + (d.sensor_name ? ' <span class="sensor">/ ' + d.sensor_name + '</span>' : '') + '</h3>' +
     '<p class="agency">' + (d.agency||'') + (d.launch_year ? ' \u00b7 since ' + d.launch_year : '') + '</p>' +
-    '<p class="short-desc">' + (d.short_description||'') + '</p></div></a>';
+    '<p class="short-desc">' + (d.short_description||'') + '</p></div></a></div>';
 }
 
 loadCatalog().then(function (catalog) {
@@ -66,6 +75,7 @@ loadCatalog().then(function (catalog) {
     } else {
       container.innerHTML = '<section><h2>' + selected + ' <span class="qa-meta">(' + groups[selected].length + ')</span></h2>' +
         '<div class="card-grid">' + groups[selected].map(cardHtml).join('') + '</div></section>';
+      wireCompareCheckboxes();
     }
   } else {
     container.innerHTML = '<div class="family-directory">' + keys.map(function (fam) {
@@ -77,6 +87,28 @@ loadCatalog().then(function (catalog) {
   document.getElementById('families-container').innerHTML = '<p>Failed to load catalog.</p>';
   console.error(err);
 });
+
+function wireCompareCheckboxes() {
+  var cart = getCart();
+  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
+    cb.checked = cart.indexOf(cb.value) >= 0;
+    cb.addEventListener('change', function () { toggleCart(cb.value); });
+  });
+}
+function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (e) { return []; } }
+function setCart(c) { localStorage.setItem('satcat-compare', JSON.stringify(c)); renderCompareBar(); }
+function toggleCart(id) { var c = getCart(); var i = c.indexOf(id); if (i >= 0) c.splice(i, 1); else c.push(id); setCart(c); }
+function renderCompareBar() {
+  var c = getCart();
+  document.getElementById('compare-bar-text').textContent = c.length + (c.length === 1 ? ' record selected' : ' records selected');
+  document.getElementById('compare-bar').classList.toggle('visible', c.length > 0);
+  document.getElementById('compare-bar-view').disabled = c.length < 2;
+}
+document.getElementById('compare-bar-view').addEventListener('click', function () {
+  window.location.href = 'compare.html?ids=' + encodeURIComponent(getCart().join(','));
+});
+document.getElementById('compare-bar-clear').addEventListener('click', function () { setCart([]); });
+renderCompareBar();
 </script>
 </body>
 </html>
