@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="page-title">Dataset - Satellite Data Catalog</title>
 <link rel="stylesheet" href="static/style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script>(function(){var t=localStorage.getItem('satcat-theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
@@ -21,8 +21,8 @@
   <p>Loading…</p>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="static/config.js"></script>
 <script src="static/catalog.js"></script>
 <script src="static/band-chart.js"></script>
@@ -171,7 +171,7 @@ function renderDataset(d, catalog) {
         L.rectangle(bounds, { color: '#3fb7e0', weight: 2, fillOpacity: 0.15 }).addTo(map);
         map.fitBounds(bounds, { padding: [20, 20] });
       } else {
-        mapEl.outerHTML = '<p class="hint">Map unavailable \u2014 Leaflet failed to load from cdnjs.cloudflare.com (network/firewall?).</p>';
+        mapEl.outerHTML = '<p class="hint">Map unavailable \u2014 Leaflet failed to load from the CDN (network/firewall?).</p>';
       }
     }
   } catch (e) { console.error('[satcat] map failed:', e); }
@@ -191,7 +191,7 @@ function renderDataset(d, catalog) {
           });
         }
       } else {
-        document.getElementById('own-band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from cdnjs.cloudflare.com (network/firewall?).</p>';
+        document.getElementById('own-band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from the CDN (network/firewall?).</p>';
       }
     }
   } catch (e) { console.error('[satcat] band chart failed:', e); }

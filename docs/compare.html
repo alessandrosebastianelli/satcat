@@ -25,7 +25,7 @@
   <div id="compare-table-container"><p class="result-count">Loading…</p></div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="static/config.js"></script>
 <script src="static/catalog.js"></script>
 <script src="static/band-chart.js"></script>
@@ -100,7 +100,7 @@ function renderTable(selected) {
     section.style.display = 'none';
   } else if (typeof Chart === 'undefined') {
     section.style.display = 'block';
-    document.getElementById('band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from cdnjs.cloudflare.com (network/firewall?).</p>';
+    document.getElementById('band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from the CDN (network/firewall?).</p>';
   } else {
     section.style.display = 'block';
     renderSpectralBandChart(document.getElementById('band-chart'), chartData, {});
