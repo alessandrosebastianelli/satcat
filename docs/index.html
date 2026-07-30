@@ -147,7 +147,9 @@ function render() {
     results = flat;
   }
 
-  document.getElementById('result-count').textContent = results.length + ' record(s) found';
+  document.getElementById('result-count').textContent = collections && collections.length
+    ? results.length + ' record(s) found, ' + collections.length + ' collection(s)'
+    : results.length + ' record(s) found';
   document.getElementById('results-container').innerHTML = collectionsHtml + (results.map(cardHtml).join('') ||
     (collectionsHtml ? '' : '<p>No records found.</p>'));
   wireCompareCheckboxes();
@@ -176,7 +178,8 @@ loadCatalog().then(function (data) {
     document.getElementById(id).addEventListener('change', render);
   });
 }).catch(function (err) {
-  document.getElementById('result-count').textContent = 'Failed to load catalog — check static/config.js has the right repo, and manifest.json lists valid files.';
+  document.getElementById('result-count').textContent = 'Failed to load catalog: ' + (err && err.message ? err.message : err) + ' (check static/config.js has the right repo)';
+  renderLoadErrorsBanner(document.querySelector('main.container'));
   console.error(err);
 });
 </script>

@@ -247,19 +247,10 @@ loadCatalog().then(function (catalog) {
     return;
   }
   var parts = (d._relpath || '').split('/');
-  if (parts.length >= 3) {
-    var satFolder = parts.slice(0, -1).join('/');
-    loadSatelliteInfo(satFolder).then(function (sat) {
-      renderDataset(mergeSatelliteInfo(d, sat), catalog, satFolder);
-    }).catch(function (err) {
-      console.error('[satcat] could not load satellite info', err);
-      renderDataset(d, catalog, null);
-    });
-  } else {
-    renderDataset(d, catalog, null);
-  }
+  var satFolder = parts.length >= 3 ? parts.slice(0, -1).join('/') : null;
+  renderDataset(d, catalog, satFolder);
 }).catch(function (err) {
-  document.getElementById('content').innerHTML = '<p>Failed to load catalog. Check static/config.js has the right repo.</p>';
+  document.getElementById('content').innerHTML = '<p>Failed to load catalog: ' + (err && err.message ? err.message : err) + '</p>';
   console.error(err);
 });
 </script>

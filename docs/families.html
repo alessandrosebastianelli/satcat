@@ -108,7 +108,7 @@ loadCatalog().then(function (catalog) {
     }).join('') + '</div>';
   }
 }).catch(function (err) {
-  document.getElementById('families-container').innerHTML = '<p>Failed to load catalog.</p>';
+  document.getElementById('families-container').innerHTML = '<p>Failed to load catalog: ' + (err && err.message ? err.message : err) + '</p>';
   console.error(err);
 });
 </script>

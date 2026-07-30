@@ -145,7 +145,7 @@ loadCatalog().then(function (catalog) {
     });
   }
 }).catch(function (err) {
-  document.getElementById('compare-table-container').innerHTML = '<p>Failed to load catalog.</p>';
+  document.getElementById('compare-table-container').innerHTML = '<p>Failed to load catalog: ' + (err && err.message ? err.message : err) + '</p>';
   console.error(err);
 });
 </script>

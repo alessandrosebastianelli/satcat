@@ -146,6 +146,39 @@ function loadCatalog() {
       }));
     })
     .then(function (list) { return list.filter(Boolean); })
+    .then(function (records) {
+      // Level records (3+ path segments: family/satellite/level.yaml)
+      // don't carry mission_name/agency/etc themselves — those live once
+      // in the satellite's _satellite.yaml. Merge them in here so every
+      // page (home, families, compare, dataset) sees fully-populated
+      // records, not just the individual dataset page.
+      var satelliteFolders = {};
+      records.forEach(function (d) {
+        var parts = (d._relpath || "").split("/");
+        if (parts.length >= 3) satelliteFolders[parts.slice(0, -1).join("/")] = true;
+      });
+      var folders = Object.keys(satelliteFolders);
+      if (!folders.length) return records;
+      return Promise.all(folders.map(function (folder) {
+        return loadSatelliteInfo(folder)
+          .then(function (sat) { return { folder: folder, sat: sat }; })
+          .catch(function (err) {
+            console.error("[satcat] could not load _satellite.yaml for", folder, err);
+            LOAD_ERRORS.push({ file: folder + "/_satellite.yaml", message: String(err && err.message ? err.message : err) });
+            return { folder: folder, sat: null };
+          });
+      })).then(function (satResults) {
+        var satByFolder = {};
+        satResults.forEach(function (r) { satByFolder[r.folder] = r.sat; });
+        return records.map(function (d) {
+          var parts = (d._relpath || "").split("/");
+          if (parts.length < 3) return d;
+          var folder = parts.slice(0, -1).join("/");
+          var sat = satByFolder[folder];
+          return sat ? mergeSatelliteInfo(d, sat) : d;
+        });
+      });
+    })
     .catch(function (err) {
       LOAD_ERRORS.push({ file: "file discovery", message: String(err && err.message ? err.message : err) });
       return [];
