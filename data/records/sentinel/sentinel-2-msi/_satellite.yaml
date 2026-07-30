@@ -14,8 +14,8 @@ long_description: Sentinel-2 is a constellation of two optical satellites (2A si
   resolution land cover classification with frequent revisit.
 instrument_type: Optical - Multispectral
 orbit_type: LEO - Sun-synchronous
-thumbnail_url: ''
-internal_contact: ''
+thumbnail_url: https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2015/06/sentinel-2/15493804-3-eng-GB/Sentinel-2.jpg
+internal_contact: Alessandro Sebastianelli
 tags:
 - NDVI
 - vegetation
@@ -34,4 +34,5 @@ geographic_coverage: Global, ~81°S to ~81°N (land areas and coastal zones)
 swath_width: 290 km
 radiometric_resolution: 12 bit
 temporal_resolution: 5 days (with the two-satellite constellation, at equator)
-citation_doi: ''
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+last_updated_by: Alessandro Sebastianelli

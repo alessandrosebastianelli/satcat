@@ -57,32 +57,61 @@ function _renderSpectralBandChartInner(container, datasets, options) {
   // Paints a faint rainbow gradient across the visible-light range
   // (~380-750nm) behind everything else, so it's immediately obvious
   // which bands fall inside vs outside what the human eye can see.
+  // Approximate atmospheric transmittance curve as a backdrop (like the
+  // grey silhouette in typical band-comparison charts): shows *where* the
+  // atmosphere actually lets radiation through, so it's obvious why bands
+  // cluster where they do (avoiding water-vapour/CO2 absorption dips).
+  // This is a stylized approximation (known absorption feature locations,
+  // not measured data) — good enough to show the shape, not for precise
+  // radiative-transfer values.
+  function atmosphericTransmittance(nm) {
+    if (nm > 1e6) return 0.95; // radio/microwave (SAR): atmosphere is essentially transparent
+    var t = 0.92;
+    [
+      { center: 760, width: 12, depth: 0.35 },     // O2 A-band
+      { center: 1400, width: 90, depth: 0.85 },    // water vapour
+      { center: 1900, width: 110, depth: 0.88 },   // water vapour
+      { center: 2600, width: 200, depth: 0.85 },   // water vapour / CO2, into opaque IR
+    ].forEach(function (d) {
+      var x = (nm - d.center) / d.width;
+      t -= d.depth * Math.exp(-x * x);
+    });
+    if (nm > 2500 && nm < 7000) t = Math.min(t, 0.08); // opaque until the thermal IR windows
+    return Math.max(0.02, Math.min(1, t));
+  }
+
   var spectrumPlugin = {
-    id: 'visibleSpectrum',
+    id: 'atmosphericBackdrop',
     beforeDatasetsDraw: function (chart) {
       var xScale = chart.scales.x;
       if (!xScale) return;
-      var visMin = 380, visMax = 750;
-      if (visMax < xScale.min || visMin > xScale.max) return; // out of view entirely
-      var x0 = xScale.getPixelForValue(Math.max(visMin, xScale.min));
-      var x1 = xScale.getPixelForValue(Math.min(visMax, xScale.max));
       var ctx = chart.ctx;
       var top = chart.chartArea.top, bottom = chart.chartArea.bottom;
-      var grad = ctx.createLinearGradient(x0, 0, x1, 0);
-      grad.addColorStop(0.00, 'rgba(138,43,226,0.22)');  // violet ~380nm
-      grad.addColorStop(0.20, 'rgba(0,100,255,0.22)');   // blue
-      grad.addColorStop(0.40, 'rgba(0,220,180,0.22)');   // cyan/green
-      grad.addColorStop(0.55, 'rgba(0,220,0,0.22)');     // green
-      grad.addColorStop(0.70, 'rgba(220,220,0,0.22)');   // yellow
-      grad.addColorStop(0.85, 'rgba(255,140,0,0.22)');   // orange
-      grad.addColorStop(1.00, 'rgba(220,0,0,0.22)');     // red ~750nm
+      var backdropH = (bottom - top) * 0.28; // occupies the top ~28% of the plot as a backdrop
+      var steps = 120;
       ctx.save();
-      ctx.fillStyle = grad;
-      ctx.fillRect(x0, top, x1 - x0, bottom - top);
-      ctx.font = '10px sans-serif';
-      ctx.fillStyle = 'rgba(200,200,200,0.6)';
-      ctx.textAlign = 'center';
-      ctx.fillText('visible light', (x0 + x1) / 2, top + 12);
+      ctx.beginPath();
+      for (var i = 0; i <= steps; i++) {
+        var frac = i / steps;
+        var logVal = Math.log10(xScale.min) + frac * (Math.log10(xScale.max) - Math.log10(xScale.min));
+        var nm = Math.pow(10, logVal);
+        var x = xScale.getPixelForValue(nm);
+        var t = atmosphericTransmittance(nm);
+        var y = top + backdropH * (1 - t);
+        if (i === 0) ctx.moveTo(x, top + backdropH); 
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(xScale.getPixelForValue(xScale.max), top + backdropH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(190,190,190,0.16)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(190,190,190,0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.font = '9px sans-serif';
+      ctx.fillStyle = 'rgba(190,190,190,0.55)';
+      ctx.textAlign = 'left';
+      ctx.fillText('atmospheric transmittance (approx.)', xScale.getPixelForValue(xScale.min) + 4, top + 10);
       ctx.restore();
     },
   };

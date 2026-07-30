@@ -47,7 +47,7 @@ gee_snippet: "// Sentinel-1 GRD, VV polarization, IW mode, ascending orbit\nvar 
   \ VV (median)');\n"
 related_datasets:
 - sentinel-2-msi-l2a
-internal_projects: ''
+internal_projects: Not yet used in a specific internal project — flag here once it is.
 notes: 'Note: since 2023 data access has migrated from the old Copernicus Open Access Hub to the new Copernicus
   Data Space Ecosystem — old links/REST endpoints no longer work. For interferometry, start from SLC data
   (not GRD).'
@@ -56,27 +56,31 @@ known_limitations: Speckle noise requires filtering before most analyses. Radiom
   across different terrain.
 example_use_cases: Landslide and subsidence monitoring via InSAR time series; flood extent mapping during/after
   heavy rain events; ship detection in coastal waters.
-extra_sections: []
+extra_sections:
+- title: SLC vs GRD, quick reference
+  content: SLC keeps phase (needed for InSAR), single-polarization complex pixels, not map-projected.
+    GRD is amplitude-only, multi-looked, map-projected, and much easier to view directly — use GRD unless
+    you specifically need interferometry.
 qa:
 - question: Can I use GRD products directly for interferometry, or do I need SLC?
-  asked_by: admin
+  asked_by: Alessandro Sebastianelli
   asked_at: 2026-01-10 09:00 UTC
   replies:
   - text: You need SLC (Single Look Complex) for InSAR — GRD has already lost the phase information during
       ground-range detection. Use GRD only for amplitude-based analyses (flood mapping, ship detection).
-    by: admin
+    by: Alessandro Sebastianelli
     at: 2026-01-10 11:20 UTC
   - text: To add — SNAP's InSAR tutorials all start from SLC for exactly this reason. If you're looking
       for a quick coherence check without full InSAR processing, the pre-computed Coherence Map product
       also works and saves time.
-    by: admin
+    by: Alessandro Sebastianelli
     at: 2026-01-11 08:45 UTC
 changelog:
 - date: 2026-01-05 10:00 UTC
-  user: admin
+  user: Alessandro Sebastianelli
   note: Record created
 verification_status: unverified
 verified_by: ''
 verified_at: ''
 last_updated: 2026-01-05 10:00 UTC
-last_updated_by: admin
+last_updated_by: Alessandro Sebastianelli

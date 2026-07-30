@@ -41,8 +41,9 @@ gee_snippet: "// Sentinel-1 GRD, VV polarization, IW mode, ascending orbit\nvar 
   \ 'VV'))\n  .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))\n  .select('VV');\n\nprint('Number\
   \ of images:', collection.size());\nMap.addLayer(collection.median(), {min: -20, max: 0}, 'Sentinel-1\
   \ VV (median)');\n"
-related_datasets: []
-internal_projects: ''
+related_datasets:
+- sentinel-1-c-sar-l1
+internal_projects: Not yet used in a specific internal project — flag here once it is.
 notes: OCN products are ocean-focused (wind/wave/currents) — for ground deformation, use the L1 SLC record
   instead.
 known_limitations: Speckle noise requires filtering before most analyses. Radiometric terrain correction
@@ -50,27 +51,30 @@ known_limitations: Speckle noise requires filtering before most analyses. Radiom
   across different terrain.
 example_use_cases: Landslide and subsidence monitoring via InSAR time series; flood extent mapping during/after
   heavy rain events; ship detection in coastal waters.
-extra_sections: []
+extra_sections:
+- title: When to actually use OCN
+  content: Only relevant for maritime/oceanographic work (wind, wave, surface current estimates). For
+    anything land-based (deformation, flood, agriculture), use the L1 record instead.
 qa:
 - question: Can I use GRD products directly for interferometry, or do I need SLC?
-  asked_by: admin
+  asked_by: Alessandro Sebastianelli
   asked_at: 2026-01-10 09:00 UTC
   replies:
   - text: You need SLC (Single Look Complex) for InSAR — GRD has already lost the phase information during
       ground-range detection. Use GRD only for amplitude-based analyses (flood mapping, ship detection).
-    by: admin
+    by: Alessandro Sebastianelli
     at: 2026-01-10 11:20 UTC
   - text: To add — SNAP's InSAR tutorials all start from SLC for exactly this reason. If you're looking
       for a quick coherence check without full InSAR processing, the pre-computed Coherence Map product
       also works and saves time.
-    by: admin
+    by: Alessandro Sebastianelli
     at: 2026-01-11 08:45 UTC
 changelog:
 - date: 2026-01-05 10:00 UTC
-  user: admin
+  user: Alessandro Sebastianelli
   note: Record created
 verification_status: unverified
 verified_by: ''
 verified_at: ''
 last_updated: 2026-01-05 10:00 UTC
-last_updated_by: admin
+last_updated_by: Alessandro Sebastianelli

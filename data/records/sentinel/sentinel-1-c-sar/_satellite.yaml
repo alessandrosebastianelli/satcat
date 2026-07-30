@@ -15,8 +15,8 @@ long_description: Sentinel-1 is a constellation of C-band SAR satellites operate
   2024 and restored the two-satellite constellation.
 instrument_type: SAR
 orbit_type: LEO - Sun-synchronous
-thumbnail_url: ''
-internal_contact: ''
+thumbnail_url: https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2013/07/sentinel-1/12775444-3-eng-GB/Sentinel-1.jpg
+internal_contact: Alessandro Sebastianelli
 tags:
 - InSAR
 - subsidence
@@ -33,6 +33,7 @@ bbox_east: 180.0
 bbox_north: 81.0
 geographic_coverage: Global, ~81°S to ~81°N (priority to Europe and coastal areas)
 swath_width: 250 km (IW mode)
-radiometric_resolution: ''
+radiometric_resolution: 16 bit (GRD amplitude quantization)
 temporal_resolution: 6 days (with the full two-satellite constellation)
-citation_doi: ''
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+last_updated_by: Alessandro Sebastianelli

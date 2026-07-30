@@ -135,7 +135,7 @@ gee_snippet: "// Sentinel-2 Surface Reflectance, cloud-filtered, NDVI composite\
   \ 'NDVI median');\n"
 related_datasets:
 - sentinel-2-msi-l2a
-internal_projects: ''
+internal_projects: Not yet used in a specific internal project — flag here once it is.
 notes: Use the "Harmonized" collection on Google Earth Engine to avoid the radiometric offset introduced
   by processing baseline 04.00 (from late 2021 onward, raw non-harmonized values have a +1000 shift).
   Coverage stops around ±81° latitude — a real orbital/tiling-grid limit (not a metadata gap), so true
@@ -145,14 +145,17 @@ known_limitations: 'Optical sensor: no valid data under cloud cover, so revisit 
   (e.g. using the SCL band or s2cloudless).'
 example_use_cases: Crop monitoring and vegetation health via NDVI time series; burned area mapping after
   wildfires; land cover change detection over multi-year periods.
-extra_sections: []
+extra_sections:
+- title: Why you'd pick L1C over L2-A
+  content: Only if you need to run your own atmospheric correction (e.g. comparing correction algorithms,
+    or working over surfaces Sen2Cor handles poorly like turbid coastal water). Otherwise use L2-A.
 qa: []
 changelog:
 - date: 2026-01-05 10:00 UTC
-  user: admin
+  user: Alessandro Sebastianelli
   note: Record created
 verification_status: unverified
 verified_by: ''
 verified_at: ''
 last_updated: 2026-01-05 10:00 UTC
-last_updated_by: admin
+last_updated_by: Alessandro Sebastianelli

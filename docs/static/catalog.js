@@ -102,18 +102,26 @@ function _discoverLocalPaths(dirUrl, ext) {
 // verified_by, verified_at, last_updated, last_updated_by.
 var COMPLETENESS_FIELDS = Object.keys(DEFAULTS).filter(function (k) {
   return ["qa", "changelog", "verification_status", "verified_by", "verified_at",
-          "last_updated", "last_updated_by"].indexOf(k) === -1;
+          "last_updated", "last_updated_by",
+          // These two are meaningfully null for an ongoing mission ("still
+          // active" / "data still being collected") — not missing data.
+          "end_of_life_year", "temporal_range_end"].indexOf(k) === -1;
 });
+
+function computeMissing(d) {
+  var missing = [];
+  COMPLETENESS_FIELDS.forEach(function (f) {
+    var v = d[f];
+    if (v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0)) missing.push(f);
+  });
+  return missing;
+}
 
 function normalizeDataset(raw, relpath) {
   var d = Object.assign({}, DEFAULTS, raw || {});
   d.bands = (d.bands || []).map(function (b) { return Object.assign({}, BAND_DEFAULTS, b); });
   d._relpath = relpath;
-  d._missing = [];
-  COMPLETENESS_FIELDS.forEach(function (f) {
-    var v = d[f];
-    if (v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0)) d._missing.push(f);
-  });
+  d._missing = computeMissing(d);
   return d;
 }
 
@@ -225,6 +233,7 @@ function mergeSatelliteInfo(level, satellite) {
     var empty = v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0);
     if (empty) merged[f] = satellite[f];
   });
+  merged._missing = computeMissing(merged);
   return merged;
 }
 
