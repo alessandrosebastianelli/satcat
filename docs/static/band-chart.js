@@ -84,34 +84,34 @@ function _renderSpectralBandChartInner(container, datasets, options) {
     id: 'atmosphericBackdrop',
     beforeDatasetsDraw: function (chart) {
       var xScale = chart.scales.x;
-      if (!xScale) return;
+      var tScale = chart.scales.yTransmittance;
+      if (!xScale || !tScale) return;
       var ctx = chart.ctx;
-      var top = chart.chartArea.top, bottom = chart.chartArea.bottom;
-      var backdropH = (bottom - top) * 0.28; // occupies the top ~28% of the plot as a backdrop
-      var steps = 120;
+      var bottom = chart.chartArea.bottom;
+      var steps = 160;
       ctx.save();
       ctx.beginPath();
+      ctx.moveTo(xScale.getPixelForValue(xScale.min), bottom);
       for (var i = 0; i <= steps; i++) {
         var frac = i / steps;
         var logVal = Math.log10(xScale.min) + frac * (Math.log10(xScale.max) - Math.log10(xScale.min));
         var nm = Math.pow(10, logVal);
         var x = xScale.getPixelForValue(nm);
         var t = atmosphericTransmittance(nm);
-        var y = top + backdropH * (1 - t);
-        if (i === 0) ctx.moveTo(x, top + backdropH); 
+        var y = tScale.getPixelForValue(t);
         ctx.lineTo(x, y);
       }
-      ctx.lineTo(xScale.getPixelForValue(xScale.max), top + backdropH);
+      ctx.lineTo(xScale.getPixelForValue(xScale.max), bottom);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(190,190,190,0.16)';
+      ctx.fillStyle = 'rgba(190,190,190,0.14)';
       ctx.fill();
-      ctx.strokeStyle = 'rgba(190,190,190,0.4)';
+      ctx.strokeStyle = 'rgba(190,190,190,0.45)';
       ctx.lineWidth = 1;
       ctx.stroke();
       ctx.font = '9px sans-serif';
-      ctx.fillStyle = 'rgba(190,190,190,0.55)';
+      ctx.fillStyle = 'rgba(190,190,190,0.6)';
       ctx.textAlign = 'left';
-      ctx.fillText('atmospheric transmittance (approx.)', xScale.getPixelForValue(xScale.min) + 4, top + 10);
+      ctx.fillText('atmospheric transmittance (approx.)', xScale.getPixelForValue(xScale.min) + 4, tScale.getPixelForValue(1) + 10);
       ctx.restore();
     },
   };
@@ -211,6 +211,12 @@ function _renderSpectralBandChartInner(container, datasets, options) {
           title: { display: true, text: 'Spatial resolution (m)', color: '#c5d2dd' },
           ticks: { color: '#93a4b5' },
           grid: { color: 'rgba(150,150,150,0.15)' },
+        },
+        yTransmittance: {
+          type: 'linear', min: 0, max: 1, position: 'right',
+          title: { display: true, text: 'Atmospheric transmittance (approx.)', color: '#8a9199' },
+          ticks: { color: '#8a9199', callback: function (v) { return Math.round(v * 100) + '%'; } },
+          grid: { display: false },
         },
       },
       plugins: {
