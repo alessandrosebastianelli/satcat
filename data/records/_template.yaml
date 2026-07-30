@@ -1,0 +1,80 @@
+# Template for a new satellite mission/sensor record.
+# Copy this file to data/records/<family>/<id>.yaml (or directly in
+# data/records/ if it doesn't belong to a family), fill in the fields you
+# know, delete the rest (empty fields are fine — leave them blank rather
+# than guessing), and open a Pull Request. An editor will review it.
+#
+# id must be a unique slug and match the filename (without .yaml).
+
+id: REPLACE-WITH-UNIQUE-SLUG
+mission_name: ""
+sensor_name: ""
+agency: ""
+mission_family: ""          # e.g. "Sentinel", "Landsat", "MSG", "MTG" — leave empty if none
+status: Active               # Active / Decommissioned / Planned / In development
+launch_year: null
+end_of_life_year: null
+
+short_description: ""        # 1-2 sentences, shown on cards
+long_description: ""         # longer, shown on the record's page
+
+instrument_type: ""          # e.g. "Optical - Multispectral", "SAR", "Radiometer - Thermal"
+orbit_type: ""                # e.g. "LEO - Sun-synchronous", "GEO"
+bands: []
+  # Example of one band entry (repeat as needed, delete if not applicable):
+  # - name: "B4 - Red"
+  #   wavelength_or_frequency: "665 nm"       # free text, always shown
+  #   spatial_resolution: "10 m"              # free text, always shown
+  #   wavelength_nm: 665                      # optical only — powers the band chart
+  #   frequency_ghz: null                     # SAR/radar only — powers the band chart instead
+  #   bandwidth_nm: 30                        # optional — box width on the band chart
+  #   resolution_m: 10                        # numeric, in METERS (not km!) — box height on the chart
+  #   typical_use: "Vegetation, soil, urban"  # short phrase — shown in the bands table
+spatial_resolution_summary: ""
+temporal_resolution: ""      # revisit time, e.g. "5 days"
+radiometric_resolution: ""
+swath_width: ""
+
+processing_level: []          # e.g. ["L1C", "L2"]
+derivable_products: []        # e.g. ["NDVI", "Land Surface Temperature"]
+measured_variables: []        # e.g. ["Surface reflectance", "Land cover"]
+data_format: []                # e.g. ["GeoTIFF", "NetCDF"]
+geographic_coverage: ""
+temporal_range_start: null
+temporal_range_end: null      # leave null if still ongoing
+data_latency: ""
+
+# Optional bounding box (plain decimal degrees) — renders a real map on the
+# record's page. Leave all four empty for missions without a fixed area.
+bbox_west: null
+bbox_south: null
+bbox_east: null
+bbox_north: null
+
+access_url: ""
+requires_registration: false
+license_cost: ""
+api_type: []
+documentation_url: ""
+download_snippet: ""
+download_snippet_lang: python
+gee_snippet: ""
+
+internal_contact: ""          # who on the team knows this dataset well
+related_datasets: []          # ids of other records
+internal_projects: ""
+notes: ""
+known_limitations: ""
+example_use_cases: ""
+
+links: []
+  # - label: "Official mission page"
+  #   url: "https://..."
+tags: []
+citation_doi: ""
+thumbnail_url: ""
+extra_sections: []
+  # - title: "Something specific to this sensor"
+  #   content: "Free text."
+
+verification_status: unverified   # always start here — an editor flips this after checking

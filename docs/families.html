@@ -11,11 +11,11 @@
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
-  <nav><button id="theme-toggle" class="icon-btn" type="button">🌓</button></nav>
+  <nav><a href="wiki.html">Wiki</a> <a href="families.html">Families</a></nav>
 </header>
 <main class="container">
   <h1>Mission families</h1>
-  <p class="hint">Missions grouped by series/generation.</p>
+  <p class="hint">Missions grouped by series/generation. Satellites with multiple processing levels open a level picker first.</p>
   <div id="families-container"><p class="result-count">Loading…</p></div>
 
   <div id="compare-bar" class="compare-bar">
@@ -27,15 +27,12 @@
 
 <script src="static/config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="static/catalog.js?v=4"></script>
+<script src="static/catalog.js?v=5"></script>
 <script>
-document.getElementById('theme-toggle').addEventListener('click', function () {
-  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('satcat-theme', next);
-});
 
-function cardHtml(d) {
+function esc(s) { return (s === null || s === undefined) ? '' : String(s); }
+
+function flatCardHtml(d) {
   var verifiedBadge = d.verification_status === 'verified'
     ? '<span class="badge verified-badge">\u2714 verified</span>'
     : '<span class="badge unverified-badge">\u25d0 unverified</span>';
@@ -49,6 +46,16 @@ function cardHtml(d) {
     '<p class="short-desc">' + (d.short_description||'') + '</p></div></a></div>';
 }
 
+function satelliteCardHtml(sat, folder, levelCount) {
+  return '<a class="card satellite-card" href="satellite.html?folder=' + encodeURIComponent(folder) + '">' +
+    '<div class="card-body">' +
+    '<div class="card-header"><span class="badge status-' + esc(sat.status).toLowerCase().replace(/ /g,'-') + '">' + esc(sat.status) + '</span>' +
+    '<span class="badge level-count-badge">' + levelCount + ' level' + (levelCount !== 1 ? 's' : '') + '</span></div>' +
+    '<h3>' + esc(sat.mission_name) + (sat.sensor_name ? ' <span class="sensor">/ ' + esc(sat.sensor_name) + '</span>' : '') + '</h3>' +
+    '<p class="agency">' + esc(sat.agency) + (sat.launch_year ? ' \u00b7 since ' + sat.launch_year : '') + '</p>' +
+    '<p class="short-desc">' + esc(sat.short_description) + '</p></div></a>';
+}
+
 loadCatalog().then(function (catalog) {
   renderLoadErrorsBanner(document.querySelector('main.container'));
   var groups = {};
@@ -56,9 +63,6 @@ loadCatalog().then(function (catalog) {
     var key = (d.mission_family || '').trim() || 'Ungrouped';
     groups[key] = groups[key] || [];
     groups[key].push(d);
-  });
-  Object.keys(groups).forEach(function (k) {
-    groups[k].sort(function (a, b) { return (a.launch_year||0) - (b.launch_year||0); });
   });
   var keys = Object.keys(groups).sort(function (a, b) {
     if (a === 'Ungrouped') return 1; if (b === 'Ungrouped') return -1; return a.localeCompare(b);
@@ -75,9 +79,27 @@ loadCatalog().then(function (catalog) {
     if (!groups[selected]) {
       container.innerHTML = '<p class="hint">No family named "' + selected + '".</p>';
     } else {
-      container.innerHTML = '<section><h2>' + selected + ' <span class="qa-meta">(' + groups[selected].length + ')</span></h2>' +
-        '<div class="card-grid">' + groups[selected].map(cardHtml).join('') + '</div></section>';
+      var grouped = groupBySatellite(groups[selected]);
+      grouped.flat.sort(function (a, b) { return (a.launch_year||0) - (b.launch_year||0); });
+      grouped.satellites.sort(function (a, b) { return a.folder.localeCompare(b.folder); });
+
+      container.innerHTML = '<section><h2>' + selected + '</h2><div class="card-grid" id="family-cards"></div></section>';
+      var cardsEl = document.getElementById('family-cards');
+      cardsEl.innerHTML = grouped.flat.map(flatCardHtml).join('');
       wireCompareCheckboxes();
+
+      Promise.all(grouped.satellites.map(function (g) {
+        return loadSatelliteInfo(g.folder).then(function (sat) {
+          return { sat: sat, folder: g.folder, count: g.levels.length };
+        }).catch(function (err) {
+          console.error('[satcat] could not load satellite info for', g.folder, err);
+          return null;
+        });
+      })).then(function (results) {
+        results.filter(Boolean).forEach(function (r) {
+          cardsEl.insertAdjacentHTML('afterbegin', satelliteCardHtml(r.sat, r.folder, r.count));
+        });
+      });
     }
   } else {
     container.innerHTML = '<div class="family-directory">' + keys.map(function (fam) {
@@ -89,28 +111,6 @@ loadCatalog().then(function (catalog) {
   document.getElementById('families-container').innerHTML = '<p>Failed to load catalog.</p>';
   console.error(err);
 });
-
-function wireCompareCheckboxes() {
-  var cart = getCart();
-  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
-    cb.checked = cart.indexOf(cb.value) >= 0;
-    cb.addEventListener('change', function () { toggleCart(cb.value); });
-  });
-}
-function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (e) { return []; } }
-function setCart(c) { localStorage.setItem('satcat-compare', JSON.stringify(c)); renderCompareBar(); }
-function toggleCart(id) { var c = getCart(); var i = c.indexOf(id); if (i >= 0) c.splice(i, 1); else c.push(id); setCart(c); }
-function renderCompareBar() {
-  var c = getCart();
-  document.getElementById('compare-bar-text').textContent = c.length + (c.length === 1 ? ' record selected' : ' records selected');
-  document.getElementById('compare-bar').classList.toggle('visible', c.length > 0);
-  document.getElementById('compare-bar-view').disabled = c.length < 2;
-}
-document.getElementById('compare-bar-view').addEventListener('click', function () {
-  window.location.href = 'compare.html?ids=' + encodeURIComponent(getCart().join(','));
-});
-document.getElementById('compare-bar-clear').addEventListener('click', function () { setCart([]); });
-renderCompareBar();
 </script>
 </body>
 </html>

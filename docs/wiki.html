@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wiki - Satellite Data Catalog</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="static/style.css?v=3">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav>
+    <a href="wiki.html">Wiki</a>
+    <a href="families.html">Families</a>
+    <a id="repo-link" href="#" target="_blank">GitHub repo</a>
+  </nav>
+</header>
+<main class="container">
+  <div class="toolbar-row">
+    <h1>Wiki</h1>
+    <button type="button" class="btn btn-small" id="add-wiki-btn">+ Add wiki entry</button>
+  </div>
+  <p class="hint">Reference concepts (processing levels, band terminology, etc.) — link to any entry from anywhere with <code>wiki-entry.html?slug=...</code>.</p>
+  <div class="card-grid" id="wiki-container"><p class="result-count">Loading…</p></div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="static/config.js?v=2"></script>
+<script src="static/catalog.js?v=5"></script>
+<script>
+document.getElementById('repo-link').href = getRepoUrl();
+document.getElementById('add-wiki-btn').addEventListener('click', function () {
+  openNewFileOnGitHub('wiki/_template.md', 'wiki/NEW-SLUG.md');
+});
+
+function wikiCardHtml(entry) {
+  var firstPara = (entry.body.replace(/^#.*$/m, '').trim().split(/\n\s*\n/)[0] || '').slice(0, 160);
+  return '<a class="card" href="wiki-entry.html?slug=' + encodeURIComponent(entry.slug) + '">' +
+    '<div class="card-body"><h3>' + entry.title + '</h3>' +
+    '<p class="short-desc">' + firstPara + (firstPara.length >= 160 ? '…' : '') + '</p></div></a>';
+}
+
+loadWiki().then(function (entries) {
+  entries.sort(function (a, b) { return a.title.localeCompare(b.title); });
+  var container = document.getElementById('wiki-container');
+  container.innerHTML = entries.length
+    ? entries.map(wikiCardHtml).join('')
+    : '<p>No wiki entries yet. Click "+ Add wiki entry" to create the first one.</p>';
+}).catch(function (err) {
+  document.getElementById('wiki-container').innerHTML = '<p>Failed to load wiki.</p>';
+  console.error(err);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+mission_name: Sentinel-2
+sensor_name: MSI (MultiSpectral Instrument)
+agency: ESA / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2015
+end_of_life_year: null
+short_description: 13-band multispectral optical constellation, the reference for NDVI and vegetation/land
+  cover monitoring at 10-60 m resolution.
+long_description: Sentinel-2 is a constellation of two optical satellites (2A since 2015, 2B since 2017)
+  designed primarily for observing vegetation, soil, and inland/ coastal waters. The MSI sensor acquires
+  13 spectral bands from visible to short-wave infrared, at spatial resolutions of 10, 20, or 60 m depending
+  on the band. It is the most widely used source for vegetation indices such as NDVI/EVI and for medium-to-high
+  resolution land cover classification with frequent revisit.
+instrument_type: Optical - Multispectral
+orbit_type: LEO - Sun-synchronous
+thumbnail_url: ''
+internal_contact: ''
+tags:
+- NDVI
+- vegetation
+- land cover
+- copernicus
+links:
+- label: Copernicus Data Space Ecosystem
+  url: https://dataspace.copernicus.eu
+- label: Sentinel-2 on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/sentinel-2
+bbox_west: -180.0
+bbox_south: -81.0
+bbox_east: 180.0
+bbox_north: 81.0
+geographic_coverage: Global, ~81°S to ~81°N (land areas and coastal zones)
+swath_width: 290 km
+radiometric_resolution: 12 bit
+temporal_resolution: 5 days (with the two-satellite constellation, at equator)
+citation_doi: ''

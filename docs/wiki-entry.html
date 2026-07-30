@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Wiki - Satellite Data Catalog</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="static/style.css?v=3">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav>
+    <a href="wiki.html">Wiki</a>
+    <a href="families.html">Families</a>
+    <a id="repo-link" href="#" target="_blank">GitHub repo</a>
+  </nav>
+</header>
+<main class="container" id="content">
+  <p>Loading…</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<script src="static/config.js?v=2"></script>
+<script src="static/catalog.js?v=5"></script>
+<script>
+document.getElementById('repo-link').href = getRepoUrl();
+var slug = new URLSearchParams(window.location.search).get('slug');
+
+loadWiki().then(function (entries) {
+  var entry = entries.find(function (e) { return e.slug === slug; });
+  var content = document.getElementById('content');
+  if (!entry) {
+    content.innerHTML = '<a href="wiki.html" class="back-link">&larr; Wiki</a><p>Entry "' +
+      (slug || '') + '" not found.</p>';
+    return;
+  }
+  document.getElementById('page-title').textContent = entry.title + ' - Satellite Data Catalog';
+  var bodyWithoutTitle = entry.body.replace(/^#\s+.+$/m, '').trim();
+  var html = typeof marked !== 'undefined' ? marked.parse(bodyWithoutTitle) :
+    '<pre>' + bodyWithoutTitle.replace(/</g, '&lt;') + '</pre>';
+  content.innerHTML =
+    '<a href="wiki.html" class="back-link">&larr; Wiki</a>' +
+    '<div class="detail-header"><div><h1>' + entry.title + '</h1></div>' +
+    '<div><a href="' + getRepoUrl() + '/edit/main/wiki/' + entry.slug + '.md" target="_blank" class="btn btn-small">\u270e Propose edit on GitHub</a></div></div>' +
+    '<div class="prose wiki-body">' + html + '</div>';
+}).catch(function (err) {
+  document.getElementById('content').innerHTML = '<p>Failed to load wiki.</p>';
+  console.error(err);
+});
+</script>
+</body>
+</html>

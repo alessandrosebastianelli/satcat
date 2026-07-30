@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Satellite - Satellite Data Catalog</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="static/style.css?v=3">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
+  <nav>
+    <a href="wiki.html">Wiki</a>
+    <a href="families.html">Families</a>
+    <a id="repo-link" href="#" target="_blank">GitHub repo</a>
+  </nav>
+</header>
+<main class="container" id="content">
+  <p>Loading…</p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+<script src="static/config.js?v=2"></script>
+<script src="static/catalog.js?v=5"></script>
+<script>
+document.getElementById('repo-link').href = getRepoUrl();
+var folder = new URLSearchParams(window.location.search).get('folder');
+
+function esc(s) { return (s === null || s === undefined) ? '' : String(s); }
+
+function levelCardHtml(d) {
+  var verifiedBadge = d.verification_status === 'verified'
+    ? '<span class="badge verified-badge">\u2714 verified</span>'
+    : '<span class="badge unverified-badge">\u25d0 unverified</span>';
+  return '<a class="card level-card" href="dataset.html?id=' + encodeURIComponent(d.id) + '">' +
+    '<div class="card-body">' +
+    '<div class="card-header"><span class="badge level-badge">' + esc(d.level) + '</span>' + verifiedBadge + '</div>' +
+    '<p class="short-desc">' + esc(d.level_summary || d.short_description) + '</p>' +
+    '</div></a>';
+}
+
+if (!folder) {
+  document.getElementById('content').innerHTML = '<p>No satellite specified.</p><a href="families.html">Back to families</a>';
+} else {
+  Promise.all([loadSatelliteInfo(folder), loadCatalog()]).then(function (results) {
+    var sat = results[0];
+    var catalog = results[1];
+    var levels = catalog.filter(function (d) { return (d._relpath || '').indexOf(folder + '/') === 0; });
+    levels.sort(function (a, b) { return (a.level || '').localeCompare(b.level || ''); });
+
+    document.getElementById('page-title').textContent = sat.mission_name + ' - Satellite Data Catalog';
+
+    document.getElementById('content').innerHTML =
+      '<a href="families.html' + (sat.mission_family ? '?name=' + encodeURIComponent(sat.mission_family) : '') + '" class="back-link">&larr; ' + esc(sat.mission_family || 'Families') + '</a>' +
+      '<div class="detail-header"><div>' +
+      (sat.thumbnail_url ? '<img class="detail-thumb" src="' + sat.thumbnail_url + '" alt="">' : '') +
+      '<h1>' + esc(sat.mission_name) + (sat.sensor_name ? ' <span class="sensor">/ ' + esc(sat.sensor_name) + '</span>' : '') + '</h1>' +
+      '<p class="agency">' + esc(sat.agency) +
+        (sat.launch_year ? ' \u00b7 launched ' + sat.launch_year : '') +
+        (sat.end_of_life_year ? ' \u2013 ' + sat.end_of_life_year : '') + '</p></div>' +
+      '<div><span class="badge status-' + esc(sat.status).toLowerCase().replace(/ /g, '-') + '">' + esc(sat.status) + '</span></div></div>' +
+      '<p class="short-desc-big">' + esc(sat.short_description) + '</p>' +
+      (sat.long_description ? '<section><h2>About this satellite</h2><div class="prose">' + esc(sat.long_description) + '</div></section>' : '') +
+      '<section><h2>Available processing levels</h2>' +
+      '<p class="hint">Pick a level to see full technical details, access info, and download scripts for that specific product.</p>' +
+      '<div class="card-grid">' + (levels.length ? levels.map(levelCardHtml).join('') : '<p>No levels found for this satellite.</p>') + '</div>' +
+      '</section>';
+  }).catch(function (err) {
+    document.getElementById('content').innerHTML = '<p>Failed to load satellite info: ' + err.message + '</p><a href="families.html">Back to families</a>';
+    console.error(err);
+  });
+}
+</script>
+</body>
+</html>

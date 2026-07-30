@@ -54,6 +54,39 @@ function _renderSpectralBandChartInner(container, datasets, options) {
   // Chart.js's plugin-options resolution timing (which turned out to run
   // the very first draw, during the Chart constructor itself, before any
   // options assigned afterwards were available).
+  // Paints a faint rainbow gradient across the visible-light range
+  // (~380-750nm) behind everything else, so it's immediately obvious
+  // which bands fall inside vs outside what the human eye can see.
+  var spectrumPlugin = {
+    id: 'visibleSpectrum',
+    beforeDatasetsDraw: function (chart) {
+      var xScale = chart.scales.x;
+      if (!xScale) return;
+      var visMin = 380, visMax = 750;
+      if (visMax < xScale.min || visMin > xScale.max) return; // out of view entirely
+      var x0 = xScale.getPixelForValue(Math.max(visMin, xScale.min));
+      var x1 = xScale.getPixelForValue(Math.min(visMax, xScale.max));
+      var ctx = chart.ctx;
+      var top = chart.chartArea.top, bottom = chart.chartArea.bottom;
+      var grad = ctx.createLinearGradient(x0, 0, x1, 0);
+      grad.addColorStop(0.00, 'rgba(138,43,226,0.22)');  // violet ~380nm
+      grad.addColorStop(0.20, 'rgba(0,100,255,0.22)');   // blue
+      grad.addColorStop(0.40, 'rgba(0,220,180,0.22)');   // cyan/green
+      grad.addColorStop(0.55, 'rgba(0,220,0,0.22)');     // green
+      grad.addColorStop(0.70, 'rgba(220,220,0,0.22)');   // yellow
+      grad.addColorStop(0.85, 'rgba(255,140,0,0.22)');   // orange
+      grad.addColorStop(1.00, 'rgba(220,0,0,0.22)');     // red ~750nm
+      ctx.save();
+      ctx.fillStyle = grad;
+      ctx.fillRect(x0, top, x1 - x0, bottom - top);
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = 'rgba(200,200,200,0.6)';
+      ctx.textAlign = 'center';
+      ctx.fillText('visible light', (x0 + x1) / 2, top + 12);
+      ctx.restore();
+    },
+  };
+
   var rectPlugin = {
     id: 'bandRects',
     afterDatasetsDraw: function (chart) {
@@ -132,7 +165,7 @@ function _renderSpectralBandChartInner(container, datasets, options) {
         };
       }),
     },
-    plugins: [rectPlugin],
+    plugins: [spectrumPlugin, rectPlugin],
     options: {
       responsive: false,
       maintainAspectRatio: false,
@@ -154,8 +187,12 @@ function _renderSpectralBandChartInner(container, datasets, options) {
       plugins: {
         legend: { display: showLegend, position: 'top', labels: { boxWidth: 12, color: '#c5d2dd' } },
         tooltip: { enabled: false },
+        zoom: {
+          pan: { enabled: true, mode: 'x' },
+          zoom: { wheel: { enabled: true, speed: 0.1 }, pinch: { enabled: true }, mode: 'x' },
+          limits: { x: { min: 'original', max: 'original' } },
+        },
       },
-      events: [],
     },
   });
 

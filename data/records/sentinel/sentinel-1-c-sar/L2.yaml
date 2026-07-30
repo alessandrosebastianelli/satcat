@@ -1,50 +1,28 @@
-id: sentinel-1-c-sar
-mission_name: Sentinel-1
-sensor_name: C-SAR
-agency: ESA / Copernicus
-mission_family: Sentinel
-status: Active
-launch_year: 2014
-end_of_life_year: null
-short_description: C-band synthetic aperture radar constellation, the main operational source for interferometry
-  (ground deformation) and all-weather day/night monitoring.
-long_description: Sentinel-1 is a constellation of C-band SAR satellites operated by ESA under the Copernicus
-  programme. Because SAR is independent of cloud cover and solar illumination, it is the reference source
-  for ground deformation monitoring (landslides, subsidence, earthquakes), flood mapping, and maritime
-  surveillance. Sentinel-1A has been operational since 2014; Sentinel-1B stopped transmitting in December
-  2021 due to a failure, temporarily reducing revisit frequency until Sentinel-1C launched in December
-  2024 and restored the two-satellite constellation.
-instrument_type: SAR
-orbit_type: LEO - Sun-synchronous
+id: sentinel-1-c-sar-l2
+level: L2
+level_summary: 'Level 2: OCN (Ocean) products — derived geophysical variables (wind, wave, current) for
+  maritime applications, not general land InSAR.'
 bands:
 - name: C-band (VV/VH, HH/HV depending on mode)
   wavelength_or_frequency: 5.405 GHz
   spatial_resolution: 5-20 m (IW mode)
   resolution_m: 5.0
   frequency_ghz: 5.405
+  typical_use: Ground deformation (InSAR), flood/ship detection
 spatial_resolution_summary: 5x20 m in Interferometric Wide (IW) mode, the most commonly used
-temporal_resolution: 6 days (with the full two-satellite constellation)
-radiometric_resolution: ''
-swath_width: 250 km (IW mode)
 processing_level:
-- L1B
-- L1C
 - L2
 derivable_products:
-- SAR Displacement (InSAR)
-- Coherence Map (SAR)
-- Flood Mapping
-- Ship Detection
+- Other
 measured_variables:
 - Ground deformation
 data_format:
 - SAFE (Sentinel)
 - GeoTIFF
-geographic_coverage: Global, ~81°S to ~81°N (priority to Europe and coastal areas)
 temporal_range_start: 2014
 temporal_range_end: null
 data_latency: Fast (< 1 day)
-access_url: https://dataspace.copernicus.eu
+access_url: https://dataspace.copernicus.eu/browser/?productType=S1_OCN
 requires_registration: true
 license_cost: Free (Open Data - Copernicus)
 api_type:
@@ -63,30 +41,15 @@ gee_snippet: "// Sentinel-1 GRD, VV polarization, IW mode, ascending orbit\nvar 
   \ 'VV'))\n  .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))\n  .select('VV');\n\nprint('Number\
   \ of images:', collection.size());\nMap.addLayer(collection.median(), {min: -20, max: 0}, 'Sentinel-1\
   \ VV (median)');\n"
-internal_contact: ''
-related_datasets:
-- sentinel-2-msi
+related_datasets: []
 internal_projects: ''
-notes: 'Note: since 2023 data access has migrated from the old Copernicus Open Access Hub to the new Copernicus
-  Data Space Ecosystem — old links/REST endpoints no longer work. For interferometry, start from SLC data
-  (not GRD).'
+notes: OCN products are ocean-focused (wind/wave/currents) — for ground deformation, use the L1 SLC record
+  instead.
 known_limitations: Speckle noise requires filtering before most analyses. Radiometric terrain correction
   (RTC) is not applied by default on GRD products — apply it yourself for quantitative backscatter comparisons
   across different terrain.
 example_use_cases: Landslide and subsidence monitoring via InSAR time series; flood extent mapping during/after
   heavy rain events; ship detection in coastal waters.
-links:
-- label: Copernicus Data Space Ecosystem
-  url: https://dataspace.copernicus.eu
-- label: RUS Copernicus training (InSAR tutorial)
-  url: https://rus-copernicus.eu
-tags:
-- InSAR
-- subsidence
-- landslides
-- copernicus
-citation_doi: ''
-thumbnail_url: ''
 extra_sections: []
 qa:
 - question: Can I use GRD products directly for interferometry, or do I need SLC?
@@ -111,7 +74,3 @@ verified_by: ''
 verified_at: ''
 last_updated: 2026-01-05 10:00 UTC
 last_updated_by: admin
-bbox_west: -180.0
-bbox_south: -81.0
-bbox_east: 180.0
-bbox_north: 81.0

@@ -13,8 +13,8 @@
 <header class="topbar">
   <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
   <nav>
+    <a href="wiki.html">Wiki</a>
     <a href="families.html">Families</a>
-    <button id="theme-toggle" class="icon-btn" type="button">🌓</button>
     <a id="repo-link" href="#" target="_blank">GitHub repo</a>
   </nav>
 </header>
@@ -22,24 +22,27 @@
   <p>Loading…</p>
 </main>
 
+<div id="compare-bar" class="compare-bar">
+  <span id="compare-bar-text"></span>
+  <button type="button" id="compare-bar-view" class="btn btn-small">View comparison</button>
+  <button type="button" id="compare-bar-clear" class="icon-btn">✕</button>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="static/config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="static/catalog.js?v=4"></script>
-<script src="static/band-chart.js?v=8"></script>
+<script src="static/catalog.js?v=5"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="static/band-chart.js?v=9"></script>
 <script>
-document.getElementById('theme-toggle').addEventListener('click', function () {
-  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('satcat-theme', next);
-});
 document.getElementById('repo-link').href = getRepoUrl();
 
 function fmtList(v) { return (v && v.length) ? v.join(', ') : '—'; }
 function esc(s) { return (s === null || s === undefined) ? '' : String(s); }
 
-function renderDataset(d, catalog) {
+function renderDataset(d, catalog, satFolder) {
   document.getElementById('page-title').textContent = d.mission_name + ' - Satellite Data Catalog';
   var repo = getRepoUrl();
   var missingNotice = d._missing.length
@@ -58,9 +61,9 @@ function renderDataset(d, catalog) {
   if (d.bands.length) {
     bandsTable = '<details class="bands-details" ' + (d.bands.length <= 6 ? 'open' : '') + '>' +
       '<summary><h3 class="inline-h3">Bands / Channels (' + d.bands.length + ')</h3></summary>' +
-      '<table class="kv-table bands-table"><tr><th>Name</th><th>Wavelength / Frequency</th><th>Spatial resolution</th></tr>' +
+      '<table class="kv-table bands-table"><tr><th>Name</th><th>Wavelength / Frequency</th><th>Spatial resolution</th><th>Typical use</th></tr>' +
       d.bands.map(function (b) {
-        return '<tr><td>' + esc(b.name) + '</td><td>' + esc(b.wavelength_or_frequency) + '</td><td>' + esc(b.spatial_resolution) + '</td></tr>';
+        return '<tr><td>' + esc(b.name) + '</td><td>' + esc(b.wavelength_or_frequency) + '</td><td>' + esc(b.spatial_resolution) + '</td><td>' + esc(b.typical_use) + '</td></tr>';
       }).join('') + '</table></details>';
   }
 
@@ -69,7 +72,7 @@ function renderDataset(d, catalog) {
   if (chartable.length) {
     chartSection = '<section><h2>Spectral / band chart</h2>' +
       '<div class="chart-wrap chart-wrap-medium" id="own-band-chart-wrap">' +
-      '<div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="own-band-chart-expand">\u26f6 Expand</button></div>' +
+      '<div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="own-band-chart-reset-zoom">\u21ba Reset zoom</button><button type="button" class="icon-btn chart-expand-btn" id="own-band-chart-expand">\u26f6 Expand</button></div>' +
       '<div id="own-band-chart" class="chart-canvas-container"></div></div>' +
       '<p class="hint">X: wavelength (nm, log scale \u2014 SAR/radar shown as equivalent wavelength). Y: spatial resolution (m). Box width = bandwidth.</p></section>';
   }
@@ -98,23 +101,28 @@ function renderDataset(d, catalog) {
       }).join('') + '</ul></section>';
   }
 
+  var backLink = satFolder
+    ? '<a href="satellite.html?folder=' + encodeURIComponent(satFolder) + '" class="back-link">&larr; Back to ' + esc(d.mission_name) + '</a>'
+    : '<a href="index.html" class="back-link">&larr; Back to catalog</a>';
+  var levelBadge = d.level ? '<span class="badge level-badge">' + esc(d.level) + '</span>' : '';
+
   document.getElementById('content').innerHTML =
-    '<a href="index.html" class="back-link">&larr; Back to catalog</a>' +
+    backLink +
     '<div class="detail-header"><div>' +
       (d.thumbnail_url ? '<img class="detail-thumb" src="' + d.thumbnail_url + '" alt="">' : '') +
-      '<h1>' + d.mission_name + (d.sensor_name ? ' <span class="sensor">/ ' + d.sensor_name + '</span>' : '') + '</h1>' +
+      '<h1>' + d.mission_name + (d.sensor_name ? ' <span class="sensor">/ ' + d.sensor_name + '</span>' : '') + (d.level ? ' <span class="sensor">\u2014 ' + esc(d.level) + '</span>' : '') + '</h1>' +
       '<p class="agency">' + (d.agency||'') +
         (d.launch_year ? ' \u00b7 launched ' + d.launch_year : '') +
         (d.end_of_life_year ? ' \u2013 ' + d.end_of_life_year : '') +
         (d.mission_family ? ' \u00b7 <a href="families.html?name=' + encodeURIComponent(d.mission_family) + '">' + d.mission_family + ' family</a>' : '') +
       '</p></div>' +
-      '<div><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span> ' + verifiedBadge +
+      '<div><span class="badge status-' + d.status.toLowerCase().replace(/ /g,'-') + '">' + d.status + '</span> ' + levelBadge + ' ' + verifiedBadge +
         ' <label class="pill-option compare-check-inline"><input type="checkbox" class="compare-checkbox" value="' + d.id + '"> Add to compare</label>' +
         ' <a href="' + repo + '/edit/main/data/records/' + (d._relpath || (d.id + '.yaml')) + '" target="_blank" class="btn btn-small">\u270e Propose edit on GitHub</a></div>' +
     '</div>' +
     missingNotice +
-    '<p class="short-desc-big">' + (d.short_description||'') + '</p>' +
-    (d.long_description ? '<section><h2>Extended description</h2><div class="prose">' + d.long_description + '</div></section>' : '') +
+    (d.level_summary ? '<p class="short-desc-big"><strong>' + esc(d.level) + ':</strong> ' + esc(d.level_summary) + '</p>' : '<p class="short-desc-big">' + (d.short_description||'') + '</p>') +
+    (d.long_description ? '<section><h2>About this satellite</h2><div class="prose">' + d.long_description + '</div></section>' : '') +
     '<section class="grid-2col"><div><h2>Technical characteristics</h2><table class="kv-table">' +
       '<tr><th>Instrument type</th><td>' + (d.instrument_type||'—') + '</td></tr>' +
       '<tr><th>Orbit type</th><td>' + (d.orbit_type||'—') + '</td></tr>' +
@@ -205,7 +213,7 @@ function renderDataset(d, catalog) {
     var chartWrapEl = document.getElementById('own-band-chart');
     if (chartWrapEl) {
       if (typeof Chart !== 'undefined') {
-        renderSpectralBandChart(chartWrapEl, [{ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable }], { singleColor: '#3fb7e0' });
+        var ownBandChart = renderSpectralBandChart(chartWrapEl, [{ mission: d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : ''), bands: chartable }], { singleColor: '#3fb7e0' });
         var expandBtn = document.getElementById('own-band-chart-expand');
         var wrap = document.getElementById('own-band-chart-wrap');
         if (expandBtn && wrap) {
@@ -214,22 +222,19 @@ function renderDataset(d, catalog) {
             expandBtn.textContent = wrap.classList.contains('chart-expanded') ? '\u2921 Collapse' : '\u26f6 Expand';
           });
         }
+        var resetZoomBtn = document.getElementById('own-band-chart-reset-zoom');
+        if (resetZoomBtn) {
+          resetZoomBtn.addEventListener('click', function () {
+            if (ownBandChart && ownBandChart.resetZoom) ownBandChart.resetZoom();
+          });
+        }
       } else {
         document.getElementById('own-band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from the CDN (network/firewall?).</p>';
       }
     }
   } catch (e) { console.error('[satcat] band chart failed:', e); }
 
-  // Compare cart
-  function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (er) { return []; } }
-  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
-    cb.checked = getCart().indexOf(cb.value) >= 0;
-    cb.addEventListener('change', function () {
-      var c = getCart(); var i = c.indexOf(cb.value);
-      if (i >= 0) c.splice(i, 1); else c.push(cb.value);
-      localStorage.setItem('satcat-compare', JSON.stringify(c));
-    });
-  });
+  wireCompareCheckboxes();
 }
 
 var params = new URLSearchParams(window.location.search);
@@ -241,7 +246,18 @@ loadCatalog().then(function (catalog) {
     document.getElementById('content').innerHTML = '<p>Record "' + esc(id) + '" not found.</p><a href="index.html">Back to catalog</a>';
     return;
   }
-  renderDataset(d, catalog);
+  var parts = (d._relpath || '').split('/');
+  if (parts.length >= 3) {
+    var satFolder = parts.slice(0, -1).join('/');
+    loadSatelliteInfo(satFolder).then(function (sat) {
+      renderDataset(mergeSatelliteInfo(d, sat), catalog, satFolder);
+    }).catch(function (err) {
+      console.error('[satcat] could not load satellite info', err);
+      renderDataset(d, catalog, null);
+    });
+  } else {
+    renderDataset(d, catalog, null);
+  }
 }).catch(function (err) {
   document.getElementById('content').innerHTML = '<p>Failed to load catalog. Check static/config.js has the right repo.</p>';
   console.error(err);

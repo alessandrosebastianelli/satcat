@@ -12,8 +12,8 @@
 <header class="topbar">
   <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
   <nav>
+    <a href="wiki.html">Wiki</a>
     <a href="families.html">Families</a>
-    <button id="theme-toggle" class="icon-btn" type="button">🌓</button>
     <a id="repo-link" href="#" target="_blank">GitHub repo</a>
     <a id="discussions-link" href="#" target="_blank">Discussions (Q&amp;A)</a>
   </nav>
@@ -34,7 +34,13 @@
     <select id="f-variable"><option value="">All variables</option></select>
   </div>
 
-  <div class="toolbar-row"><p class="result-count" id="result-count">Loading catalog…</p></div>
+  <div class="toolbar-row">
+    <p class="result-count" id="result-count">Loading catalog…</p>
+    <div>
+      <button type="button" class="btn btn-small" id="add-dataset-btn">+ Add a dataset</button>
+      <a class="btn btn-small" id="request-dataset-link" href="#" target="_blank">Request a dataset</a>
+    </div>
+  </div>
   <div class="card-grid" id="results-container"></div>
 
   <div id="compare-bar" class="compare-bar">
@@ -46,17 +52,16 @@
 
 <script src="static/config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="static/catalog.js?v=4"></script>
+<script src="static/catalog.js?v=5"></script>
 <script>
-document.getElementById('theme-toggle').addEventListener('click', function () {
-  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('satcat-theme', next);
-});
 document.getElementById('repo-link').href = getRepoUrl();
 document.getElementById('discussions-link').href = getRepoUrl() + '/discussions';
 document.getElementById('discussions-link2').href = getRepoUrl() + '/discussions';
 document.getElementById('issues-link').href = getRepoUrl() + '/issues/new/choose';
+document.getElementById('request-dataset-link').href = getRepoUrl() + '/issues/new/choose';
+document.getElementById('add-dataset-btn').addEventListener('click', function () {
+  openNewFileOnGitHub('data/records/_template.yaml', 'data/records/NEW-DATASET-ID.yaml');
+});
 
 var CATALOG = [];
 
@@ -160,33 +165,11 @@ function collectionCardHtml(c) {
     '<div class="tag-row">' + preview + more + '</div></div></a></div>';
 }
 
-function wireCompareCheckboxes() {
-  var cart = getCart();
-  document.querySelectorAll('.compare-checkbox').forEach(function (cb) {
-    cb.checked = cart.indexOf(cb.value) >= 0;
-    cb.addEventListener('change', function () { toggleCart(cb.value); });
-  });
-}
-function getCart() { try { return JSON.parse(localStorage.getItem('satcat-compare') || '[]'); } catch (e) { return []; } }
-function setCart(c) { localStorage.setItem('satcat-compare', JSON.stringify(c)); renderCompareBar(); }
-function toggleCart(id) { var c = getCart(); var i = c.indexOf(id); if (i >= 0) c.splice(i, 1); else c.push(id); setCart(c); }
-function renderCompareBar() {
-  var c = getCart();
-  document.getElementById('compare-bar-text').textContent = c.length + (c.length === 1 ? ' record selected' : ' records selected');
-  document.getElementById('compare-bar').classList.toggle('visible', c.length > 0);
-  document.getElementById('compare-bar-view').disabled = c.length < 2;
-}
-document.getElementById('compare-bar-view').addEventListener('click', function () {
-  window.location.href = 'compare.html?ids=' + encodeURIComponent(getCart().join(','));
-});
-document.getElementById('compare-bar-clear').addEventListener('click', function () { setCart([]); });
-
 loadCatalog().then(function (data) {
   CATALOG = data;
   CATALOG.sort(function (a, b) { return a.mission_name.localeCompare(b.mission_name); });
   populateFilterOptions();
   render();
-  renderCompareBar();
   renderLoadErrorsBanner(document.querySelector('main.container'));
   ['q','f-instrument','f-status','f-variable'].forEach(function (id) {
     document.getElementById(id).addEventListener('input', render);

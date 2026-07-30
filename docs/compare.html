@@ -11,7 +11,7 @@
 <body>
 <header class="topbar">
   <a class="brand" href="index.html">🛰️ Satellite Data Catalog <span class="mirror-badge">public mirror</span></a>
-  <nav><button id="theme-toggle" class="icon-btn" type="button">🌓</button></nav>
+  <nav><a href="wiki.html">Wiki</a> <a href="families.html">Families</a></nav>
 </header>
 <main class="container">
   <a href="index.html" class="back-link">&larr; Back to catalog</a>
@@ -20,7 +20,7 @@
   <div class="compare-picker"><button type="button" class="btn-primary" id="update-compare-btn">Update comparison</button></div>
   <div id="band-chart-section" style="display:none;">
     <h2>Spectral band comparison</h2>
-    <div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="band-chart-expand">⛶ Expand</button></div>
+    <div class="chart-toolbar"><button type="button" class="icon-btn chart-expand-btn" id="band-chart-reset-zoom">↺ Reset zoom</button><button type="button" class="icon-btn chart-expand-btn" id="band-chart-expand">⛶ Expand</button></div>
     <div class="chart-wrap" id="band-chart-wrap"><div id="band-chart" class="chart-canvas-container"></div></div>
   </div>
   <div id="compare-table-container"><p class="result-count">Loading…</p></div>
@@ -29,14 +29,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="static/config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="static/catalog.js?v=4"></script>
-<script src="static/band-chart.js?v=8"></script>
+<script src="static/catalog.js?v=5"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+<script src="static/band-chart.js?v=9"></script>
 <script>
-document.getElementById('theme-toggle').addEventListener('click', function () {
-  var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('satcat-theme', next);
-});
 
 var FIELDS = [
   ["agency","Agency"],["status","Status"],["launch_year","Launch year"],
@@ -59,7 +56,17 @@ function renderPicker(catalog, selectedIds) {
       d.mission_name + (d.sensor_name ? ' / ' + d.sensor_name : '') + '</label>';
   }).join('');
   document.querySelectorAll('#pill-picker input').forEach(function (cb) {
-    cb.addEventListener('change', function () { cb.closest('.pill-option').classList.toggle('checked', cb.checked); });
+    cb.addEventListener('change', function () {
+      var checkedCount = document.querySelectorAll('#pill-picker input:checked').length;
+      if (cb.checked && checkedCount > MAX_COMPARE) {
+        cb.checked = false;
+        return;
+      }
+      cb.closest('.pill-option').classList.toggle('checked', cb.checked);
+      document.querySelectorAll('#pill-picker input:not(:checked)').forEach(function (other) {
+        other.disabled = checkedCount >= MAX_COMPARE;
+      });
+    });
   });
 }
 
@@ -105,7 +112,13 @@ function renderTable(selected) {
     document.getElementById('band-chart-wrap').outerHTML = '<p class="hint">Chart unavailable \u2014 Chart.js failed to load from the CDN (network/firewall?).</p>';
   } else {
     section.style.display = 'block';
-    renderSpectralBandChart(document.getElementById('band-chart'), chartData, {});
+    var cmpChart = renderSpectralBandChart(document.getElementById('band-chart'), chartData, {});
+    var resetZoomBtn = document.getElementById('band-chart-reset-zoom');
+    if (resetZoomBtn) {
+      resetZoomBtn.addEventListener('click', function () {
+        if (cmpChart && cmpChart.resetZoom) cmpChart.resetZoom();
+      });
+    }
   }
 }
 

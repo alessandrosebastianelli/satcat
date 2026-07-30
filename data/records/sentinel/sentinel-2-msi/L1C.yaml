@@ -1,20 +1,8 @@
-id: sentinel-2-msi
-mission_name: Sentinel-2
-sensor_name: MSI (MultiSpectral Instrument)
-agency: ESA / Copernicus
-mission_family: Sentinel
-status: Active
-launch_year: 2015
-end_of_life_year: null
-short_description: 13-band multispectral optical constellation, the reference for NDVI and vegetation/land
-  cover monitoring at 10-60 m resolution.
-long_description: Sentinel-2 is a constellation of two optical satellites (2A since 2015, 2B since 2017)
-  designed primarily for observing vegetation, soil, and inland/ coastal waters. The MSI sensor acquires
-  13 spectral bands from visible to short-wave infrared, at spatial resolutions of 10, 20, or 60 m depending
-  on the band. It is the most widely used source for vegetation indices such as NDVI/EVI and for medium-to-high
-  resolution land cover classification with frequent revisit.
-instrument_type: Optical - Multispectral
-orbit_type: LEO - Sun-synchronous
+id: sentinel-2-msi-l1c
+level: L1C
+level_summary: 'Level 1C: Top-of-atmosphere (TOA) reflectance, orthorectified and geometrically corrected
+  — no atmospheric correction applied. Use this if you want full control over the atmospheric correction
+  step yourself.'
 bands:
 - name: B1 - Coastal aerosol
   wavelength_or_frequency: 443 nm
@@ -22,85 +10,94 @@ bands:
   wavelength_nm: 443
   bandwidth_nm: 20.0
   resolution_m: 60.0
+  typical_use: Coastal/aerosol correction
 - name: B2 - Blue
   wavelength_or_frequency: 490 nm
   spatial_resolution: 10 m
   wavelength_nm: 490
   bandwidth_nm: 65.0
   resolution_m: 10.0
+  typical_use: True color, atmospheric correction
 - name: B3 - Green
   wavelength_or_frequency: 560 nm
   spatial_resolution: 10 m
   wavelength_nm: 560
   bandwidth_nm: 35.0
   resolution_m: 10.0
+  typical_use: True color, vegetation
 - name: B4 - Red
   wavelength_or_frequency: 665 nm
   spatial_resolution: 10 m
   wavelength_nm: 665
   bandwidth_nm: 30.0
   resolution_m: 10.0
+  typical_use: True color, NDVI red input
 - name: B5 - Red edge 1
   wavelength_or_frequency: 705 nm
   spatial_resolution: 20 m
   wavelength_nm: 705
   bandwidth_nm: 15.0
   resolution_m: 20.0
+  typical_use: Vegetation stress, chlorophyll
 - name: B6 - Red edge 2
   wavelength_or_frequency: 740 nm
   spatial_resolution: 20 m
   wavelength_nm: 740
   bandwidth_nm: 15.0
   resolution_m: 20.0
+  typical_use: Vegetation stress, chlorophyll
 - name: B7 - Red edge 3
   wavelength_or_frequency: 783 nm
   spatial_resolution: 20 m
   wavelength_nm: 783
   bandwidth_nm: 20.0
   resolution_m: 20.0
+  typical_use: Vegetation stress, chlorophyll
 - name: B8 - NIR
   wavelength_or_frequency: 842 nm
   spatial_resolution: 10 m
   wavelength_nm: 842
   bandwidth_nm: 115.0
   resolution_m: 10.0
+  typical_use: NDVI/EVI NIR input, biomass
 - name: B8A - Narrow NIR
   wavelength_or_frequency: 865 nm
   spatial_resolution: 20 m
   wavelength_nm: 865
   bandwidth_nm: 20.0
   resolution_m: 20.0
+  typical_use: Vegetation, water vapour correction
 - name: B9 - Water vapour
   wavelength_or_frequency: 945 nm
   spatial_resolution: 60 m
   wavelength_nm: 945
   bandwidth_nm: 20.0
   resolution_m: 60.0
+  typical_use: Atmospheric correction
 - name: B10 - Cirrus
   wavelength_or_frequency: 1375 nm
   spatial_resolution: 60 m
   wavelength_nm: 1375
   bandwidth_nm: 30.0
   resolution_m: 60.0
+  typical_use: Cirrus cloud detection/masking
 - name: B11 - SWIR1
   wavelength_or_frequency: 1610 nm
   spatial_resolution: 20 m
   wavelength_nm: 1610
   bandwidth_nm: 90.0
   resolution_m: 20.0
+  typical_use: Soil moisture, snow/ice, burned area
 - name: B12 - SWIR2
   wavelength_or_frequency: 2190 nm
   spatial_resolution: 20 m
   wavelength_nm: 2190
   bandwidth_nm: 180.0
   resolution_m: 20.0
+  typical_use: Burned area, geology, soil moisture
 spatial_resolution_summary: 10 m (VIS/NIR), 20 m (red edge/SWIR), 60 m (atmospheric bands)
-temporal_resolution: 5 days (with the two-satellite constellation, at equator)
-radiometric_resolution: 12 bit
-swath_width: 290 km
 processing_level:
 - L1C
-- L2
 derivable_products:
 - NDVI
 - EVI
@@ -114,7 +111,6 @@ data_format:
 - SAFE (Sentinel)
 - GeoTIFF
 - COG
-geographic_coverage: Global, ~81°S to ~81°N (land areas and coastal zones)
 temporal_range_start: 2015
 temporal_range_end: null
 data_latency: Fast (< 1 day)
@@ -137,9 +133,8 @@ gee_snippet: "// Sentinel-2 Surface Reflectance, cloud-filtered, NDVI composite\
   \  return img.addBands(ndvi);\n};\n\nvar withNDVI = collection.map(addNDVI);\nvar ndviMedian = withNDVI.select('NDVI').median();\n\
   \nMap.centerObject(aoi, 10);\nMap.addLayer(ndviMedian, {min: 0, max: 1, palette: ['white', 'green']},\
   \ 'NDVI median');\n"
-internal_contact: ''
 related_datasets:
-- sentinel-1-c-sar
+- sentinel-2-msi-l2a
 internal_projects: ''
 notes: Use the "Harmonized" collection on Google Earth Engine to avoid the radiometric offset introduced
   by processing baseline 04.00 (from late 2021 onward, raw non-harmonized values have a +1000 shift).
@@ -150,18 +145,6 @@ known_limitations: 'Optical sensor: no valid data under cloud cover, so revisit 
   (e.g. using the SCL band or s2cloudless).'
 example_use_cases: Crop monitoring and vegetation health via NDVI time series; burned area mapping after
   wildfires; land cover change detection over multi-year periods.
-links:
-- label: Copernicus Data Space Ecosystem
-  url: https://dataspace.copernicus.eu
-- label: Sentinel-2 on Google Earth Engine
-  url: https://developers.google.com/earth-engine/datasets/catalog/sentinel-2
-tags:
-- NDVI
-- vegetation
-- land cover
-- copernicus
-citation_doi: ''
-thumbnail_url: ''
 extra_sections: []
 qa: []
 changelog:
@@ -173,7 +156,3 @@ verified_by: ''
 verified_at: ''
 last_updated: 2026-01-05 10:00 UTC
 last_updated_by: admin
-bbox_west: -180.0
-bbox_south: -81.0
-bbox_east: 180.0
-bbox_north: 81.0
