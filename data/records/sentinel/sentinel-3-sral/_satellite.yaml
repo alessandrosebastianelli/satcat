@@ -1,0 +1,41 @@
+mission_name: Sentinel-3
+sensor_name: SRAL (SAR Radar Altimeter)
+agency: ESA / EUMETSAT / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2016
+end_of_life_year: null
+short_description: Dual-frequency (Ku/C band) SAR radar altimeter for sea surface height, significant
+  wave height, wind speed, and inland water and ice elevation.
+long_description: SRAL is the radar altimeter of Sentinel-3, operating at Ku-band (13.575 GHz) and C-band
+  (5.41 GHz, used for the ionospheric correction). It works in SAR (delay-Doppler) mode along the whole
+  orbit, giving about 300 m along-track resolution, and is supported by a microwave radiometer (MWR) for
+  the wet troposphere correction. Applications include ocean topography, significant wave height, sea
+  ice freeboard, and the water level of rivers, lakes and reservoirs.
+instrument_type: Radar altimeter (SAR mode, Ku/C band)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- altimetry
+- sea level
+- wave height
+- inland water
+- copernicus
+- Sentinel-3
+links:
+- label: Copernicus Data Space Ecosystem
+  url: https://dataspace.copernicus.eu
+- label: Sentinel Online (ESA)
+  url: https://sentiwiki.copernicus.eu
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+bbox_west: -180.0
+bbox_south: -81.5
+bbox_east: 180.0
+bbox_north: 81.5
+geographic_coverage: Global, along-track sampling (orbit inclination about 98.6 degrees)
+swath_width: Nadir profile (no swath)
+temporal_resolution: 27-day orbit cycle (a 14-day sub-cycle is used for some products)
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-3-sral.ipynb
+last_updated_by: Alessandro Sebastianelli

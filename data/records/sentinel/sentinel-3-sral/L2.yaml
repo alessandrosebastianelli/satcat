@@ -1,0 +1,139 @@
+id: sentinel-3-sral-l2
+level: L2
+level_summary: 'Level 2: geophysical altimetry products over land and inland water (LAN) and over the
+  ocean (WAT), with corrections applied.'
+bands:
+- name: Ku-band
+  wavelength_or_frequency: 13.575 GHz
+  spatial_resolution: about 300 m along-track (SAR mode)
+  resolution_m: 300.0
+  frequency_ghz: 13.575
+  typical_use: Primary altimetric measurement (SAR mode)
+- name: C-band
+  wavelength_or_frequency: 5.41 GHz
+  spatial_resolution: n/a (ionospheric correction)
+  frequency_ghz: 5.41
+  resolution_m: 7000.0
+  typical_use: Ionospheric correction
+spatial_resolution_summary: About 300 m along-track (20 Hz), 1 Hz averaged
+processing_level:
+- L2
+derivable_products:
+- Sea surface height anomaly
+- Significant wave height
+- Wind speed
+- River/lake water level
+- Sea ice freeboard
+measured_variables:
+- Surface height
+- Significant wave height
+- Wind speed
+- Inland water level
+data_format:
+- SEN3 (NetCDF4 files)
+temporal_range_start: 2016
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours), short-time-critical (about 48 hours), non-time-critical
+  (about 1 month)
+access_url: https://dataspace.copernicus.eu/browser/?productType=SR_2_LAN___
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- OData
+- STAC API
+- Python SDK
+documentation_url: https://sentiwiki.copernicus.eu/web/sral-processing
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one Sentinel-3 SRAL land altimetry product from the Planetary Computer (no account
+    needed) and plots the ground track.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - xarray
+  - netCDF4
+  - requests
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import requests
+    import xarray as xr
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+
+    search = catalog.search(
+        collections=["sentinel-3-sral-lan-l2-netcdf"],
+        bbox=[6.0, 36.0, 19.0, 47.0],      # Italy
+        datetime="2024-06-01/2024-06-05",
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No products found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "products; using", item.id)
+    print("assets:", sorted(item.assets))
+
+    with requests.get(item.assets["standard-measurement"].href, stream=True) as r:
+        r.raise_for_status()
+        with open("sral_standard.nc", "wb") as f:
+            for chunk in r.iter_content(chunk_size=1 << 20):
+                f.write(chunk)
+
+    ds = xr.open_dataset("sral_standard.nc")
+    print(list(ds.variables)[:40])
+    lat = ds[next(v for v in ds.variables if v.startswith("lat"))]
+    lon = ds[next(v for v in ds.variables if v.startswith("lon"))]
+    plt.plot(lon, lat, ".", markersize=1)       # ground track of the altimeter
+    plt.xlabel("longitude")
+    plt.ylabel("latitude")
+    plt.title(item.id)
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # SRAL Level-2 Land (SR_2_WAT for ocean)
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-3' and contains(Name,'SR_2_LAN') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
+related_datasets:
+- sentinel-3-sral-l1
+- sentinel-6-poseidon-4-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Use the NTC (non-time-critical) products for science: they use the best orbit and corrections.
+  STC and NRT are faster but less accurate.'
+known_limitations: Along-track only. Over land and inland water, retracking of complex waveforms is difficult;
+  use the dedicated land (LAN) retrackers and a water mask.
+example_use_cases: Reservoir and river level monitoring; mean sea level and wave climate studies; sea
+  ice thickness (via freeboard).
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
