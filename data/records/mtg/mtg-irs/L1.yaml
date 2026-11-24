@@ -1,0 +1,117 @@
+id: mtg-irs-l1
+level: L1
+level_summary: 'Level 1: calibrated, geolocated infrared spectra (uncompressed and principal-component
+  compressed), split by long-wave and mid-wave bands.'
+bands:
+- name: LWIR - 700-1210 cm-1
+  wavelength_or_frequency: 8.26-14.29 um (700-1210 cm-1)
+  spatial_resolution: 4 km
+  wavelength_nm: 11275
+  bandwidth_nm: 6030.0
+  resolution_m: 4000.0
+  typical_use: Temperature profile, surface, ozone, clouds
+- name: MWIR - 1600-2175 cm-1
+  wavelength_or_frequency: 4.6-6.25 um (1600-2175 cm-1)
+  spatial_resolution: 4 km
+  wavelength_nm: 5425
+  bandwidth_nm: 1650.0
+  resolution_m: 4000.0
+  typical_use: Humidity profile, CO, winds
+spatial_resolution_summary: About 4 km at the sub-satellite point
+processing_level:
+- L1
+derivable_products:
+- Temperature profiles
+- Humidity profiles
+- Trace gases
+- Atmospheric motion vectors
+measured_variables:
+- Radiance spectra
+data_format:
+- NetCDF4
+temporal_range_start: 2025
+temporal_range_end: null
+data_latency: Real time (a few minutes) through EUMETCast
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy)
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/mtg-irs-level-1-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Looks for IRS collections in the EUMETSAT Data Store (title search) and downloads the first
+    product of the window. Needs a free account and consumer key/secret, asked at run time. IRS products
+    are large.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "irs level" in str(c.title).lower()]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2026, 10, 1, 12, 0), dtend=dt.datetime(2026, 10, 1, 12, 30)))
+    print(len(products), "IRS products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+    print(sorted(out.rglob('*.nc'))[:5])
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # IRS Level-1: look the collection ID up on data.eumetsat.int (search 'IRS')
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- mtg-irs-l2
+- sentinel-4-uvn-l1b
+- mtg-fci-l1c
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection IDs are listed on data.eumetsat.int: the Python example prints the matching collections.
+  Band limits are the nominal ranges.'
+known_limitations: Very large volumes (hundreds of GB per day at Level 1); few readers exist yet beyond
+  EUMETSAT tools and xarray; collection IDs and versions may change while the service matures.
+example_use_cases: Direct assimilation of radiances in NWP; research on retrievals; hyperspectral studies
+  of the atmosphere.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
