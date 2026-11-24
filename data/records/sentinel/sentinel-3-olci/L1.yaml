@@ -1,0 +1,288 @@
+id: sentinel-3-olci-l1
+level: L1
+level_summary: 'Level 1: calibrated, geolocated top-of-atmosphere radiances (EFR at 300 m, ERR at 1.2
+  km), 21 bands.'
+bands:
+- name: Oa1 - 400 nm
+  wavelength_or_frequency: 400 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 400
+  bandwidth_nm: 15.0
+  resolution_m: 300.0
+  typical_use: Aerosol, yellow substance
+- name: Oa2 - 412.5 nm
+  wavelength_or_frequency: 412.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 412.5
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Yellow substance, detrital pigments
+- name: Oa3 - 442.5 nm
+  wavelength_or_frequency: 442.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 442.5
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll absorption maximum
+- name: Oa4 - 490 nm
+  wavelength_or_frequency: 490 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 490
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll, suspended matter
+- name: Oa5 - 510 nm
+  wavelength_or_frequency: 510 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 510
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll, suspended matter
+- name: Oa6 - 560 nm
+  wavelength_or_frequency: 560 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 560
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll reference, suspended matter
+- name: Oa7 - 620 nm
+  wavelength_or_frequency: 620 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 620
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Suspended matter
+- name: Oa8 - 665 nm
+  wavelength_or_frequency: 665 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 665
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll absorption, red
+- name: Oa9 - 673.75 nm
+  wavelength_or_frequency: 673.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 673.75
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: Chlorophyll fluorescence baseline
+- name: Oa10 - 681.25 nm
+  wavelength_or_frequency: 681.25 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 681.25
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: Chlorophyll fluorescence peak
+- name: Oa11 - 708.75 nm
+  wavelength_or_frequency: 708.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 708.75
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Fluorescence baseline, red edge
+- name: Oa12 - 753.75 nm
+  wavelength_or_frequency: 753.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 753.75
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: O2 absorption reference
+- name: Oa13 - 761.25 nm
+  wavelength_or_frequency: 761.25 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 761.25
+  bandwidth_nm: 2.5
+  resolution_m: 300.0
+  typical_use: O2 A-band, cloud top pressure
+- name: Oa14 - 764.375 nm
+  wavelength_or_frequency: 764.375 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 764.375
+  bandwidth_nm: 3.75
+  resolution_m: 300.0
+  typical_use: O2 A-band
+- name: Oa15 - 767.5 nm
+  wavelength_or_frequency: 767.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 767.5
+  bandwidth_nm: 2.5
+  resolution_m: 300.0
+  typical_use: O2 A-band
+- name: Oa16 - 778.75 nm
+  wavelength_or_frequency: 778.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 778.75
+  bandwidth_nm: 15.0
+  resolution_m: 300.0
+  typical_use: Atmospheric and aerosol correction
+- name: Oa17 - 865 nm
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 865
+  bandwidth_nm: 20.0
+  resolution_m: 300.0
+  typical_use: Atmospheric correction, vegetation
+- name: Oa18 - 885 nm
+  wavelength_or_frequency: 885 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 885
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Water vapour reference
+- name: Oa19 - 900 nm
+  wavelength_or_frequency: 900 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 900
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Water vapour
+- name: Oa20 - 940 nm
+  wavelength_or_frequency: 940 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 940
+  bandwidth_nm: 20.0
+  resolution_m: 300.0
+  typical_use: Water vapour absorption
+- name: Oa21 - 1020 nm
+  wavelength_or_frequency: 1020 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 1020
+  bandwidth_nm: 40.0
+  resolution_m: 300.0
+  typical_use: Atmospheric and aerosol correction
+spatial_resolution_summary: 300 m (full resolution, EFR) / 1.2 km (reduced resolution, ERR)
+processing_level:
+- L1
+derivable_products:
+- Chlorophyll-a
+- Suspended matter
+- Vegetation indices
+- True-colour imagery
+measured_variables:
+- TOA radiance
+- Solar irradiance
+data_format:
+- SEN3 (NetCDF4 files)
+temporal_range_start: 2016
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours) and non-time-critical (about 1 month)
+access_url: https://dataspace.copernicus.eu/browser/?productType=OL_1_EFR___
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- OData
+- STAC API
+- Google Earth Engine
+- Python SDK
+documentation_url: https://sentiwiki.copernicus.eu/web/olci-user-guides
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Copernicus Data Space catalogue (anonymous). Set DOWNLOAD = True to fetch
+    the first product.
+  requirements:
+  - requests
+  code: |
+    import requests
+
+    CATALOGUE = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
+    AREA = "POLYGON((12.0 41.0, 13.0 41.0, 13.0 42.5, 12.0 42.5, 12.0 41.0))"   # Italy (lon lat)
+    START, END = "2024-06-01T00:00:00.000Z", "2024-06-03T00:00:00.000Z"
+
+    flt = (
+        f"Collection/Name eq 'SENTINEL-3' "
+        f"and Attributes/OData.CSC.StringAttribute/any(a:a/Name eq 'productType' "
+        f"and a/OData.CSC.StringAttribute/Value eq 'OL_1_EFR___') "
+        f"and ContentDate/Start gt {START} and ContentDate/Start lt {END} "
+        f"and OData.CSC.Intersects(area=geography'SRID=4326;{AREA}')"
+    )
+    response = requests.get(CATALOGUE, params={"$filter": flt, "$orderby": "ContentDate/Start asc", "$top": 5})
+    response.raise_for_status()
+    products = response.json()["value"]
+    print(len(products), "OLCI EFR products found")
+    for p in products:
+        print(p["Name"], round(p["ContentLength"] / 1e6), "MB")
+
+    # Searching is anonymous. Downloading needs a free Copernicus Data Space account.
+    DOWNLOAD = False
+    if DOWNLOAD and products:
+        import getpass
+        token = requests.post(
+            "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token",
+            data={"client_id": "cdse-public", "grant_type": "password",
+                  "username": input("CDSE e-mail: "), "password": getpass.getpass("CDSE password: ")},
+        ).json()["access_token"]
+        product = products[0]
+        url = "https://download.dataspace.copernicus.eu/odata/v1/Products(%s)/$value" % product["Id"]
+        with requests.get(url, headers={"Authorization": "Bearer " + token}, stream=True) as r:
+            r.raise_for_status()
+            with open(product["Name"] + ".zip", "wb") as f:
+                for chunk in r.iter_content(chunk_size=1 << 20):
+                    f.write(chunk)
+        print("saved", product["Name"] + ".zip")
+
+    # After downloading and unzipping, open the product with satpy, for example:
+    #   from glob import glob
+    #   from satpy import Scene
+    #   scn = Scene(filenames=glob("S3*.SEN3/*.nc"), reader="olci_l1b")   # or "slstr_l1b"
+    #   scn.load(["Oa08"]); scn["Oa08"].plot()
+- title: Google Earth Engine
+  lang: javascript
+  description: Level-1 EFR radiances are available in Earth Engine from 2016.
+  code: |
+    // Sentinel-3 OLCI Level-1 (EFR) radiance, true-colour composite
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('COPERNICUS/S3/OLCI')
+      .filterBounds(aoi)
+      .filterDate('2024-06-01', '2024-06-10');
+
+    print('Scenes:', collection.size());
+    var image = collection.median();
+    Map.centerObject(aoi, 6);
+    Map.addLayer(image, {bands: ['Oa08_radiance', 'Oa06_radiance', 'Oa04_radiance'], min: 0, max: 6, gamma: 1.5}, 'OLCI RGB');
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # OLCI Level-1 Earth Observation Full Resolution
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-3' and contains(Name,'OL_1_EFR') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
+related_datasets:
+- sentinel-3-olci-l2
+- sentinel-3-slstr-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Level-1 radiances are not reflectances: divide by the solar flux to obtain reflectance. Product
+  names carry the platform letter (S3A, S3B, S3C).'
+known_limitations: Optical sensor, so no data under cloud. Sun glint over water in the east of the swath
+  is a frequent problem for ocean colour; OLCI tilts its field of view away from the sun to reduce it.
+example_use_cases: Chlorophyll and turbidity mapping in coastal waters; harmful algal bloom detection;
+  vegetation monitoring at 300 m.
+extra_sections:
+- title: Full vs reduced resolution
+  content: EFR is the full-resolution (300 m) product and ERR the reduced-resolution (1.2 km) product,
+    the latter being a 4 x 4 average. Use EFR for coastal and inland waters and ERR for open-ocean or
+    global work.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
