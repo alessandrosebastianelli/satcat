@@ -1,0 +1,116 @@
+id: metop-sg-sca-l1b
+level: L1B
+level_summary: 'Level 1B: normalised radar backscatter (sigma0) with geolocation and quality flags.'
+bands:
+- name: SCA C-band VV
+  wavelength_or_frequency: 5.355 GHz
+  spatial_resolution: 25 km (12.5 km grid)
+  resolution_m: 25000.0
+  frequency_ghz: 5.355
+  typical_use: Ocean wind vectors, soil moisture, ice
+spatial_resolution_summary: 25 km / 12.5 km
+processing_level:
+- L1B
+derivable_products:
+- Wind vectors
+- Soil moisture
+- Sea ice
+measured_variables:
+- Backscatter
+data_format:
+- netCDF
+temporal_range_start: 2026
+temporal_range_end: null
+data_latency: 'Real time (target: within about 1 hour)'
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides
+snippets:
+- title: Python
+  lang: python
+  description: Looks for SCA L1B collections in the EUMETSAT Data Store (title search, prints the matches)
+    and downloads the first product of the window. Free account and consumer key/secret needed; the collection
+    may not be public yet.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "scatterometer" in str(c.title).lower()]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2026, 6, 1, 12, 0), dtend=dt.datetime(2026, 6, 1, 13, 0)))
+    print(len(products), "SCA L1B products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    import xarray as xr
+
+    files = sorted(out.rglob("*.nc"))
+    print(files[:3])
+    if files:
+        try:
+            ds = xr.open_dataset(files[0], engine="h5netcdf")
+            print(ds)
+        except Exception as exc:                      # some products need group="..." or another engine
+            print("Could not open directly:", exc)
+    else:
+        print("No .nc file: the product is in EPS native / BUFR / HDF5 format - read it with satpy, eccodes or the EUMETSAT tools")
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # SCA L1B: look the collection ID up on data.eumetsat.int (search 'scatterometer')
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- metop-ascat-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Metop-SG-B1 is not yet in orbit: no data are available at the time of writing. The record is a
+  placeholder.'
+known_limitations: No data yet.
+example_use_cases: Marine forecasting; soil moisture; sea-ice monitoring.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
