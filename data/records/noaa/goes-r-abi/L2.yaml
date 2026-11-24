@@ -1,0 +1,221 @@
+id: goes-r-abi-l2
+level: L2
+level_summary: 'Level 2: Cloud and Moisture Imagery (CMIP, MCMIP multi-band) and derived products: cloud
+  mask, cloud top height, SST, LST, fire (FDC), aerosol optical depth, rainfall rate and others.'
+bands:
+- name: C01
+  wavelength_or_frequency: 0.47 um
+  spatial_resolution: 1 km
+  wavelength_nm: 470
+  bandwidth_nm: 40.0
+  resolution_m: 1000.0
+  typical_use: Aerosols, blue (true colour)
+- name: C02
+  wavelength_or_frequency: 0.64 um
+  spatial_resolution: 500 m
+  wavelength_nm: 640
+  bandwidth_nm: 100.0
+  resolution_m: 500.0
+  typical_use: Clouds, land, red (true colour)
+- name: C03
+  wavelength_or_frequency: 0.865 um
+  spatial_resolution: 1 km
+  wavelength_nm: 865
+  bandwidth_nm: 39.0
+  resolution_m: 1000.0
+  typical_use: Vegetation, aerosols
+- name: C04
+  wavelength_or_frequency: 1.378 um
+  spatial_resolution: 2 km
+  wavelength_nm: 1378
+  bandwidth_nm: 15.0
+  resolution_m: 2000.0
+  typical_use: Cirrus
+- name: C05
+  wavelength_or_frequency: 1.61 um
+  spatial_resolution: 1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Snow/ice, cloud phase
+- name: C06
+  wavelength_or_frequency: 2.25 um
+  spatial_resolution: 2 km
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 2000.0
+  typical_use: Cloud particle size
+- name: C07
+  wavelength_or_frequency: 3.9 um
+  spatial_resolution: 2 km
+  wavelength_nm: 3900
+  bandwidth_nm: 200.0
+  resolution_m: 2000.0
+  typical_use: Fog, fires, low cloud
+- name: C08
+  wavelength_or_frequency: 6.19 um
+  spatial_resolution: 2 km
+  wavelength_nm: 6190
+  bandwidth_nm: 830.0
+  resolution_m: 2000.0
+  typical_use: Upper-level water vapour
+- name: C09
+  wavelength_or_frequency: 6.95 um
+  spatial_resolution: 2 km
+  wavelength_nm: 6950
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: Mid-level water vapour
+- name: C10
+  wavelength_or_frequency: 7.34 um
+  spatial_resolution: 2 km
+  wavelength_nm: 7340
+  bandwidth_nm: 200.0
+  resolution_m: 2000.0
+  typical_use: Lower-level water vapour, SO2
+- name: C11
+  wavelength_or_frequency: 8.5 um
+  spatial_resolution: 2 km
+  wavelength_nm: 8500
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: Cloud-top phase, SO2
+- name: C12
+  wavelength_or_frequency: 9.61 um
+  spatial_resolution: 2 km
+  wavelength_nm: 9610
+  bandwidth_nm: 380.0
+  resolution_m: 2000.0
+  typical_use: Ozone
+- name: C13
+  wavelength_or_frequency: 10.35 um
+  spatial_resolution: 2 km
+  wavelength_nm: 10350
+  bandwidth_nm: 500.0
+  resolution_m: 2000.0
+  typical_use: Clean IR window
+- name: C14
+  wavelength_or_frequency: 11.2 um
+  spatial_resolution: 2 km
+  wavelength_nm: 11200
+  bandwidth_nm: 800.0
+  resolution_m: 2000.0
+  typical_use: IR window, SST
+- name: C15
+  wavelength_or_frequency: 12.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 12300
+  bandwidth_nm: 1000.0
+  resolution_m: 2000.0
+  typical_use: Dirty IR window
+- name: C16
+  wavelength_or_frequency: 13.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 13300
+  bandwidth_nm: 600.0
+  resolution_m: 2000.0
+  typical_use: 'CO2: cloud-top height'
+spatial_resolution_summary: 2 km (CMI products); others 2-10 km
+processing_level:
+- L2
+derivable_products:
+- Cloud mask
+- Cloud top height
+- SST
+- LST
+- Fire/hot spots
+- AOD
+- Rainfall rate
+measured_variables:
+- Reflectance factor
+- Brightness temperature
+- Cloud
+- Fire
+data_format:
+- netCDF4
+temporal_range_start: 2017
+temporal_range_end: null
+data_latency: Real time (about 1-10 minutes)
+access_url: https://registry.opendata.aws/noaa-goes/
+requires_registration: false
+license_cost: Free and open (NOAA open data policy)
+api_type:
+- AWS S3 (anonymous)
+- Google Earth Engine
+documentation_url: https://www.goes-r.gov/products/baseline.html
+snippets:
+- title: Python
+  lang: python
+  description: Reads one full-disc cloud and moisture imagery file (band 13) from the public NOAA bucket
+    on AWS (no credentials) and plots it.
+  requirements:
+  - s3fs
+  - xarray
+  - h5netcdf
+  - matplotlib
+  - numpy
+  code: |
+    import datetime as dt
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import s3fs
+    import xarray as xr
+
+    fs = s3fs.S3FileSystem(anon=True)                # public NOAA bucket, no credentials needed
+    BUCKET = "noaa-goes19"                               # noaa-goes16, noaa-goes18, noaa-goes19 (GOES-17 until 2023)
+    PRODUCT = "ABI-L2-CMIPF"                             # F = full disk, C = CONUS, M = mesoscale
+    day = dt.datetime(2025, 6, 1, 12)
+    prefix = "%s/%s/%s/%s/%s/" % (BUCKET, PRODUCT, day.strftime("%Y"), day.strftime("%j"), day.strftime("%H"))
+    files = [f for f in fs.ls(prefix) if "C13_G" in f]
+    print(len(files), "files in", prefix)
+    if not files:
+        raise SystemExit("No files: check the bucket (satellite) and the date")
+
+    with fs.open(files[0]) as fobj:
+        ds = xr.open_dataset(fobj, engine="h5netcdf").load()
+    print(ds)
+
+    cmi = ds["CMI"]
+    cmi[::4, ::4].plot(cmap="gray_r", robust=True)    # band 13 brightness temperature (K) on the ABI fixed grid
+    plt.title("GOES ABI CMI band 13 (10.3 um)")
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Brightness temperature of band 13 over the contiguous US (2 km, every 10 minutes). Scale
+    and offset are read from each image's properties.
+  code: |
+    // GOES-16 ABI Cloud and Moisture Imagery, CONUS (band 13, 10.3 um). GOES-19 replaced GOES-16 from 7 April 2025 (NOAA/GOES/19/...).
+    var ic = ee.ImageCollection("NOAA/GOES/16/MCMIPC").filterDate("2020-07-29T12:00", "2020-07-29T13:00");
+    var im = ee.Image(ic.first());
+    // bands 7-16 are brightness temperature: apply the per-image scale and offset
+    var bt = im.select("CMI_C13").multiply(ee.Number(im.get("CMI_C13_scale"))).add(ee.Number(im.get("CMI_C13_offset")));
+    Map.setCenter(-98, 38, 4);
+    Map.addLayer(bt, {min: 200, max: 320, palette: ["white", "black"]}, "GOES-16 band 13 (K)");
+- title: Original Method
+  lang: bash
+  description: Public NOAA buckets on AWS. Other L2 products have their own prefix (for example ABI-L2-ACMF
+    cloud mask, ABI-L2-FDCF fire).
+  code: |
+    aws s3 ls --no-sign-request s3://noaa-goes19/ABI-L2-CMIPF/2025/152/12/
+    aws s3 cp --no-sign-request s3://noaa-goes19/ABI-L2-CMIPF/2025/152/12/ . --recursive --exclude "*" --include "*C13_G19*"
+related_datasets:
+- goes-r-abi-l1b
+- goes-r-glm-l2
+- mtg-fci-l2
+- msg-seviri-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Earth Engine collections: NOAA/GOES/NN/MCMIPF (NN = satellite number) (full disc), MCMIPC (CONUS),
+  MCMIPM (mesoscale) and FDCF/FDCC for fire. CMI values need scale and offset.'
+known_limitations: Product versions differ between satellites; check quality flags (DQF) for each band.
+example_use_cases: True-colour and RGB composites; fire and smoke; SST and LST nowcasting.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

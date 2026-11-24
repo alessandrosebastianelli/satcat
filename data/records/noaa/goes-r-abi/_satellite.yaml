@@ -1,0 +1,46 @@
+mission_name: GOES-R series (GOES-16, -17, -18, -19)
+sensor_name: ABI (Advanced Baseline Imager)
+agency: NOAA / NASA
+mission_family: GOES-R
+status: Active
+launch_year: 2016
+end_of_life_year: null
+short_description: '16-channel geostationary imager: full disc every 10 minutes (CONUS 5 minutes, mesoscale
+  1 minute) at 0.5-2 km; GOES-19 is GOES-East and GOES-18 is GOES-West.'
+long_description: ABI is the main imager of the GOES-R series (GOES-16 launched 2016, GOES-17 2018, GOES-18
+  2022, GOES-19 2024). It scans the Western Hemisphere in 16 channels with 0.5 km (red), 1 km and 2 km
+  sampling. GOES-19 became GOES-East on 7 April 2025 (replacing GOES-16) and GOES-18 is GOES-West; GOES-17
+  is no longer operational. ABI is similar to FCI on MTG and AHI on Himawari, which allows consistent
+  multi-satellite products.
+instrument_type: Optical - Multispectral + thermal imager (16 channels, geostationary)
+orbit_type: GEO (GOES-East 75.2 W, GOES-West 137 W)
+internal_contact: Alessandro Sebastianelli
+tags:
+- GOES
+- ABI
+- geostationary
+- NOAA
+- nowcasting
+- cloud
+- fire
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+- label: GOES-R series
+  url: https://www.goes-r.gov
+bbox_west: -165.0
+bbox_south: -60.0
+bbox_east: -15.0
+bbox_north: 60.0
+geographic_coverage: 'Western Hemisphere: GOES-East (Americas, Atlantic) and GOES-West (Pacific); approximate
+  extents'
+swath_width: Full disc
+radiometric_resolution: 12-14 bit
+temporal_resolution: 10 min (full disc), 5 min (CONUS), 1 min (mesoscale)
+citation_doi: 'NOAA data are in the public domain: acknowledge NOAA/NESDIS and the product name and version.'
+colab_notebook: notebooks/goes-r-abi.ipynb
+last_updated_by: Alessandro Sebastianelli
