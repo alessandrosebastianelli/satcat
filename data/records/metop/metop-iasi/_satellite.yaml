@@ -1,0 +1,48 @@
+mission_name: Metop (EPS)
+sensor_name: IASI (Infrared Atmospheric Sounding Interferometer)
+agency: EUMETSAT / ESA
+mission_family: Metop
+status: Active
+launch_year: 2006
+end_of_life_year: null
+short_description: Hyperspectral infrared sounder (645-2760 cm-1, 8461 channels, 12 km footprint) providing
+  temperature, humidity and trace gas information twice daily, globally.
+long_description: IASI (built by CNES for EUMETSAT) is a Fourier-transform spectrometer measuring the
+  thermal infrared at 0.25 cm-1 sampling (0.5 cm-1 apodised resolution) with 8461 channels per spectrum.
+  It is among the most important instruments for numerical weather prediction and atmospheric composition
+  (O3, CO, CH4, NH3, SO2, dust). Metop-A (launched 2006) was decommissioned in November 2021. Metop-B
+  (2012) and Metop-C (2018) are operational; the Metop-SG series is replacing them. It is succeeded by
+  IASI-NG on Metop-SG.
+instrument_type: Hyperspectral infrared sounder (Fourier-transform interferometer)
+orbit_type: LEO sun-synchronous (about 817 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- IASI
+- Metop
+- sounder
+- hyperspectral
+- temperature
+- humidity
+- trace gases
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop (EUMETSAT)
+  url: https://www.eumetsat.int/our-satellites/metop-series
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: 'Spectral: 8461 channels, 0.25 cm-1 sampling'
+temporal_resolution: Twice daily (global coverage per satellite)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-iasi.ipynb
+last_updated_by: Alessandro Sebastianelli
