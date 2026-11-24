@@ -1,0 +1,172 @@
+id: landsat-7-etm-plus-l1
+level: L1
+level_summary: 'Level 1 (Collection 2): calibrated digital numbers (Tier 1 / Tier 2 / RT) with conversion
+  coefficients in the metadata. Scenes after May 2003 are SLC-off.'
+bands:
+- name: B1 - Blue
+  wavelength_or_frequency: 482.5 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 482.5
+  bandwidth_nm: 65.0
+  resolution_m: 30.0
+  typical_use: Water penetration, soil/vegetation
+- name: B2 - Green
+  wavelength_or_frequency: 565 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 565
+  bandwidth_nm: 80.0
+  resolution_m: 30.0
+  typical_use: Vegetation vigour
+- name: B3 - Red
+  wavelength_or_frequency: 660 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 660
+  bandwidth_nm: 60.0
+  resolution_m: 30.0
+  typical_use: Chlorophyll absorption, NDVI red
+- name: B4 - NIR
+  wavelength_or_frequency: 837.5 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 837.5
+  bandwidth_nm: 125.0
+  resolution_m: 30.0
+  typical_use: Biomass, NDVI near-infrared
+- name: B5 - SWIR1
+  wavelength_or_frequency: 1650 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 1650
+  bandwidth_nm: 200.0
+  resolution_m: 30.0
+  typical_use: Vegetation and soil moisture, snow/cloud
+- name: B6 - Thermal infrared (low/high gain)
+  wavelength_or_frequency: 11.45 um
+  spatial_resolution: 60 m
+  wavelength_nm: 11450
+  bandwidth_nm: 2100.0
+  resolution_m: 60.0
+  typical_use: Surface temperature (60 m, resampled to 30 m)
+- name: B7 - SWIR2
+  wavelength_or_frequency: 2220 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 2220
+  bandwidth_nm: 260.0
+  resolution_m: 30.0
+  typical_use: Geology, burned area, moisture
+- name: B8 - Panchromatic
+  wavelength_or_frequency: 710 nm
+  spatial_resolution: 15 m
+  wavelength_nm: 710
+  bandwidth_nm: 380.0
+  resolution_m: 15.0
+  typical_use: Sharpening, fine detail
+spatial_resolution_summary: 30 m (thermal 60 m, panchromatic 15 m)
+processing_level:
+- L1
+derivable_products:
+- TOA reflectance
+- NDVI
+- Brightness temperature
+- Pan-sharpened imagery
+measured_variables:
+- Radiance
+- TOA reflectance
+- Brightness temperature
+data_format:
+- GeoTIFF
+- COG
+temporal_range_start: 1999
+temporal_range_end: 2024
+data_latency: Historical archive (static)
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- USGS M2M API
+- STAC API
+- Google Earth Engine
+- AWS S3 (requester pays)
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-7
+snippets:
+- title: Python
+  lang: python
+  description: Level-1 top-of-atmosphere reflectance through the Earth Engine Python API. Needs a Google
+    account with Earth Engine access; the notebook asks for your Cloud project ID.
+  requirements:
+  - earthengine-api
+  code: |
+    import ee
+    from IPython.display import Image, display
+
+    # One-off sign-in with a Google account that has Earth Engine access
+    ee.Authenticate()
+    PROJECT = input("Google Cloud project ID registered for Earth Engine: ")
+    ee.Initialize(project=PROJECT)
+
+    point = ee.Geometry.Point([12.5, 41.9])           # Rome - change to your area
+    collection = (
+        ee.ImageCollection("LANDSAT/LE07/C02/T1_TOA")
+        .filterBounds(point)
+        .filterDate("2010-06-01", "2010-08-31")
+        .sort("CLOUD_COVER")
+    )
+    print("scenes:", collection.size().getInfo())
+    image = ee.Image(collection.first())
+    print("least cloudy scene:", image.get("system:index").getInfo(), "cloud cover:", image.get("CLOUD_COVER").getInfo())
+
+    url = image.select(['B3', 'B2', 'B1']).getThumbURL({
+        "min": 0, "max": 0.3, "dimensions": 900,
+        "region": point.buffer(30000).bounds(),
+    })
+    display(Image(url=url))
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Landsat 7 ETM+ top-of-atmosphere reflectance (true colour). SLC-off gaps are visible after 2003.
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('LANDSAT/LE07/C02/T1_TOA')
+      .filterBounds(aoi)
+      .filterDate('2010-06-01', '2010-08-31')
+      .sort('CLOUD_COVER');
+
+    print('Scenes:', collection.size());
+    var image = ee.Image(collection.first());
+    Map.centerObject(aoi, 9);
+    Map.addLayer(image, {bands: ['B3', 'B2', 'B1'], min: 0, max: 0.3}, 'Least cloudy scene');
+- title: Original Method
+  lang: bash
+  description: Official USGS distribution. EarthExplorer and the M2M API need a free USGS account; the
+    AWS bucket is requester-pays.
+  code: |
+    # Landsat 7 ETM+ Level-1
+    # USGS Collection 2 archive on AWS (requester-pays bucket: needs an AWS account).
+    # Path/row 191/031 is Rome (WRS-2) - find yours on https://landsat.usgs.gov/landsat_acq
+    aws s3 ls --request-payer requester s3://usgs-landsat/collection02/level-1/standard/etm/2023/191/031/
+    aws s3 cp --request-payer requester --recursive \
+      s3://usgs-landsat/collection02/level-1/standard/etm/2023/191/031/SCENE_ID/ ./SCENE_ID/
+
+    # Free alternative without AWS: search and download from EarthExplorer
+    # https://earthexplorer.usgs.gov  (free USGS ERS account) or the M2M API:
+    # https://m2m.cr.usgs.gov/
+related_datasets:
+- landsat-7-etm-plus-l2
+- landsat-5-tm-l1
+- landsat-8-oli-tirs-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection 2 Level-1 comes in Tier 1 (best geometric/radiometric quality, use for time series),
+  Tier 2 and Real-Time (RT). Prefer Tier 1. After the 2022 orbit lowering the overpass time drifts: do
+  not mix late data with the earlier archive without checking.'
+known_limitations: SLC-off data have wedge-shaped gaps covering about 22% of each scene; gap-fill with
+  other dates or sensors. Data after 2017 suffer from orbit drift in crossing time.
+example_use_cases: Bridging TM and OLI time series; long-term NDVI records 1999-2021; historical thermal
+  imagery.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
