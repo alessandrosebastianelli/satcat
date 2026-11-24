@@ -1,0 +1,137 @@
+id: metop-gome-2-l2
+level: L2
+level_summary: 'Level 2: operational products such as total ozone and tropospheric NO2 columns, SO2, HCHO,
+  BrO, water vapour and cloud (EUMETSAT and O3M SAF).'
+bands:
+- name: Channel 1
+  wavelength_or_frequency: 240-315 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 277
+  bandwidth_nm: 75.0
+  resolution_m: 40000.0
+  typical_use: Ozone profile, SO2
+- name: Channel 2
+  wavelength_or_frequency: 311-403 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 357
+  bandwidth_nm: 92.0
+  resolution_m: 40000.0
+  typical_use: Total ozone, NO2, BrO, SO2
+- name: Channel 3
+  wavelength_or_frequency: 400-600 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 500
+  bandwidth_nm: 200.0
+  resolution_m: 40000.0
+  typical_use: NO2, O3, aerosols, clouds
+- name: Channel 4
+  wavelength_or_frequency: 590-790 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 690
+  bandwidth_nm: 200.0
+  resolution_m: 40000.0
+  typical_use: Clouds, water vapour, O2 A-band, aerosols
+spatial_resolution_summary: 40 x 40 km
+processing_level:
+- L2
+derivable_products:
+- Total ozone
+- NO2 columns
+- SO2 columns
+- HCHO
+measured_variables:
+- Ozone
+- NO2
+- SO2
+- HCHO
+- Cloud
+data_format:
+- netCDF
+- HDF5
+- BUFR
+temporal_range_start: 2007
+temporal_range_end: null
+data_latency: Real time (about 3 hours)
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://acsaf.org/
+snippets:
+- title: Python
+  lang: python
+  description: Looks for GOME-2 collections in the EUMETSAT Data Store (title search, prints the matches)
+    and downloads the first product of the window.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "gome" in str(c.title).lower()]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 12, 0), dtend=dt.datetime(2024, 6, 1, 14, 0)))
+    print(len(products), "GOME-2 L2 products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # tens of MB per product
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    import xarray as xr
+
+    files = sorted(out.rglob("*.nc"))
+    print(files[:3])
+    if files:
+        try:
+            ds = xr.open_dataset(files[0], engine="h5netcdf")
+            print(ds)
+        except Exception as exc:                      # some products need group="..." or another engine
+            print("Could not open directly:", exc)
+    else:
+        print("No .nc file: the product is in EPS native / BUFR / HDF5 format - read it with satpy, eccodes or the EUMETSAT tools")
+related_datasets:
+- metop-gome-2-l1b
+- sentinel-5p-tropomi-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'The Python example lists the collections found: choose the one you need (ozone, NO2, SO2, ...).
+  Many GOME-2 L2 products are distributed by the Atmospheric Composition SAF (acsaf.org).'
+known_limitations: Algorithm versions vary between satellites and years.
+example_use_cases: Long-term ozone and NO2 records; volcanic SO2 detection.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

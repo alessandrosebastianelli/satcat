@@ -1,0 +1,144 @@
+id: metop-gome-2-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated Earth radiances and solar irradiances for the 4 channels,
+  with polarisation (PMD) data.'
+bands:
+- name: Channel 1
+  wavelength_or_frequency: 240-315 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 277
+  bandwidth_nm: 75.0
+  resolution_m: 40000.0
+  typical_use: Ozone profile, SO2
+- name: Channel 2
+  wavelength_or_frequency: 311-403 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 357
+  bandwidth_nm: 92.0
+  resolution_m: 40000.0
+  typical_use: Total ozone, NO2, BrO, SO2
+- name: Channel 3
+  wavelength_or_frequency: 400-600 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 500
+  bandwidth_nm: 200.0
+  resolution_m: 40000.0
+  typical_use: NO2, O3, aerosols, clouds
+- name: Channel 4
+  wavelength_or_frequency: 590-790 nm
+  spatial_resolution: 40 km
+  wavelength_nm: 690
+  bandwidth_nm: 200.0
+  resolution_m: 40000.0
+  typical_use: Clouds, water vapour, O2 A-band, aerosols
+spatial_resolution_summary: 40 x 40 km (nominal; 80 x 40 km in the original Metop-A mode)
+processing_level:
+- L1B
+derivable_products:
+- Total column ozone
+- NO2
+- SO2
+- HCHO
+- BrO
+- Cloud properties
+measured_variables:
+- Radiance
+- Irradiance
+data_format:
+- EPS native (.nat)
+- HDF5
+- netCDF
+temporal_range_start: 2007
+temporal_range_end: null
+data_latency: Real time (about 2-3 hours)
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:METOP:GOMEL1
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/gome-2-level-1-product-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one GOME-2 L1B product from the EUMETSAT Data Store (free account and consumer
+    key/secret, asked at run time) and opens it.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:METOP:GOMEL1")
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 12, 0), dtend=dt.datetime(2024, 6, 1, 14, 0)))
+    print(len(products), "GOME-2 L1B products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # tens of MB per orbit
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    import xarray as xr
+
+    files = sorted(out.rglob("*.nc"))
+    print(files[:3])
+    if files:
+        try:
+            ds = xr.open_dataset(files[0], engine="h5netcdf")
+            print(ds)
+        except Exception as exc:                      # some products need group="..." or another engine
+            print("Could not open directly:", exc)
+    else:
+        print("No .nc file: the product is in EPS native / BUFR / HDF5 format - read it with satpy, eccodes or the EUMETSAT tools")
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # GOME-2 Level 1B (Metop-B/C). Verify the collection ID on data.eumetsat.int.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:METOP:GOMEL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:METOP:GOMEL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- metop-gome-2-l2
+- sentinel-5p-tropomi-l1b
+- sentinel-5-uvns-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Verify the collection ID on data.eumetsat.int. GOME-2 Metop-A moved to a reduced swath (960 km)
+  in 2013.
+known_limitations: Coarse pixels compared with TROPOMI; degradation of the instrument is corrected in
+  processing but affects long time series.
+example_use_cases: Total ozone monitoring; NO2 and SO2 time series; bridging GOME/SCIAMACHY, OMI and TROPOMI.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
