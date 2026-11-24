@@ -1,0 +1,46 @@
+mission_name: Metop (EPS)
+sensor_name: MHS (Microwave Humidity Sounder)
+agency: EUMETSAT / ESA
+mission_family: Metop
+status: Active
+launch_year: 2006
+end_of_life_year: null
+short_description: Five-channel microwave humidity sounder (89-190 GHz, 17 km at nadir) on Metop-A/B/C;
+  part of the ATOVS suite.
+long_description: MHS measures humidity profiles in cloudy conditions and detects precipitation with channels
+  at 89, 157 and around the 183 GHz water vapour line. It operates together with AMSU-A and HIRS (HIRS
+  only on Metop-A/B) and is succeeded by the Microwave Sounder (MWS) on Metop-SG. Metop-A (launched 2006)
+  was decommissioned in November 2021. Metop-B (2012) and Metop-C (2018) are operational; the Metop-SG
+  series is replacing them.
+instrument_type: Passive microwave humidity sounder (5 channels)
+orbit_type: LEO sun-synchronous (about 817 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- MHS
+- Metop
+- microwave
+- humidity
+- ATOVS
+- precipitation
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop (EUMETSAT)
+  url: https://www.eumetsat.int/our-satellites/metop-series
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: Noise equivalent dT about 0.5-1 K
+temporal_resolution: Twice daily (per satellite)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-mhs.ipynb
+last_updated_by: Alessandro Sebastianelli

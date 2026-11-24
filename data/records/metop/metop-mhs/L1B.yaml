@@ -1,0 +1,138 @@
+id: metop-mhs-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated antenna/brightness temperatures per scan line.'
+bands:
+- name: Ch1 - 89 GHz (V)
+  wavelength_or_frequency: 89 GHz
+  spatial_resolution: 17000 m
+  resolution_m: 17000.0
+  frequency_ghz: 89.0
+  typical_use: 'Window channel: surface, clouds, precipitation'
+- name: Ch2 - 157 GHz (V)
+  wavelength_or_frequency: 157 GHz
+  spatial_resolution: 17000 m
+  resolution_m: 17000.0
+  frequency_ghz: 157.0
+  typical_use: 'Window channel: clouds, ice, precipitation'
+- name: Ch3 - 183.311 +/- 1 GHz (H)
+  wavelength_or_frequency: 183.311 GHz
+  spatial_resolution: 17 km
+  resolution_m: 17000.0
+  frequency_ghz: 183.311
+  typical_use: Upper-level humidity
+- name: Ch4 - 183.311 +/- 3 GHz (H)
+  wavelength_or_frequency: 183.311 GHz
+  spatial_resolution: 17000 m
+  resolution_m: 17000.0
+  frequency_ghz: 183.311
+  typical_use: Mid-level humidity
+- name: Ch5 - 190.311 GHz (V)
+  wavelength_or_frequency: 190.311 GHz
+  spatial_resolution: 17000 m
+  resolution_m: 17000.0
+  frequency_ghz: 190.311
+  typical_use: Lower-level humidity
+spatial_resolution_summary: 17 km at nadir
+processing_level:
+- L1B
+derivable_products:
+- Humidity profiles
+- Rain rate
+- Snowfall detection
+measured_variables:
+- Brightness temperature
+data_format:
+- EPS native (.nat)
+- BUFR (L1C)
+temporal_range_start: 2007
+temporal_range_end: null
+data_latency: Real time (about 1-3 hours)
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:METOP:MHSL1
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/mhs-level-1-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one MHS L1B product from the EUMETSAT Data Store (free account and consumer key/secret,
+    asked at run time) and opens it.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:METOP:MHSL1")
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 12, 0), dtend=dt.datetime(2024, 6, 1, 14, 0)))
+    print(len(products), "MHS L1B products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # a few MB per orbit
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    import xarray as xr
+
+    files = sorted(out.rglob("*.nc"))
+    print(files[:3])
+    if files:
+        try:
+            ds = xr.open_dataset(files[0], engine="h5netcdf")
+            print(ds)
+        except Exception as exc:                      # some products need group="..." or another engine
+            print("Could not open directly:", exc)
+    else:
+        print("No .nc file: the product is in EPS native / BUFR / HDF5 format - read it with satpy, eccodes or the EUMETSAT tools")
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # MHS Level 1B. Verify the collection ID on data.eumetsat.int.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:METOP:MHSL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:METOP:MHSL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- metop-amsu-a-l1b
+- metop-sg-mws-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: EPS native files are usually processed with AAPP, which also produces the AAPP L1C format read
+  by satpy (mhs_l1c_aapp).
+known_limitations: Needs a dedicated reader; the Python example only inspects the file when it is netCDF.
+example_use_cases: Humidity assimilation; precipitation and snowfall retrieval.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
