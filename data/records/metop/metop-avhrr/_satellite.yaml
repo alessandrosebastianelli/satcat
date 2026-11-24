@@ -1,0 +1,48 @@
+mission_name: Metop (EPS)
+sensor_name: AVHRR/3 (Advanced Very High Resolution Radiometer)
+agency: EUMETSAT / ESA
+mission_family: Metop
+status: Active
+launch_year: 2006
+end_of_life_year: null
+short_description: 'Six-channel cross-track imager on Metop-A/B/C: 1.1 km at nadir (LAC/HRPT), 4 km global
+  (GAC), a continuation of the NOAA AVHRR record.'
+long_description: AVHRR/3 flies on all Metop satellites in a morning (09:30) orbit, complementing the
+  afternoon NOAA/JPSS orbits. It scans a 2900 km swath in five or six channels (channel 3 alternates between
+  3a at 1.6 um by day and 3b at 3.7 um by night depending on illumination) and is the basis of long climate
+  records of SST, vegetation and cloud. Metop-A (launched 2006) was decommissioned in November 2021. Metop-B
+  (2012) and Metop-C (2018) are operational; the Metop-SG series is replacing them. The AVHRR heritage
+  is continued on Metop-SG by MetImage.
+instrument_type: Optical - Multispectral + thermal imager (6 channels)
+orbit_type: LEO sun-synchronous (about 817 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- AVHRR
+- Metop
+- SST
+- NDVI
+- cloud
+- polar
+- morning orbit
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop (EUMETSAT)
+  url: https://www.eumetsat.int/our-satellites/metop-series
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2900 km
+radiometric_resolution: 10 bit
+temporal_resolution: Daily global coverage (about 2 passes per day at mid latitudes)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-avhrr.ipynb
+last_updated_by: Alessandro Sebastianelli
