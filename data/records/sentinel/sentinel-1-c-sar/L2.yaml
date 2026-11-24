@@ -30,17 +30,73 @@ api_type:
 - REST
 - Python SDK
 documentation_url: https://sentiwiki.copernicus.eu/web/s1-mission
-download_snippet: "from sentinelhub import SHConfig, SentinelHubCatalog\n\nconfig = SHConfig()\ncatalog\
-  \ = SentinelHubCatalog(config=config)\nsearch_iterator = catalog.search(\n    collection=\"sentinel-1-grd\"\
-  ,\n    bbox=[12.4, 41.8, 12.6, 42.0],\n    time=(\"2024-01-01\", \"2024-02-01\"),\n)\nfor item in search_iterator:\n\
-  \    print(item[\"id\"])\n"
-download_snippet_lang: python
-gee_snippet: "// Sentinel-1 GRD, VV polarization, IW mode, ascending orbit\nvar aoi = ee.Geometry.Point([12.5,\
-  \ 41.9]);\n\nvar collection = ee.ImageCollection('COPERNICUS/S1_GRD')\n  .filterBounds(aoi)\n  .filterDate('2024-01-01',\
-  \ '2024-03-01')\n  .filter(ee.Filter.eq('instrumentMode', 'IW'))\n  .filter(ee.Filter.listContains('transmitterReceiverPolarisation',\
-  \ 'VV'))\n  .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))\n  .select('VV');\n\nprint('Number\
-  \ of images:', collection.size());\nMap.addLayer(collection.median(), {min: -20, max: 0}, 'Sentinel-1\
-  \ VV (median)');\n"
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Copernicus Data Space catalogue (anonymous). Set DOWNLOAD = True to fetch
+    the first product.
+  requirements:
+  - requests
+  code: |
+    import requests
+
+    CATALOGUE = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
+    AREA = "POLYGON((12.0 41.0, 13.0 41.0, 13.0 42.5, 12.0 42.5, 12.0 41.0))"   # Italy (lon lat)
+    START, END = "2024-06-01T00:00:00.000Z", "2024-06-03T00:00:00.000Z"
+
+    flt = (
+        f"Collection/Name eq 'SENTINEL-1' "
+        f"and Attributes/OData.CSC.StringAttribute/any(a:a/Name eq 'productType' "
+        f"and a/OData.CSC.StringAttribute/Value eq 'OCN') "
+        f"and ContentDate/Start gt {START} and ContentDate/Start lt {END} "
+        f"and OData.CSC.Intersects(area=geography'SRID=4326;{AREA}')"
+    )
+    response = requests.get(CATALOGUE, params={"$filter": flt, "$orderby": "ContentDate/Start asc", "$top": 5})
+    response.raise_for_status()
+    products = response.json()["value"]
+    print(len(products), "Sentinel-1 OCN products found")
+    for p in products:
+        print(p["Name"], round(p["ContentLength"] / 1e6), "MB")
+
+    # Searching is anonymous. Downloading needs a free Copernicus Data Space account.
+    DOWNLOAD = False
+    if DOWNLOAD and products:
+        import getpass
+        token = requests.post(
+            "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token",
+            data={"client_id": "cdse-public", "grant_type": "password",
+                  "username": input("CDSE e-mail: "), "password": getpass.getpass("CDSE password: ")},
+        ).json()["access_token"]
+        product = products[0]
+        url = "https://download.dataspace.copernicus.eu/odata/v1/Products(%s)/$value" % product["Id"]
+        with requests.get(url, headers={"Authorization": "Bearer " + token}, stream=True) as r:
+            r.raise_for_status()
+            with open(product["Name"] + ".zip", "wb") as f:
+                for chunk in r.iter_content(chunk_size=1 << 20):
+                    f.write(chunk)
+        print("saved", product["Name"] + ".zip")
+
+    # After downloading, OCN files are NetCDF4: open them with xarray (xr.open_dataset) to read wind, wave and current fields.
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # Sentinel-1 Level-2 Ocean (OCN)
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-1' and contains(Name,'OCN') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
 related_datasets:
 - sentinel-1-c-sar-l1
 internal_projects: Not yet used in a specific internal project — flag here once it is.
