@@ -1,0 +1,110 @@
+id: sentinel-6-poseidon-4-l1
+level: L1
+level_summary: 'Level 1: calibrated altimeter waveforms (L1A and L1B, high-resolution and low-resolution
+  modes).'
+bands:
+- name: Ku-band
+  wavelength_or_frequency: 13.575 GHz
+  spatial_resolution: about 300 m along-track (SAR mode)
+  resolution_m: 300.0
+  frequency_ghz: 13.575
+  typical_use: Primary altimetric measurement (SAR mode)
+- name: C-band
+  wavelength_or_frequency: 5.41 GHz
+  spatial_resolution: n/a (ionospheric correction)
+  frequency_ghz: 5.41
+  resolution_m: 7000.0
+  typical_use: Ionospheric correction
+spatial_resolution_summary: About 300 m along-track in SAR mode (1 Hz and 20 Hz products)
+processing_level:
+- L1
+derivable_products:
+- Sea surface height
+- Significant wave height
+measured_variables:
+- Radar waveforms
+- Range
+data_format:
+- NetCDF4
+temporal_range_start: 2020
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours), short-time-critical (about 1.5 days) and non-time-critical
+  (about 60 days)
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- EUMETSAT Data Store API
+documentation_url: https://www.eumetsat.int/sentinel-6
+snippets:
+- title: Python
+  lang: python
+  description: Lists the Sentinel-6 collections of the EUMETSAT Data Store and downloads the first product
+    of the window. Requires a free Data Store account; check the printed list and pick the collection
+    (L1 or L2) you need.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "Sentinel-6" in str(c.title)]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 0, 0), dtend=dt.datetime(2024, 6, 2, 0, 0)))
+    print(len(products), "Sentinel-6 products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+    print(list(out.rglob('*.nc'))[:5])
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store command line client. The data can also be ordered from data.eumetsat.int
+    or received live through EUMETCast.
+  code: |
+    # Sentinel-6 collection IDs are listed on data.eumetsat.int
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- sentinel-6-poseidon-4-l2
+- sentinel-3-sral-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Collection IDs are listed in the EUMETSAT Data Store under the Sentinel-6 / Jason-CS category.
+  The Python example prints them.
+known_limitations: L1 is intended for altimetry specialists. Along-track profiles only.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

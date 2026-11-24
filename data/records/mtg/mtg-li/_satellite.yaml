@@ -1,0 +1,45 @@
+mission_name: MTG-I (Meteosat Third Generation Imager)
+sensor_name: LI (Lightning Imager)
+agency: EUMETSAT / ESA
+mission_family: MTG
+status: Active
+launch_year: 2022
+end_of_life_year: null
+short_description: 'First European lightning imager in geostationary orbit: continuous optical detection
+  of lightning flashes over Europe, Africa and the Atlantic at about 4.5 km.'
+long_description: The Lightning Imager on MTG-I detects the optical pulses of lightning in the oxygen
+  line near 777.4 nm with a 1 ms frame rate (1000 frames per second) using four detector arrays, day and
+  night, continuously over most of the Earth disc seen by FCI. It is distributed only as Level-2 products
+  (events, groups and flashes, and accumulated gridded products). MTG-I1 (Meteosat-12) was launched in
+  December 2022; MTG-I2 (Meteosat-14) was launched on 27 August 2026 and carries a second LI.
+instrument_type: Optical - Single-band lightning detector (777.4 nm)
+orbit_type: GEO (0 degrees longitude)
+internal_contact: Alessandro Sebastianelli
+tags:
+- lightning
+- LI
+- MTG
+- nowcasting
+- convection
+- geostationary
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+bbox_west: -60.0
+bbox_south: -60.0
+bbox_east: 60.0
+bbox_north: 60.0
+geographic_coverage: 'Most of the FCI disc: Europe, Africa, the Atlantic and the east of South America
+  (approximate field of regard)'
+swath_width: Disc coverage (about 80 percent of the FCI field of view)
+radiometric_resolution: Event energy detection (not an imager with radiometric bands)
+temporal_resolution: Continuous (1 ms frames); accumulated products every 30 s to 10 minutes
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/mtg-li.ipynb
+last_updated_by: Alessandro Sebastianelli

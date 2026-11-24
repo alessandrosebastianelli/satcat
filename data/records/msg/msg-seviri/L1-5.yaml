@@ -1,0 +1,212 @@
+id: msg-seviri-l1-5
+level: L1.5
+level_summary: 'Level 1.5: calibrated, geolocated and radiometrically corrected image data in 12 channels,
+  in the native (.nat) format, HRIT or NetCDF.'
+bands:
+- name: VIS0.6
+  wavelength_or_frequency: 635 nm
+  spatial_resolution: 3 km
+  wavelength_nm: 635
+  bandwidth_nm: 150.0
+  resolution_m: 3000.0
+  typical_use: Clouds, fog, aerosols, land surface
+- name: VIS0.8
+  wavelength_or_frequency: 810 nm
+  spatial_resolution: 3 km
+  wavelength_nm: 810
+  bandwidth_nm: 140.0
+  resolution_m: 3000.0
+  typical_use: Clouds, vegetation, aerosols, snow
+- name: IR1.6
+  wavelength_or_frequency: 1640 nm
+  spatial_resolution: 3 km
+  wavelength_nm: 1640
+  bandwidth_nm: 280.0
+  resolution_m: 3000.0
+  typical_use: Cloud phase, snow/cloud discrimination
+- name: IR3.9
+  wavelength_or_frequency: 3.92 um
+  spatial_resolution: 3 km
+  wavelength_nm: 3920
+  bandwidth_nm: 880.0
+  resolution_m: 3000.0
+  typical_use: Low cloud/fog at night, fires, surface temperature
+- name: WV6.2
+  wavelength_or_frequency: 6.25 um
+  spatial_resolution: 3 km
+  wavelength_nm: 6250
+  bandwidth_nm: 1800.0
+  resolution_m: 3000.0
+  typical_use: Upper-level water vapour, jet streams
+- name: WV7.3
+  wavelength_or_frequency: 7.35 um
+  spatial_resolution: 3 km
+  wavelength_nm: 7350
+  bandwidth_nm: 1000.0
+  resolution_m: 3000.0
+  typical_use: Mid-level water vapour
+- name: IR8.7
+  wavelength_or_frequency: 8.7 um
+  spatial_resolution: 3 km
+  wavelength_nm: 8700
+  bandwidth_nm: 800.0
+  resolution_m: 3000.0
+  typical_use: Cloud phase, SO2, thin cirrus
+- name: IR9.7
+  wavelength_or_frequency: 9.66 um
+  spatial_resolution: 3 km
+  wavelength_nm: 9660
+  bandwidth_nm: 560.0
+  resolution_m: 3000.0
+  typical_use: Ozone, stratospheric dynamics
+- name: IR10.8
+  wavelength_or_frequency: 10.8 um
+  spatial_resolution: 3 km
+  wavelength_nm: 10800
+  bandwidth_nm: 2000.0
+  resolution_m: 3000.0
+  typical_use: Cloud top temperature, surface temperature
+- name: IR12.0
+  wavelength_or_frequency: 12 um
+  spatial_resolution: 3 km
+  wavelength_nm: 12000
+  bandwidth_nm: 2000.0
+  resolution_m: 3000.0
+  typical_use: 'Split window: SST/LST, dust, volcanic ash'
+- name: IR13.4
+  wavelength_or_frequency: 13.4 um
+  spatial_resolution: 3 km
+  wavelength_nm: 13400
+  bandwidth_nm: 2000.0
+  resolution_m: 3000.0
+  typical_use: Cloud top height (CO2 absorption)
+- name: HRV
+  wavelength_or_frequency: 0.4-1.1 um (broadband)
+  spatial_resolution: 1 km
+  wavelength_nm: 750
+  bandwidth_nm: 700.0
+  resolution_m: 1000.0
+  typical_use: 'High resolution visible: fine cloud and surface detail'
+spatial_resolution_summary: 3 km at the sub-satellite point (11 channels), 1 km (HRV); pixels grow with
+  distance from the sub-satellite point
+processing_level:
+- L1.5
+derivable_products:
+- Brightness temperature
+- Reflectance
+- Cloud masks
+- Land surface temperature
+- Fire detection
+- Dust / ash RGB composites
+measured_variables:
+- Radiance
+- Brightness temperature
+- Reflectance
+data_format:
+- MSG Native (.nat)
+- HRIT
+- NetCDF
+temporal_range_start: 2004
+temporal_range_end: null
+data_latency: Real time (about 15-20 minutes) through EUMETCast; archive in the Data Store
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:MSG:HRSEVIRI
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/msg-level-1-5-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one full-disc SEVIRI scan from the EUMETSAT Data Store (needs a free account
+    and consumer key/secret, asked at run time) and plots the 10.8 um channel with satpy.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:MSG:HRSEVIRI")
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 12, 0), dtend=dt.datetime(2024, 6, 1, 12, 15)))
+    print(len(products), "SEVIRI L1.5 products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # about 100-150 MB per full-disc scan
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    files = sorted(glob("data/**/*.nat", recursive=True))
+    print(len(files), "files")
+    scn = Scene(filenames=files, reader="seviri_l1b_native")
+    print(scn.available_dataset_names())
+    scn.load(["IR_108"])
+    scn["IR_108"].plot(cmap="gray_r")              # brightness temperature (K)
+    plt.title("SEVIRI IR 10.8 um")
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # SEVIRI Level 1.5 full-disc image data (0 degrees). Use MSG15-RSS for rapid scan and HRSEVIRI-IODC for the Indian Ocean.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:MSG:HRSEVIRI -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:MSG:HRSEVIRI -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- msg-seviri-l2
+- mtg-fci-l1c
+- landsat-8-oli-tirs-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection IDs: EO:EUM:DAT:MSG:HRSEVIRI (0 degrees full disc), EO:EUM:DAT:MSG:MSG15-RSS (rapid
+  scan) and EO:EUM:DAT:MSG:HRSEVIRI-IODC (Indian Ocean). Meteosat-12 / MTG-FCI continues this record at
+  higher resolution; to build long series, mind the differences in channels and spectral response.'
+known_limitations: 'Coarse 3 km pixels degrade quickly towards the disc edge (about 5-6 km over Europe).
+  Native format is specific to MSG: use satpy, pytroll or EUMETSAT''s own tools to read it. Radiometric
+  calibration varies slightly between the four satellites.'
+example_use_cases: Convective storm nowcasting; fog and low-cloud detection; fire and dust monitoring;
+  diurnal cycle of land surface temperature; cloud climatologies.
+extra_sections:
+- title: Satellites, positions and roles
+  content: Meteosat-8 (2002, retired 1 July 2022), Meteosat-9 (2005; Indian Ocean data coverage at 45.5
+    E), Meteosat-10 (2012) and Meteosat-11 (2015). Rapid scan and backup roles are shared between Meteosat-10
+    and Meteosat-11 and have changed since Meteosat-12 became the prime service in 2025. Check EUMETSAT
+    for the current assignment.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

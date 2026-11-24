@@ -1,0 +1,40 @@
+mission_name: Landsat 7
+sensor_name: ETM+ (Enhanced Thematic Mapper Plus)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1999
+end_of_life_year: 2025
+short_description: Eight-band ETM+ with a 15 m panchromatic band; acquired data from 1999 until January
+  2024 (scan-line corrector failed in 2003).
+long_description: Landsat 7 was launched on 15 April 1999 and carried the ETM+ sensor, adding a 15 m panchromatic
+  band and a better thermal band to the TM design. The scan-line corrector (SLC) failed on 31 May 2003,
+  leaving wedge-shaped gaps in every scene since (SLC-off data). From 2022 the orbit was lowered and drifted
+  away from the standard crossing time to make room for Landsat 9; the satellite stopped acquiring science
+  data on 19 January 2024 and was decommissioned on 4 June 2025.
+instrument_type: Optical - Multispectral + thermal + panchromatic (8 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- ETM+
+- SLC-off
+- NDVI
+- Landsat 7
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Global
+swath_width: 185 km
+radiometric_resolution: 8 bit
+temporal_resolution: 16 days
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-7-etm-plus.ipynb
+last_updated_by: Alessandro Sebastianelli

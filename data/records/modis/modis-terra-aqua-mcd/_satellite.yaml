@@ -1,0 +1,46 @@
+mission_name: Terra + Aqua (combined)
+sensor_name: MODIS combined products (MCD)
+agency: NASA
+mission_family: MODIS
+status: Active
+launch_year: 2000
+end_of_life_year: null
+short_description: 'MODIS products that merge Terra and Aqua observations (MCD prefix): BRDF-corrected
+  reflectance, burned area, land cover, LAI/FPAR and MAIAC aerosol.'
+long_description: The MCD products combine the observations of both MODIS instruments to improve data
+  quality and temporal coverage. Examples are MCD43 (BRDF/albedo and nadir BRDF-adjusted reflectance,
+  NBAR), MCD64A1 (burned area), MCD12Q1 (yearly land cover), MCD15A2H/A3H (LAI and FPAR) and MCD19A2 (MAIAC
+  aerosol and surface reflectance at 1 km). They are usually preferred over single-platform products for
+  climate and land cover studies. Data stop when Terra and Aqua end their MODIS acquisitions (planned
+  for 2026-2027); a VIIRS continuation is available.
+instrument_type: Optical - Multispectral/thermal imager (36 bands)
+orbit_type: LEO - Sun-synchronous (Terra 10:30 desc., Aqua 13:30 asc.)
+internal_contact: Alessandro Sebastianelli
+tags:
+- MODIS
+- MCD
+- BRDF
+- burned area
+- land cover
+- LAI
+- albedo
+links:
+- label: MODIS Web (NASA)
+  url: https://modis.gsfc.nasa.gov
+- label: LAADS DAAC (Level 1, atmosphere)
+  url: https://ladsweb.modaps.eosdis.nasa.gov
+- label: LP DAAC (land products)
+  url: https://lpdaac.usgs.gov/product_search/?collections=Combined+MODIS&collections=Terra+MODIS&collections=Aqua+MODIS
+- label: MODIS to VIIRS transition (LAADS)
+  url: https://ladsweb.modaps.eosdis.nasa.gov/learn/modis-to-viirs-transition/
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global land
+swath_width: 2330 km (underlying acquisitions)
+radiometric_resolution: 12 bit (underlying acquisitions)
+temporal_resolution: Daily, 4-day, 8-day, monthly or yearly depending on the product
+citation_doi: Cite the individual product DOI (see LAADS DAAC / LP DAAC product pages).
+colab_notebook: notebooks/modis-terra-aqua-mcd.ipynb
+last_updated_by: Alessandro Sebastianelli

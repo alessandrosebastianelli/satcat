@@ -30,7 +30,7 @@ var DEFAULTS = {
   bbox_west: null, bbox_south: null, bbox_east: null, bbox_north: null,
   data_latency: "", access_url: "", requires_registration: false, license_cost: "",
   api_type: [], documentation_url: "", download_snippet: "", download_snippet_lang: "python",
-  gee_snippet: "", internal_contact: "", related_datasets: [], internal_projects: "",
+  gee_snippet: "", snippets: [], colab_notebook: "", internal_contact: "", related_datasets: [], internal_projects: "",
   notes: "", known_limitations: "", example_use_cases: "", links: [], tags: [],
   citation_doi: "", thumbnail_url: "", extra_sections: [], qa: [], changelog: [],
   verification_status: "unverified", verified_by: "", verified_at: "",
@@ -103,6 +103,10 @@ function _discoverLocalPaths(dirUrl, ext) {
 var COMPLETENESS_FIELDS = Object.keys(DEFAULTS).filter(function (k) {
   return ["qa", "changelog", "verification_status", "verified_by", "verified_at",
           "last_updated", "last_updated_by",
+          // Code examples are checked through getSnippets() instead (legacy
+          // download_snippet/gee_snippet fields still count as examples), and
+          // the Colab notebook link is optional.
+          "snippets", "download_snippet", "download_snippet_lang", "gee_snippet", "colab_notebook",
           // These two are meaningfully null for an ongoing mission ("still
           // active" / "data still being collected") — not missing data.
           "end_of_life_year", "temporal_range_end"].indexOf(k) === -1;
@@ -114,7 +118,96 @@ function computeMissing(d) {
     var v = d[f];
     if (v === null || v === undefined || v === "" || (Array.isArray(v) && v.length === 0)) missing.push(f);
   });
+  if (!getSnippets(d).length) missing.push("snippets");
   return missing;
+}
+
+/** Code examples of a record as a list of {title, lang, code, description,
+ * requirements}. New records use the `snippets:` list (one entry per tab:
+ * Python, Google Earth Engine, Original Method, ...). Older records that
+ * still carry download_snippet / gee_snippet are converted on the fly, so
+ * nothing has to be migrated by hand. */
+function getSnippets(d) {
+  var list = (d.snippets || []).filter(function (s) { return s && s.code; });
+  if (list.length) return list;
+  var out = [];
+  if (d.download_snippet) out.push({ title: "Python", lang: d.download_snippet_lang || "python", code: d.download_snippet });
+  if (d.gee_snippet) out.push({ title: "Google Earth Engine", lang: "javascript", code: d.gee_snippet });
+  return out;
+}
+
+/** URL that opens the record's example notebook in Google Colab (the
+ * notebook is read straight from this GitHub repo), or "" if none. */
+function getColabUrl(d) {
+  if (!d || !d.colab_notebook) return "";
+  return "https://colab.research.google.com/github/" + REPO + "/blob/" + BRANCH + "/" + d.colab_notebook;
+}
+
+/** Renders the tabbed code examples into containerEl. Code is inserted
+ * with textContent, so any character is safe. */
+function renderSnippetTabs(containerEl, snippets) {
+  if (!containerEl) return;
+  containerEl.innerHTML = "";
+  if (!snippets.length) return;
+  var tabs = document.createElement("div");
+  tabs.className = "snippet-tablist";
+  tabs.setAttribute("role", "tablist");
+  var panel = document.createElement("div");
+  panel.className = "snippet-panel";
+  containerEl.appendChild(tabs);
+  containerEl.appendChild(panel);
+
+  function show(i) {
+    var s = snippets[i];
+    Array.prototype.forEach.call(tabs.children, function (b, j) {
+      b.classList.toggle("active", i === j);
+      b.setAttribute("aria-selected", i === j ? "true" : "false");
+    });
+    panel.innerHTML = "";
+    if (s.description) {
+      var desc = document.createElement("p");
+      desc.className = "hint snippet-desc";
+      desc.textContent = s.description;
+      panel.appendChild(desc);
+    }
+    if (s.requirements && s.requirements.length) {
+      var req = document.createElement("p");
+      req.className = "hint snippet-desc";
+      req.textContent = "Requires: " + s.requirements.join(", ");
+      panel.appendChild(req);
+    }
+    var wrap = document.createElement("div");
+    wrap.className = "snippet-codewrap";
+    var copy = document.createElement("button");
+    copy.type = "button";
+    copy.className = "icon-btn snippet-copy";
+    copy.textContent = "Copy";
+    copy.addEventListener("click", function () {
+      var done = function () { copy.textContent = "Copied"; setTimeout(function () { copy.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(s.code).then(done, function () {});
+      }
+    });
+    var pre = document.createElement("pre");
+    pre.className = "code-block";
+    var code = document.createElement("code");
+    code.textContent = s.code;
+    pre.appendChild(code);
+    wrap.appendChild(copy);
+    wrap.appendChild(pre);
+    panel.appendChild(wrap);
+  }
+
+  snippets.forEach(function (s, i) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "snippet-tab";
+    b.setAttribute("role", "tab");
+    b.textContent = s.title || ("Example " + (i + 1));
+    b.addEventListener("click", function () { show(i); });
+    tabs.appendChild(b);
+  });
+  show(0);
 }
 
 function normalizeDataset(raw, relpath) {
@@ -217,7 +310,7 @@ var SATELLITE_FIELDS = [
   "mission_name", "sensor_name", "agency", "mission_family", "status",
   "launch_year", "end_of_life_year", "short_description", "long_description",
   "instrument_type", "orbit_type", "thumbnail_url", "internal_contact",
-  "tags", "links", "bbox_west", "bbox_south", "bbox_east", "bbox_north",
+  "tags", "links", "colab_notebook", "bbox_west", "bbox_south", "bbox_east", "bbox_north",
   "geographic_coverage", "swath_width", "radiometric_resolution",
   "temporal_resolution", "citation_doi",
 ];

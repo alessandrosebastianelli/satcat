@@ -1,0 +1,49 @@
+mission_name: MTG-S (Meteosat Third Generation Sounder)
+sensor_name: IRS (InfraRed Sounder)
+agency: EUMETSAT / ESA
+mission_family: MTG
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: 'First hyperspectral infrared sounder in geostationary orbit: temperature and humidity
+  profiles over Europe every 30 minutes and the full disc every hour.'
+long_description: MTG-S1 (Meteosat-13) was launched on 1 July 2025 and carries the InfraRed Sounder (IRS),
+  a Fourier-transform interferometer measuring the long-wave (about 700-1210 cm-1) and mid-wave (about
+  1600-2175 cm-1) infrared spectrum at 0.625 cm-1 spectral sampling with about 4 km spatial sampling.
+  It provides vertical profiles of temperature and humidity, trace gases and winds from geostationary
+  orbit, with local-area coverage over Europe about every 30 minutes. The IRS entered operational service
+  in October 2026 and MTG-S1 shares its platform with the Copernicus Sentinel-4 UVN. It produces large
+  data volumes (hundreds of GB per day at Level 1).
+instrument_type: Hyperspectral infrared sounder (Fourier-transform interferometer, geostationary)
+orbit_type: GEO (0 degrees longitude)
+internal_contact: Alessandro Sebastianelli
+tags:
+- sounder
+- IRS
+- MTG-S1
+- Meteosat-13
+- humidity
+- temperature profile
+- hyperspectral
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: MTG-S1 / Meteosat-13 (EUMETSAT)
+  url: https://www.eumetsat.int/mtg-sounder
+bbox_west: -80.0
+bbox_south: -80.0
+bbox_east: 80.0
+bbox_north: 80.0
+geographic_coverage: Europe and North Africa every ~30 min (local area coverage); full disc about hourly
+swath_width: Local area coverage and full disc
+radiometric_resolution: Hyperspectral, spectral sampling 0.625 cm-1
+temporal_resolution: About 30 minutes (Europe LAC), about 1 hour (full disc)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/mtg-irs.ipynb
+last_updated_by: Alessandro Sebastianelli

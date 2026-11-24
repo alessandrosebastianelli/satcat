@@ -1,0 +1,161 @@
+id: landsat-1-mss-l1
+level: L1
+level_summary: 'Level 1 (Collection 2): geometrically corrected, calibrated digital numbers with scale
+  factors in the metadata. MSS has no surface-reflectance Level-2 product.'
+bands:
+- name: B4 - Green
+  wavelength_or_frequency: 550 nm
+  spatial_resolution: 60 m (resampled from 79-82 m)
+  wavelength_nm: 550
+  bandwidth_nm: 100.0
+  resolution_m: 60.0
+  typical_use: Sediment-laden water, vegetation vigour
+- name: B5 - Red
+  wavelength_or_frequency: 650 nm
+  spatial_resolution: 60 m (resampled from 79-82 m)
+  wavelength_nm: 650
+  bandwidth_nm: 100.0
+  resolution_m: 60.0
+  typical_use: Vegetation discrimination, cultural features
+- name: B6 - Near infrared 1
+  wavelength_or_frequency: 750 nm
+  spatial_resolution: 60 m (resampled from 79-82 m)
+  wavelength_nm: 750
+  bandwidth_nm: 100.0
+  resolution_m: 60.0
+  typical_use: Vegetation boundaries, water/land
+- name: B7 - Near infrared 2
+  wavelength_or_frequency: 950 nm
+  spatial_resolution: 60 m (resampled from 79-82 m)
+  wavelength_nm: 950
+  bandwidth_nm: 300.0
+  resolution_m: 60.0
+  typical_use: Vegetation, water penetration limits
+spatial_resolution_summary: 60 m (resampled from the native 79-82 m pixel)
+processing_level:
+- L1
+derivable_products:
+- NDVI-like indices (near infrared vs red)
+- Land cover change baselines
+- Forest/agriculture history
+measured_variables:
+- Radiance
+- TOA reflectance (via metadata coefficients)
+data_format:
+- GeoTIFF
+- COG
+temporal_range_start: 1972
+temporal_range_end: 1978
+data_latency: Historical archive (static)
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- USGS M2M API
+- STAC API
+- Google Earth Engine
+- AWS S3 (requester pays)
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-multispectral-scanner
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed) for Landsat
+    Collection 2 Level-1 MSS scenes and plots the near-infrared and red bands. MSS coverage over Europe
+    is patchy, so the search covers Italy and the whole mission life.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["landsat-c2-l1"],
+        bbox=[6.0, 36.0, 19.0, 47.0],       # Italy - MSS coverage over Europe is patchy
+        datetime="1972-01-01/1978-12-31",
+        query={"platform": {"eq": "landsat-1"}},
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No scenes found - try another date range or area")
+    item = min(items, key=lambda i: i.properties.get("eo:cloud_cover", 100))
+    print(len(items), "scenes found; using", item.id, item.datetime)
+    print("assets:", sorted(item.assets))
+
+    # MSS has no blue band: show the near-infrared band (nir08) and the red band
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    for ax, key in zip(axes, ["nir08", "red"]):
+        open_overview(item.assets[key].href, level=3).plot(ax=ax, cmap="gray", robust=True, add_colorbar=False)
+        ax.set_title(key)
+    plt.suptitle(item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Raw DN scenes; apply the radiance/reflectance coefficients from the image properties to
+    calibrate.
+  code: |
+    // Landsat 1 MSS Collection 2 (Tier 2), raw DN
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('LANDSAT/LM01/C02/T2')
+      .filterBounds(aoi);
+
+    print('Scenes over the point:', collection.size());
+    var image = ee.Image(collection.first());
+    Map.centerObject(aoi, 8);
+    // Near-infrared, red, green as a false-colour composite
+    Map.addLayer(image, {bands: ['B6', 'B5', 'B4'], min: 0, max: 150}, 'MSS false colour');
+- title: Original Method
+  lang: bash
+  description: Official USGS distribution. EarthExplorer and the M2M API need a free USGS account; the
+    AWS bucket is requester-pays.
+  code: |
+    # Landsat 1 MSS Level-1 (WRS-1)
+    # USGS Collection 2 archive on AWS (requester-pays bucket: needs an AWS account).
+    # Replace PPP/RRR with the WRS path/row of your area - find yours on https://landsat.usgs.gov/landsat_acq
+    aws s3 ls --request-payer requester s3://usgs-landsat/collection02/level-1/standard/mss/YYYY/PPP/RRR/
+    aws s3 cp --request-payer requester --recursive \
+      s3://usgs-landsat/collection02/level-1/standard/mss/YYYY/PPP/RRR/SCENE_ID/ ./SCENE_ID/
+
+    # Free alternative without AWS: search and download from EarthExplorer
+    # https://earthexplorer.usgs.gov  (free USGS ERS account) or the M2M API:
+    # https://m2m.cr.usgs.gov/
+related_datasets:
+- landsat-2-mss-l1
+- landsat-3-mss-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'MSS band numbering differs: Landsat 1-3 name the bands 4-7, Landsat 4-5 name them 1-4. Collection
+  2 Level-1 comes in Tier 1 (best geometric/radiometric quality, use for time series), Tier 2 and Real-Time
+  (RT). Prefer Tier 1.'
+known_limitations: Coarse and noisy compared with later sensors, no blue band, 6-bit radiometry, patchy
+  coverage outside North America in the early years, and calibration between MSS satellites is imperfect.
+example_use_cases: Reconstructing land cover and urban expansion back to the 1970s; glacier and lake extent
+  history; long-term vegetation change.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

@@ -1,0 +1,178 @@
+id: sentinel-5p-tropomi-l2
+level: L2
+level_summary: 'Level 2: tropospheric/total columns of NO2, O3, SO2, CO, CH4, HCHO plus aerosol index,
+  aerosol layer height and cloud properties.'
+bands:
+- name: UV - bands 1-2 (270-320 nm)
+  wavelength_or_frequency: 270-320 nm
+  spatial_resolution: 5.5 x 3.5 km
+  wavelength_nm: 295
+  bandwidth_nm: 50.0
+  resolution_m: 5500.0
+  typical_use: Ozone, SO2, UV aerosol index
+- name: UVIS - bands 3-4 (320-490 nm)
+  wavelength_or_frequency: 320-490 nm
+  spatial_resolution: 5.5 x 3.5 km
+  wavelength_nm: 405
+  bandwidth_nm: 170.0
+  resolution_m: 5500.0
+  typical_use: NO2, HCHO, aerosols, clouds
+- name: NIR - bands 5-6 (675-775 nm)
+  wavelength_or_frequency: 675-775 nm
+  spatial_resolution: 5.5 x 3.5 km
+  wavelength_nm: 725
+  bandwidth_nm: 100.0
+  resolution_m: 5500.0
+  typical_use: Cloud, aerosol layer height
+- name: SWIR - bands 7-8 (2305-2385 nm)
+  wavelength_or_frequency: 2305-2385 nm
+  spatial_resolution: 5.5 x 7 km
+  wavelength_nm: 2345
+  bandwidth_nm: 80.0
+  resolution_m: 5500.0
+  typical_use: CO, CH4
+spatial_resolution_summary: 5.5 km x 3.5 km at nadir (7 km x 3.5 km before August 2019)
+processing_level:
+- L2
+derivable_products:
+- NO2 tropospheric column
+- O3 total column
+- SO2 column
+- CO column
+- CH4 column
+- HCHO column
+- UV aerosol index
+- Cloud fraction
+measured_variables:
+- NO2
+- O3
+- SO2
+- CO
+- CH4
+- HCHO
+- Aerosol
+- Cloud
+data_format:
+- NetCDF4
+temporal_range_start: 2018
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours) and offline (reprocessed, about days to weeks)
+access_url: https://dataspace.copernicus.eu/browser/?productType=L2__NO2___
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- OData
+- STAC API
+- Google Earth Engine
+- Python SDK
+documentation_url: https://sentiwiki.copernicus.eu/web/s5p-mission
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one TROPOMI offline NO2 orbit from the Planetary Computer (no account needed;
+    several hundred MB) and maps the quality-filtered tropospheric column.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - xarray
+  - netCDF4
+  - requests
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import requests
+    import xarray as xr
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+
+    search = catalog.search(
+        collections=["sentinel-5p-l2-netcdf"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-06-01/2024-06-03",
+        query={"s5p:processing_mode": {"eq": "OFFL"}},
+    )
+    items = [i for i in search.item_collection() if "no2" in i.assets]
+    if not items:
+        raise SystemExit("No NO2 products found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "NO2 products; using", item.id)
+
+    # One orbit is a few hundred MB
+    with requests.get(item.assets["no2"].href, stream=True) as r:
+        r.raise_for_status()
+        with open("no2.nc", "wb") as f:
+            for chunk in r.iter_content(chunk_size=1 << 20):
+                f.write(chunk)
+
+    ds = xr.open_dataset("no2.nc", group="PRODUCT")
+    no2 = ds["nitrogendioxide_tropospheric_column"][0]
+    qa = ds["qa_value"][0]
+    no2 = no2.where(qa > 0.75)                   # recommended quality filter
+    plt.pcolormesh(ds["longitude"][0], ds["latitude"][0], no2, vmin=0, vmax=2e-4, cmap="magma")
+    plt.colorbar(label="tropospheric NO2 column (mol/m2)")
+    plt.title(item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Earth Engine hosts L3 gridded versions of the L2 products (NO2, O3, CO, SO2, CH4, HCHO,
+    aerosol, cloud) as COPERNICUS/S5P/OFFL/L3_* and COPERNICUS/S5P/NRTI/L3_*.
+  code: |
+    // Sentinel-5P offline NO2, mean tropospheric column over a month
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var no2 = ee.ImageCollection('COPERNICUS/S5P/OFFL/L3_NO2')
+      .select('tropospheric_NO2_column_number_density')
+      .filterDate('2024-06-01', '2024-06-30')
+      .mean();
+
+    Map.centerObject(aoi, 5);
+    Map.addLayer(no2, {min: 0, max: 0.0002, palette: ['black', 'blue', 'purple', 'cyan', 'green', 'yellow', 'red']}, 'NO2 June 2024');
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # TROPOMI Level-2 NO2 (use L2__CO____, L2__CH4___, L2__O3____, ... for the other products)
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-5P' and contains(Name,'L2__NO2___') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
+related_datasets:
+- sentinel-5p-tropomi-l1b
+- sentinel-5-uvns-l2
+- sentinel-4-uvn-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Always filter with qa_value (0.75 is the recommended threshold for tropospheric NO2). Earth Engine
+  collections are L3 binned versions of the L2 files and are easier to use for maps and time series.
+known_limitations: Clouds reduce usable data for most products; low sun and snow cover degrade the retrievals.
+  Swath geometry in L2 files.
+example_use_cases: Lockdown and traffic-related NO2 changes; methane super-emitter detection; volcanic
+  SO2 plumes; CAMS validation.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

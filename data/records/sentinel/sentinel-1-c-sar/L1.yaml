@@ -34,17 +34,93 @@ api_type:
 - REST
 - Python SDK
 documentation_url: https://sentiwiki.copernicus.eu/web/s1-mission
-download_snippet: "from sentinelhub import SHConfig, SentinelHubCatalog\n\nconfig = SHConfig()\ncatalog\
-  \ = SentinelHubCatalog(config=config)\nsearch_iterator = catalog.search(\n    collection=\"sentinel-1-grd\"\
-  ,\n    bbox=[12.4, 41.8, 12.6, 42.0],\n    time=(\"2024-01-01\", \"2024-02-01\"),\n)\nfor item in search_iterator:\n\
-  \    print(item[\"id\"])\n"
-download_snippet_lang: python
-gee_snippet: "// Sentinel-1 GRD, VV polarization, IW mode, ascending orbit\nvar aoi = ee.Geometry.Point([12.5,\
-  \ 41.9]);\n\nvar collection = ee.ImageCollection('COPERNICUS/S1_GRD')\n  .filterBounds(aoi)\n  .filterDate('2024-01-01',\
-  \ '2024-03-01')\n  .filter(ee.Filter.eq('instrumentMode', 'IW'))\n  .filter(ee.Filter.listContains('transmitterReceiverPolarisation',\
-  \ 'VV'))\n  .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))\n  .select('VV');\n\nprint('Number\
-  \ of images:', collection.size());\nMap.addLayer(collection.median(), {min: -20, max: 0}, 'Sentinel-1\
-  \ VV (median)');\n"
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed) for Sentinel-1
+    GRD scenes and plots VV backscatter in decibel. For terrain-corrected backscatter use the collection
+    sentinel-1-rtc.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["sentinel-1-grd"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-06-01/2024-06-30",
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No scenes found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "scenes found; using", item.id, item.datetime)
+    print("assets:", sorted(item.assets))
+
+    # GRD assets are in slant/ground-range geometry (not map-projected): plotted here in image coordinates
+    vv = open_overview(item.assets["vv"].href, level=3)
+    db = 10 * np.log10(vv.where(vv > 0))
+    db.plot(cmap="gray", vmin=-25, vmax=0)
+    plt.title("VV backscatter (dB) - " + item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Earth Engine hosts GRD scenes only (already thermal-noise removed, calibrated and terrain-corrected,
+    in dB).
+  code: |
+    // Sentinel-1 GRD, VV polarization, IW mode, ascending orbit
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('COPERNICUS/S1_GRD')
+      .filterBounds(aoi)
+      .filterDate('2024-01-01', '2024-03-01')
+      .filter(ee.Filter.eq('instrumentMode', 'IW'))
+      .filter(ee.Filter.listContains('transmitterReceiverPolarisation', 'VV'))
+      .filter(ee.Filter.eq('orbitProperties_pass', 'ASCENDING'))
+      .select('VV');
+
+    print('Number of images:', collection.size());
+    Map.addLayer(collection.median(), {min: -20, max: 0}, 'Sentinel-1 VV (median)');
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # Sentinel-1 Level-1 GRD (use SLC for interferometry)
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-1' and contains(Name,'GRD') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
 related_datasets:
 - sentinel-2-msi-l2a
 internal_projects: Not yet used in a specific internal project — flag here once it is.

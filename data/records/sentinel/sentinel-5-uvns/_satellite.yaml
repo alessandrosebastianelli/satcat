@@ -1,0 +1,42 @@
+mission_name: Sentinel-5
+sensor_name: UVNS (Ultraviolet Visible Near-infrared Shortwave spectrometer)
+agency: ESA / EUMETSAT / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: Polar-orbiting UV-VIS-NIR-SWIR spectrometer on Metop-SG for daily global monitoring
+  of air pollutants, ozone, aerosols and greenhouse-related gases.
+long_description: 'Sentinel-5 is a hosted payload on the Metop Second Generation A satellites. The first,
+  Metop-SG-A1, was launched on 13 August 2025. The UVNS imaging spectrometer covers the ultraviolet to
+  shortwave infrared, delivering daily global maps of ozone, nitrogen dioxide, sulphur dioxide, formaldehyde,
+  carbon monoxide, methane and aerosols at about 7.5 km, a clear step up from Sentinel-5P. Operational
+  data release timing depends on the commissioning of Metop-SG-A1: check the EUMETSAT Data Store for current
+  availability.'
+instrument_type: Imaging spectrometer - UV/VIS/NIR/SWIR
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- air quality
+- ozone
+- methane
+- CO
+- aerosol
+- copernicus
+- Metop-SG
+links:
+- label: Sentinel-5 (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-5
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: About 2670 km
+radiometric_resolution: Not stated (hyperspectral)
+temporal_resolution: Daily global coverage
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-5-uvns.ipynb
+last_updated_by: Alessandro Sebastianelli

@@ -1,0 +1,43 @@
+mission_name: Sentinel-4
+sensor_name: UVN (Ultraviolet Visible Near-infrared spectrometer)
+agency: ESA / EUMETSAT / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: Geostationary UV-VIS-NIR spectrometer for hourly air quality monitoring (NO2, O3, SO2,
+  HCHO, aerosols) over Europe and North Africa.
+long_description: Sentinel-4 is a hosted payload on the Meteosat Third Generation Sounder satellite MTG-S1
+  (named Meteosat-13 in operations), launched on 1 July 2025. From geostationary orbit at 0 degrees longitude
+  its UVN imaging spectrometer scans Europe and North Africa every hour, measuring trace gases (ozone,
+  nitrogen dioxide, sulphur dioxide, formaldehyde, glyoxal) and aerosol and cloud properties from hyperspectral
+  observations. It is the geostationary counterpart of Sentinel-5P and Sentinel-5. Sentinel-4 data are
+  expected to enter operational release in 2027; check the EUMETSAT Data Store and the Copernicus Data
+  Space for the current availability.
+instrument_type: Imaging spectrometer - UV/VIS/NIR (geostationary)
+orbit_type: GEO (0 degrees longitude)
+internal_contact: Alessandro Sebastianelli
+tags:
+- air quality
+- NO2
+- ozone
+- aerosol
+- geostationary
+- copernicus
+- MTG-S1
+links:
+- label: Sentinel-4 (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-4
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+bbox_west: -30.0
+bbox_south: 25.0
+bbox_east: 45.0
+bbox_north: 65.0
+geographic_coverage: Europe and North Africa (approximate field of regard, hourly repeat cycle)
+swath_width: Regional scan (east-west sweep over the field of regard)
+radiometric_resolution: Not stated (hyperspectral, about 0.5 nm sampling)
+temporal_resolution: Hourly
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-4-uvn.ipynb
+last_updated_by: Alessandro Sebastianelli

@@ -56,9 +56,19 @@ requires_registration: false
 license_cost: ""
 api_type: []
 documentation_url: ""
-download_snippet: ""
-download_snippet_lang: python
-gee_snippet: ""
+# Code examples shown as tabs (put the Python one first).
+# lang: python | javascript | bash. Optional: description, requirements (pip packages).
+snippets:
+  - title: Python
+    lang: python
+    description: ""
+    requirements: []
+    code: |
+      print("hello")
+  - title: Original Method
+    lang: bash
+    code: |
+      echo "official download command"
 
 internal_contact: ""          # who on the team knows this dataset well
 related_datasets: []          # ids of other records

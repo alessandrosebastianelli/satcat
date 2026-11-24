@@ -1,0 +1,196 @@
+id: sentinel-3-slstr-l1
+level: L1
+level_summary: 'Level 1 (RBT): calibrated radiances and brightness temperatures, geolocated, for the nadir
+  and oblique views.'
+bands:
+- name: S1 - 555 nm
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Cloud screening, vegetation
+- name: S2 - 659 nm
+  wavelength_or_frequency: 659 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 659
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: NDVI, vegetation
+- name: S3 - 865 nm
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 865
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: NDVI, vegetation, flood
+- name: S4 - 1375 nm
+  wavelength_or_frequency: 1375 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1375
+  bandwidth_nm: 15.0
+  resolution_m: 500.0
+  typical_use: Thin cirrus detection
+- name: S5 - 1610 nm
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 500.0
+  typical_use: Snow/cloud discrimination
+- name: S6 - 2250 nm
+  wavelength_or_frequency: 2250 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 500.0
+  typical_use: Aerosol, cloud
+- name: S7 - 3.74 um
+  wavelength_or_frequency: 3.74 um
+  spatial_resolution: 1 km
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 1000.0
+  typical_use: Sea and land surface temperature, fires
+- name: S8 - 10.85 um
+  wavelength_or_frequency: 10.85 um
+  spatial_resolution: 1 km
+  wavelength_nm: 10850
+  bandwidth_nm: 900.0
+  resolution_m: 1000.0
+  typical_use: Sea and land surface temperature
+- name: S9 - 12 um
+  wavelength_or_frequency: 12 um
+  spatial_resolution: 1 km
+  wavelength_nm: 12000
+  bandwidth_nm: 1000.0
+  resolution_m: 1000.0
+  typical_use: Sea and land surface temperature
+- name: F1 - 3.74 um
+  wavelength_or_frequency: 3.74 um
+  spatial_resolution: 1 km
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 1000.0
+  typical_use: Active fire detection (low saturation)
+- name: F2 - 10.85 um
+  wavelength_or_frequency: 10.85 um
+  spatial_resolution: 1 km
+  wavelength_nm: 10850
+  bandwidth_nm: 900.0
+  resolution_m: 1000.0
+  typical_use: Active fire detection (low saturation)
+spatial_resolution_summary: 500 m (visible/shortwave), 1 km (thermal and fire)
+processing_level:
+- L1
+derivable_products:
+- Sea surface temperature
+- Land surface temperature
+- Fire radiative power
+measured_variables:
+- Radiance
+- Brightness temperature
+data_format:
+- SEN3 (NetCDF4 files)
+temporal_range_start: 2016
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours) and non-time-critical (about 1 month)
+access_url: https://dataspace.copernicus.eu/browser/?productType=SL_1_RBT___
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- OData
+- STAC API
+- Python SDK
+documentation_url: https://sentiwiki.copernicus.eu/web/slstr-user-guides
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Copernicus Data Space catalogue (anonymous). Set DOWNLOAD = True to fetch
+    the first product.
+  requirements:
+  - requests
+  code: |
+    import requests
+
+    CATALOGUE = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
+    AREA = "POLYGON((12.0 41.0, 13.0 41.0, 13.0 42.5, 12.0 42.5, 12.0 41.0))"   # Italy (lon lat)
+    START, END = "2024-06-01T00:00:00.000Z", "2024-06-03T00:00:00.000Z"
+
+    flt = (
+        f"Collection/Name eq 'SENTINEL-3' "
+        f"and Attributes/OData.CSC.StringAttribute/any(a:a/Name eq 'productType' "
+        f"and a/OData.CSC.StringAttribute/Value eq 'SL_1_RBT___') "
+        f"and ContentDate/Start gt {START} and ContentDate/Start lt {END} "
+        f"and OData.CSC.Intersects(area=geography'SRID=4326;{AREA}')"
+    )
+    response = requests.get(CATALOGUE, params={"$filter": flt, "$orderby": "ContentDate/Start asc", "$top": 5})
+    response.raise_for_status()
+    products = response.json()["value"]
+    print(len(products), "SLSTR RBT products found")
+    for p in products:
+        print(p["Name"], round(p["ContentLength"] / 1e6), "MB")
+
+    # Searching is anonymous. Downloading needs a free Copernicus Data Space account.
+    DOWNLOAD = False
+    if DOWNLOAD and products:
+        import getpass
+        token = requests.post(
+            "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token",
+            data={"client_id": "cdse-public", "grant_type": "password",
+                  "username": input("CDSE e-mail: "), "password": getpass.getpass("CDSE password: ")},
+        ).json()["access_token"]
+        product = products[0]
+        url = "https://download.dataspace.copernicus.eu/odata/v1/Products(%s)/$value" % product["Id"]
+        with requests.get(url, headers={"Authorization": "Bearer " + token}, stream=True) as r:
+            r.raise_for_status()
+            with open(product["Name"] + ".zip", "wb") as f:
+                for chunk in r.iter_content(chunk_size=1 << 20):
+                    f.write(chunk)
+        print("saved", product["Name"] + ".zip")
+
+    # After downloading and unzipping, open the product with satpy, for example:
+    #   from glob import glob
+    #   from satpy import Scene
+    #   scn = Scene(filenames=glob("S3*.SEN3/*.nc"), reader="olci_l1b")   # or "slstr_l1b"
+    #   scn.load(["Oa08"]); scn["Oa08"].plot()
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # SLSTR Level-1 Radiances and Brightness Temperatures
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-3' and contains(Name,'SL_1_RBT') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
+related_datasets:
+- sentinel-3-slstr-l2
+- sentinel-3-olci-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Nadir and oblique views are on different grids (files with suffix n and o); S1-S6 are also stored
+  on the 500 m grid, thermal channels on the 1 km grid.
+known_limitations: Swath geometry only (no map projection). The S7 channel saturates over hot targets
+  such as fires; F1 exists for that purpose.
+example_use_cases: Thermal anomaly and wildfire screening; research on brightness temperature and cloud
+  masks.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

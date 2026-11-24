@@ -1,0 +1,44 @@
+mission_name: Sentinel-3
+sensor_name: OLCI (Ocean and Land Colour Instrument)
+agency: ESA / EUMETSAT / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2016
+end_of_life_year: null
+short_description: 21-band ocean and land colour imager on the Sentinel-3 satellites, at 300 m full resolution,
+  for water quality, chlorophyll and vegetation monitoring.
+long_description: OLCI is a push-broom imaging spectrometer on the Sentinel-3 satellites (3A launched
+  in 2016, 3B in 2018, 3C in September 2026, 3D planned). It measures 21 bands between 400 and 1020 nm
+  at 300 m (full resolution) and 1.2 km (reduced resolution), continuing the ENVISAT MERIS heritage. Main
+  uses are ocean and coastal water quality (chlorophyll, suspended matter, coloured dissolved organic
+  matter), land vegetation indices and atmospheric products (water vapour, aerosols). Global coverage
+  is obtained in about 2 days with two satellites.
+instrument_type: Optical - Hyperspectral/multispectral imager (21 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- ocean colour
+- chlorophyll
+- water quality
+- vegetation
+- copernicus
+- Sentinel-3
+links:
+- label: Copernicus Data Space Ecosystem
+  url: https://dataspace.copernicus.eu
+- label: Sentinel Online (ESA)
+  url: https://sentiwiki.copernicus.eu
+- label: Sentinel-3 OLCI on Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S3_OLCI
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global (land and ocean)
+swath_width: 1270 km
+radiometric_resolution: Not stated in the product specification summary (calibrated radiances stored as
+  16-bit scaled integers)
+temporal_resolution: Under 2 days with two satellites (about 27-day orbit cycle for a single satellite)
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-3-olci.ipynb
+last_updated_by: Alessandro Sebastianelli

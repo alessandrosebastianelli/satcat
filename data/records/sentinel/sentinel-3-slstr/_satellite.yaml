@@ -1,0 +1,41 @@
+mission_name: Sentinel-3
+sensor_name: SLSTR (Sea and Land Surface Temperature Radiometer)
+agency: ESA / EUMETSAT / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2016
+end_of_life_year: null
+short_description: Dual-view radiometer measuring sea and land surface temperature to about 0.3 K accuracy,
+  plus active fire and aerosol products.
+long_description: SLSTR is a conical-scanning radiometer on the Sentinel-3 satellites with 9 spectral
+  bands from the visible to the thermal infrared, plus two dedicated fire channels (F1 and F2). It observes
+  each point on the ground twice, at nadir and at an oblique angle (about 55 degrees), which improves
+  atmospheric correction for surface temperature. Visible and shortwave bands have 500 m pixels and thermal
+  bands 1 km. It continues the ENVISAT AATSR series and underpins the Copernicus climate-quality sea surface
+  temperature record.
+instrument_type: Radiometer - Thermal and optical (dual view)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- sea surface temperature
+- land surface temperature
+- fire
+- thermal infrared
+- copernicus
+- Sentinel-3
+links:
+- label: Copernicus Data Space Ecosystem
+  url: https://dataspace.copernicus.eu
+- label: Sentinel Online (ESA)
+  url: https://sentiwiki.copernicus.eu
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 1400 km (nadir view), 740 km (oblique view)
+radiometric_resolution: Brightness temperature noise about 0.05 K (thermal channels)
+temporal_resolution: About 1 day with two satellites (dual view, at 1 km)
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-3-slstr.ipynb
+last_updated_by: Alessandro Sebastianelli

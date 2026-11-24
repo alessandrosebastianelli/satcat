@@ -1,0 +1,233 @@
+id: mtg-fci-l1c
+level: L1c
+level_summary: 'Level 1c: calibrated, geolocated and harmonised radiances/reflectances for the 16 channels,
+  as full-disc high spectral resolution (FDHSI, normal resolution) or high-resolution fast imagery (HRFI)
+  NetCDF files in chunks.'
+bands:
+- name: vis_04 - VIS 0.4
+  wavelength_or_frequency: 444 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 444
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Aerosols, coastal waters, true-colour blue
+- name: vis_05 - VIS 0.5
+  wavelength_or_frequency: 510 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 510
+  bandwidth_nm: 40.0
+  resolution_m: 1000.0
+  typical_use: True-colour green, water quality
+- name: vis_06 - VIS 0.6
+  wavelength_or_frequency: 640 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 640
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: 'Clouds, land, true-colour red (HRFI: 500 m)'
+- name: vis_08 - VIS 0.8
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 865
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: Vegetation, aerosols, clouds
+- name: vis_09 - VIS 0.9
+  wavelength_or_frequency: 914 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 914
+  bandwidth_nm: 20.0
+  resolution_m: 1000.0
+  typical_use: Water vapour (near infrared), cloud phase
+- name: nir_13 - NIR 1.3
+  wavelength_or_frequency: 1380 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 1380
+  bandwidth_nm: 30.0
+  resolution_m: 1000.0
+  typical_use: Cirrus detection
+- name: nir_16 - NIR 1.6
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: Cloud phase, snow/ice
+- name: nir_22 - NIR 2.2
+  wavelength_or_frequency: 2250 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: 'Cloud particle size, fires (HRFI: 500 m)'
+- name: ir_38 - IR 3.8
+  wavelength_or_frequency: 3.8 um
+  spatial_resolution: 2 km
+  wavelength_nm: 3800
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: 'Fog/low cloud, fires, surface temperature (HRFI: 1 km)'
+- name: wv_63 - WV 6.3
+  wavelength_or_frequency: 6.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 6300
+  bandwidth_nm: 1000.0
+  resolution_m: 2000.0
+  typical_use: Upper-level water vapour
+- name: wv_73 - WV 7.3
+  wavelength_or_frequency: 7.35 um
+  spatial_resolution: 2 km
+  wavelength_nm: 7350
+  bandwidth_nm: 500.0
+  resolution_m: 2000.0
+  typical_use: Mid-level water vapour
+- name: ir_87 - IR 8.7
+  wavelength_or_frequency: 8.7 um
+  spatial_resolution: 2 km
+  wavelength_nm: 8700
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: Cloud phase, SO2
+- name: ir_97 - IR 9.7
+  wavelength_or_frequency: 9.66 um
+  spatial_resolution: 2 km
+  wavelength_nm: 9660
+  bandwidth_nm: 300.0
+  resolution_m: 2000.0
+  typical_use: Ozone
+- name: ir_105 - IR 10.5
+  wavelength_or_frequency: 10.5 um
+  spatial_resolution: 2 km
+  wavelength_nm: 10500
+  bandwidth_nm: 700.0
+  resolution_m: 2000.0
+  typical_use: 'Cloud top and surface temperature (HRFI: 1 km)'
+- name: ir_123 - IR 12.3
+  wavelength_or_frequency: 12.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 12300
+  bandwidth_nm: 500.0
+  resolution_m: 2000.0
+  typical_use: 'Split window: dust, ash, SST/LST'
+- name: ir_133 - IR 13.3
+  wavelength_or_frequency: 13.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 13300
+  bandwidth_nm: 600.0
+  resolution_m: 2000.0
+  typical_use: Cloud top height (CO2 absorption)
+spatial_resolution_summary: 1 km (VIS/NIR) and 2 km (IR) at nadir; HRFI 0.5 km (vis_06, nir_22) and 1
+  km (ir_38, ir_105)
+processing_level:
+- L1c
+derivable_products:
+- Reflectance
+- Brightness temperature
+- RGB composites
+- Land surface temperature
+- Fire detection
+- Cloud products
+measured_variables:
+- Radiance
+- Reflectance
+- Brightness temperature
+data_format:
+- NetCDF4 (SIP zip with 41 chunks per cycle)
+temporal_range_start: 2022
+temporal_range_end: null
+data_latency: Real time (a few minutes after acquisition) through EUMETCast
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:0662
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/mtg-fci-level-1c-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one FCI full-disc cycle (normal resolution, EO:EUM:DAT:0662) from the EUMETSAT
+    Data Store (needs a free account and consumer key/secret, asked at run time) and plots the 10.5 um
+    channel with satpy.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:0662")
+
+    products = list(collection.search(dtstart=dt.datetime(2025, 6, 1, 12, 0), dtend=dt.datetime(2025, 6, 1, 12, 10)))
+    print(len(products), "FCI L1c products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # about 1-2 GB per full-disc cycle: the download can take several minutes
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    files = sorted(glob("data/**/*.nc", recursive=True))
+    print(len(files), "files")
+    scn = Scene(filenames=files, reader="fci_l1c_nc")
+    print(scn.available_dataset_names())
+    scn.load(["ir_105"])
+    scn["ir_105"].plot(cmap="gray_r")               # brightness temperature (K)
+    plt.title("FCI IR 10.5 um")
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # FCI Level-1c normal resolution (FDHSI). EO:EUM:DAT:0665 is the high-resolution (HRFI) collection.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:0662 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:0662 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- mtg-fci-l2
+- msg-seviri-l1-5
+- mtg-li-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection IDs: EO:EUM:DAT:0662 (FCI L1c normal resolution FDHSI) and EO:EUM:DAT:0665 (high resolution
+  HRFI). Band centres and widths here are nominal values: check the FCI Level 1 Product User Guide for
+  the exact spectral response. Channel names follow the satpy convention (vis_04 ... ir_133).'
+known_limitations: Files are large and split into 41 chunks per full-disc repeat cycle; satpy is the usual
+  way to assemble them. Operational data formats and collection IDs can evolve as MTG-I2 enters service.
+example_use_cases: High-frequency nowcasting; convective initiation; fire and smoke monitoring; true-colour
+  imagery of Europe and Africa every 10 minutes; replacing SEVIRI in existing pipelines.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

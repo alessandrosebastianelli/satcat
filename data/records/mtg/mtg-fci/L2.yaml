@@ -1,0 +1,227 @@
+id: mtg-fci-l2
+level: L2
+level_summary: 'Level 2: products from FCI: cloud mask (CLM), all-sky radiance (ASR), global instability
+  index (GII), optimal cloud analysis (OCA), atmospheric motion vectors (AMV) and others.'
+bands:
+- name: vis_04 - VIS 0.4
+  wavelength_or_frequency: 444 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 444
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Aerosols, coastal waters, true-colour blue
+- name: vis_05 - VIS 0.5
+  wavelength_or_frequency: 510 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 510
+  bandwidth_nm: 40.0
+  resolution_m: 1000.0
+  typical_use: True-colour green, water quality
+- name: vis_06 - VIS 0.6
+  wavelength_or_frequency: 640 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 640
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: 'Clouds, land, true-colour red (HRFI: 500 m)'
+- name: vis_08 - VIS 0.8
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 865
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: Vegetation, aerosols, clouds
+- name: vis_09 - VIS 0.9
+  wavelength_or_frequency: 914 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 914
+  bandwidth_nm: 20.0
+  resolution_m: 1000.0
+  typical_use: Water vapour (near infrared), cloud phase
+- name: nir_13 - NIR 1.3
+  wavelength_or_frequency: 1380 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 1380
+  bandwidth_nm: 30.0
+  resolution_m: 1000.0
+  typical_use: Cirrus detection
+- name: nir_16 - NIR 1.6
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: Cloud phase, snow/ice
+- name: nir_22 - NIR 2.2
+  wavelength_or_frequency: 2250 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: 'Cloud particle size, fires (HRFI: 500 m)'
+- name: ir_38 - IR 3.8
+  wavelength_or_frequency: 3.8 um
+  spatial_resolution: 2 km
+  wavelength_nm: 3800
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: 'Fog/low cloud, fires, surface temperature (HRFI: 1 km)'
+- name: wv_63 - WV 6.3
+  wavelength_or_frequency: 6.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 6300
+  bandwidth_nm: 1000.0
+  resolution_m: 2000.0
+  typical_use: Upper-level water vapour
+- name: wv_73 - WV 7.3
+  wavelength_or_frequency: 7.35 um
+  spatial_resolution: 2 km
+  wavelength_nm: 7350
+  bandwidth_nm: 500.0
+  resolution_m: 2000.0
+  typical_use: Mid-level water vapour
+- name: ir_87 - IR 8.7
+  wavelength_or_frequency: 8.7 um
+  spatial_resolution: 2 km
+  wavelength_nm: 8700
+  bandwidth_nm: 400.0
+  resolution_m: 2000.0
+  typical_use: Cloud phase, SO2
+- name: ir_97 - IR 9.7
+  wavelength_or_frequency: 9.66 um
+  spatial_resolution: 2 km
+  wavelength_nm: 9660
+  bandwidth_nm: 300.0
+  resolution_m: 2000.0
+  typical_use: Ozone
+- name: ir_105 - IR 10.5
+  wavelength_or_frequency: 10.5 um
+  spatial_resolution: 2 km
+  wavelength_nm: 10500
+  bandwidth_nm: 700.0
+  resolution_m: 2000.0
+  typical_use: 'Cloud top and surface temperature (HRFI: 1 km)'
+- name: ir_123 - IR 12.3
+  wavelength_or_frequency: 12.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 12300
+  bandwidth_nm: 500.0
+  resolution_m: 2000.0
+  typical_use: 'Split window: dust, ash, SST/LST'
+- name: ir_133 - IR 13.3
+  wavelength_or_frequency: 13.3 um
+  spatial_resolution: 2 km
+  wavelength_nm: 13300
+  bandwidth_nm: 600.0
+  resolution_m: 2000.0
+  typical_use: Cloud top height (CO2 absorption)
+spatial_resolution_summary: About 2 km at nadir (product dependent)
+processing_level:
+- L2
+derivable_products:
+- Cloud mask
+- Cloud optical properties
+- Instability indices
+- Atmospheric motion vectors
+- Clear-sky radiances
+measured_variables:
+- Cloud
+- Atmospheric instability
+- Winds
+data_format:
+- NetCDF4
+- BUFR
+temporal_range_start: 2022
+temporal_range_end: null
+data_latency: Real time (about 20 minutes)
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:0678
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/mtg-fci-level-2-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one FCI Level-2 cloud mask (netCDF) from the EUMETSAT Data Store (needs a free
+    account and consumer key/secret, asked at run time) and plots the first dataset with satpy.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:0678")
+
+    products = list(collection.search(dtstart=dt.datetime(2025, 6, 1, 12, 0), dtend=dt.datetime(2025, 6, 1, 12, 20)))
+    print(len(products), "FCI cloud mask products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # tens of MB per product
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    files = sorted(glob("data/**/*.nc", recursive=True))
+    print(len(files), "files")
+    scn = Scene(filenames=files, reader="fci_l2_nc")
+    print(scn.available_dataset_names())
+    name = scn.available_dataset_names()[0]
+    scn.load([name])
+    scn[name].plot()
+    plt.title(name)
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # FCI Level-2 cloud mask (netCDF). Other collections: ASR 0677, GII 0683, OCA 0684.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:0678 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:0678 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- mtg-fci-l1c
+- msg-seviri-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection IDs: 0678 (CLM, netCDF), 0677 (ASR, netCDF), 0683 (GII, netCDF), 0684 (OCA, netCDF).'
+known_limitations: Cloud-dependent products are missing under cloud cover; product versions evolve during
+  the early operational phase.
+example_use_cases: Cloud screening for other geostationary products; instability maps for convection forecasting.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

@@ -1,0 +1,48 @@
+mission_name: Aqua
+sensor_name: MODIS (Moderate Resolution Imaging Spectroradiometer)
+agency: NASA
+mission_family: MODIS
+status: Active
+launch_year: 2002
+end_of_life_year: null
+short_description: '36-band imager at 250 m to 1 km with daily global coverage: the reference for land,
+  ocean and atmosphere products from 2000. Afternoon (13:30) satellite.'
+long_description: MODIS flies on the NASA Aqua satellite (launched 2002), part of the Earth Observing
+  System. It measures 36 spectral bands from 0.4 to 14.4 um at 250 m (2 bands), 500 m (5 bands) and 1
+  km (29 bands) with a 2330 km swath, giving near-daily global coverage. Aqua was launched on 4 May 2002
+  into an afternoon (13:30 ascending) orbit and is part of the A-Train until it drifted away from it.
+  NASA plans to end Aqua science data collection in September 2027 (check the LAADS DAAC MODIS-to-VIIRS
+  transition page for the current date). Both platforms have been drifting out of their nominal orbits
+  since fuel ran low, so overpass times and view geometry now change over time. NASA will end MODIS observations
+  in the coming years and recommends moving to VIIRS for continuity.
+instrument_type: Optical - Multispectral/thermal imager (36 bands)
+orbit_type: LEO - Sun-synchronous (705 km, 13:30 ascending)
+internal_contact: Alessandro Sebastianelli
+tags:
+- MODIS
+- NDVI
+- land surface temperature
+- ocean colour
+- fire
+- aerosol
+- Aqua
+links:
+- label: MODIS Web (NASA)
+  url: https://modis.gsfc.nasa.gov
+- label: LAADS DAAC (Level 1, atmosphere)
+  url: https://ladsweb.modaps.eosdis.nasa.gov
+- label: LP DAAC (land products)
+  url: https://lpdaac.usgs.gov/product_search/?collections=Combined+MODIS&collections=Terra+MODIS&collections=Aqua+MODIS
+- label: MODIS to VIIRS transition (LAADS)
+  url: https://ladsweb.modaps.eosdis.nasa.gov/learn/modis-to-viirs-transition/
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2330 km
+radiometric_resolution: 12 bit
+temporal_resolution: Daily (1-2 days; the two MODIS instruments together give 4 observations per day)
+citation_doi: Cite the individual product DOI (see LAADS DAAC / LP DAAC product pages).
+colab_notebook: notebooks/modis-aqua.ipynb
+last_updated_by: Alessandro Sebastianelli

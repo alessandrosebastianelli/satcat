@@ -1,0 +1,291 @@
+id: sentinel-3-olci-l2
+level: L2
+level_summary: 'Level 2: geophysical products. Land (LFR/LRR): OGVI, OTCI, GIFAPAR, water vapour. Water
+  (WFR/WRR): water-leaving reflectance, chlorophyll, suspended matter, aerosol.'
+bands:
+- name: Oa1 - 400 nm
+  wavelength_or_frequency: 400 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 400
+  bandwidth_nm: 15.0
+  resolution_m: 300.0
+  typical_use: Aerosol, yellow substance
+- name: Oa2 - 412.5 nm
+  wavelength_or_frequency: 412.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 412.5
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Yellow substance, detrital pigments
+- name: Oa3 - 442.5 nm
+  wavelength_or_frequency: 442.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 442.5
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll absorption maximum
+- name: Oa4 - 490 nm
+  wavelength_or_frequency: 490 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 490
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll, suspended matter
+- name: Oa5 - 510 nm
+  wavelength_or_frequency: 510 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 510
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll, suspended matter
+- name: Oa6 - 560 nm
+  wavelength_or_frequency: 560 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 560
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll reference, suspended matter
+- name: Oa7 - 620 nm
+  wavelength_or_frequency: 620 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 620
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Suspended matter
+- name: Oa8 - 665 nm
+  wavelength_or_frequency: 665 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 665
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Chlorophyll absorption, red
+- name: Oa9 - 673.75 nm
+  wavelength_or_frequency: 673.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 673.75
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: Chlorophyll fluorescence baseline
+- name: Oa10 - 681.25 nm
+  wavelength_or_frequency: 681.25 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 681.25
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: Chlorophyll fluorescence peak
+- name: Oa11 - 708.75 nm
+  wavelength_or_frequency: 708.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 708.75
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Fluorescence baseline, red edge
+- name: Oa12 - 753.75 nm
+  wavelength_or_frequency: 753.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 753.75
+  bandwidth_nm: 7.5
+  resolution_m: 300.0
+  typical_use: O2 absorption reference
+- name: Oa13 - 761.25 nm
+  wavelength_or_frequency: 761.25 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 761.25
+  bandwidth_nm: 2.5
+  resolution_m: 300.0
+  typical_use: O2 A-band, cloud top pressure
+- name: Oa14 - 764.375 nm
+  wavelength_or_frequency: 764.375 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 764.375
+  bandwidth_nm: 3.75
+  resolution_m: 300.0
+  typical_use: O2 A-band
+- name: Oa15 - 767.5 nm
+  wavelength_or_frequency: 767.5 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 767.5
+  bandwidth_nm: 2.5
+  resolution_m: 300.0
+  typical_use: O2 A-band
+- name: Oa16 - 778.75 nm
+  wavelength_or_frequency: 778.75 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 778.75
+  bandwidth_nm: 15.0
+  resolution_m: 300.0
+  typical_use: Atmospheric and aerosol correction
+- name: Oa17 - 865 nm
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 865
+  bandwidth_nm: 20.0
+  resolution_m: 300.0
+  typical_use: Atmospheric correction, vegetation
+- name: Oa18 - 885 nm
+  wavelength_or_frequency: 885 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 885
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Water vapour reference
+- name: Oa19 - 900 nm
+  wavelength_or_frequency: 900 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 900
+  bandwidth_nm: 10.0
+  resolution_m: 300.0
+  typical_use: Water vapour
+- name: Oa20 - 940 nm
+  wavelength_or_frequency: 940 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 940
+  bandwidth_nm: 20.0
+  resolution_m: 300.0
+  typical_use: Water vapour absorption
+- name: Oa21 - 1020 nm
+  wavelength_or_frequency: 1020 nm
+  spatial_resolution: 300 m (FR) / 1.2 km (RR)
+  wavelength_nm: 1020
+  bandwidth_nm: 40.0
+  resolution_m: 300.0
+  typical_use: Atmospheric and aerosol correction
+spatial_resolution_summary: 300 m (full resolution) / 1.2 km (reduced resolution)
+processing_level:
+- L2
+derivable_products:
+- OGVI
+- OTCI
+- GIFAPAR
+- Chlorophyll-a (OC4ME, NN)
+- Total suspended matter
+- Water-leaving reflectance
+measured_variables:
+- Vegetation indices
+- FAPAR
+- Water-leaving reflectance
+- Chlorophyll concentration
+- Integrated water vapour
+data_format:
+- SEN3 (NetCDF4 files)
+temporal_range_start: 2016
+temporal_range_end: null
+data_latency: Near-real-time (about 3 hours) and non-time-critical (about 1 month)
+access_url: https://dataspace.copernicus.eu/browser/?productType=OL_2_LFR___
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- OData
+- STAC API
+- Python SDK
+documentation_url: https://sentiwiki.copernicus.eu/web/olci-processing
+snippets:
+- title: Python
+  lang: python
+  description: Downloads the OGVI layer of one Land Full Resolution product from the Planetary Computer
+    (no account needed) and plots it in swath geometry.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - xarray
+  - netCDF4
+  - requests
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import requests
+    import xarray as xr
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+
+    search = catalog.search(
+        collections=["sentinel-3-olci-lfr-l2-netcdf"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-06-01/2024-06-05",
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No products found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "products; using", item.id)
+    print("assets:", sorted(item.assets))
+
+
+    def fetch(key):
+        path = key + ".nc"
+        with requests.get(item.assets[key].href, stream=True) as r:
+            r.raise_for_status()
+            with open(path, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1 << 20):
+                    f.write(chunk)
+        return xr.open_dataset(path)
+
+
+    ogvi = fetch("ogvi")                 # OLCI Global Vegetation Index (swath, not gridded)
+    var = list(ogvi.data_vars)[0]
+    print(ogvi[var])
+    ogvi[var].plot(cmap="YlGn", vmin=0, vmax=1)
+    plt.title(item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Only Level-1 is in Earth Engine; this computes a simple radiance-based index.
+  code: |
+    // Earth Engine only hosts the Level-1 OLCI radiances (COPERNICUS/S3/OLCI).
+    // For Level-2 land/water products use the Python tab or the Copernicus Data Space.
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+    var img = ee.ImageCollection('COPERNICUS/S3/OLCI').filterBounds(aoi)
+      .filterDate('2024-06-01', '2024-06-10').median();
+    // Simple vegetation index from OLCI bands Oa17 (865 nm) and Oa8 (665 nm)
+    var ndvi = img.normalizedDifference(['Oa17_radiance', 'Oa08_radiance']);
+    Map.centerObject(aoi, 6);
+    Map.addLayer(ndvi, {min: 0, max: 0.8, palette: ['white', 'green']}, 'OLCI NDVI-like index');
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # OLCI Level-2 Land Full Resolution (use OL_2_WFR for water)
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-3' and contains(Name,'OL_2_LFR') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
+related_datasets:
+- sentinel-3-olci-l1
+- sentinel-2-msi-l2a
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Water products (WFR) carry the standard ocean-colour flags: always apply the WQSF mask before
+  using chlorophyll or reflectance values. For fine-resolution vegetation work Sentinel-2 is usually better;
+  OLCI shines for daily regional/global coverage.'
+known_limitations: Land products are provided in swath geometry (not map-projected); you have to reproject
+  them yourself. Clouds, glint and adjacency effects limit the water products near coasts.
+example_use_cases: Lake and coastal water quality time series; terrestrial chlorophyll index (OTCI) for
+  vegetation stress; global FAPAR monitoring.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

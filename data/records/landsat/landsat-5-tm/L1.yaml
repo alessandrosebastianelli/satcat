@@ -1,0 +1,163 @@
+id: landsat-5-tm-l1
+level: L1
+level_summary: 'Level 1 (Collection 2): geometrically and radiometrically calibrated digital numbers (Tier
+  1 / Tier 2 / RT), with metadata to convert to radiance or TOA reflectance.'
+bands:
+- name: B1 - Blue
+  wavelength_or_frequency: 485 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 485
+  bandwidth_nm: 70.0
+  resolution_m: 30.0
+  typical_use: Water penetration, soil/vegetation
+- name: B2 - Green
+  wavelength_or_frequency: 560 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 560
+  bandwidth_nm: 80.0
+  resolution_m: 30.0
+  typical_use: Vegetation vigour
+- name: B3 - Red
+  wavelength_or_frequency: 660 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 660
+  bandwidth_nm: 60.0
+  resolution_m: 30.0
+  typical_use: Chlorophyll absorption, NDVI red
+- name: B4 - NIR
+  wavelength_or_frequency: 830 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 830
+  bandwidth_nm: 140.0
+  resolution_m: 30.0
+  typical_use: Biomass, NDVI near-infrared
+- name: B5 - SWIR1
+  wavelength_or_frequency: 1650 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 1650
+  bandwidth_nm: 200.0
+  resolution_m: 30.0
+  typical_use: Vegetation and soil moisture, snow/cloud
+- name: B6 - Thermal infrared
+  wavelength_or_frequency: 11.45 um
+  spatial_resolution: 120 m
+  wavelength_nm: 11450
+  bandwidth_nm: 2100.0
+  resolution_m: 120.0
+  typical_use: Surface temperature (120 m, resampled to 30 m)
+- name: B7 - SWIR2
+  wavelength_or_frequency: 2215 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 2215
+  bandwidth_nm: 270.0
+  resolution_m: 30.0
+  typical_use: Geology, burned area, moisture
+spatial_resolution_summary: 30 m (thermal 120 m, resampled to 30 m)
+processing_level:
+- L1
+derivable_products:
+- TOA reflectance
+- NDVI
+- Brightness temperature
+- Land cover
+measured_variables:
+- Radiance
+- TOA reflectance
+- Brightness temperature
+data_format:
+- GeoTIFF
+- COG
+temporal_range_start: 1984
+temporal_range_end: 2012
+data_latency: Historical archive (static)
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- USGS M2M API
+- STAC API
+- Google Earth Engine
+- AWS S3 (requester pays)
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-thematic-mapper
+snippets:
+- title: Python
+  lang: python
+  description: Level-1 top-of-atmosphere reflectance through the Earth Engine Python API. Needs a Google
+    account with Earth Engine access; the notebook asks for your Cloud project ID.
+  requirements:
+  - earthengine-api
+  code: |
+    import ee
+    from IPython.display import Image, display
+
+    # One-off sign-in with a Google account that has Earth Engine access
+    ee.Authenticate()
+    PROJECT = input("Google Cloud project ID registered for Earth Engine: ")
+    ee.Initialize(project=PROJECT)
+
+    point = ee.Geometry.Point([12.5, 41.9])           # Rome - change to your area
+    collection = (
+        ee.ImageCollection("LANDSAT/LT05/C02/T1_TOA")
+        .filterBounds(point)
+        .filterDate("2005-06-01", "2005-08-31")
+        .sort("CLOUD_COVER")
+    )
+    print("scenes:", collection.size().getInfo())
+    image = ee.Image(collection.first())
+    print("least cloudy scene:", image.get("system:index").getInfo(), "cloud cover:", image.get("CLOUD_COVER").getInfo())
+
+    url = image.select(['B3', 'B2', 'B1']).getThumbURL({
+        "min": 0, "max": 0.3, "dimensions": 900,
+        "region": point.buffer(30000).bounds(),
+    })
+    display(Image(url=url))
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Landsat 5 TM top-of-atmosphere reflectance (true colour)
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('LANDSAT/LT05/C02/T1_TOA')
+      .filterBounds(aoi)
+      .filterDate('2005-06-01', '2005-08-31')
+      .sort('CLOUD_COVER');
+
+    print('Scenes:', collection.size());
+    var image = ee.Image(collection.first());
+    Map.centerObject(aoi, 9);
+    Map.addLayer(image, {bands: ['B3', 'B2', 'B1'], min: 0, max: 0.3}, 'Least cloudy scene');
+- title: Original Method
+  lang: bash
+  description: Official USGS distribution. EarthExplorer and the M2M API need a free USGS account; the
+    AWS bucket is requester-pays.
+  code: |
+    # Landsat 5 TM Level-1
+    # USGS Collection 2 archive on AWS (requester-pays bucket: needs an AWS account).
+    # Path/row 191/031 is Rome (WRS-2) - find yours on https://landsat.usgs.gov/landsat_acq
+    aws s3 ls --request-payer requester s3://usgs-landsat/collection02/level-1/standard/tm/2023/191/031/
+    aws s3 cp --request-payer requester --recursive \
+      s3://usgs-landsat/collection02/level-1/standard/tm/2023/191/031/SCENE_ID/ ./SCENE_ID/
+
+    # Free alternative without AWS: search and download from EarthExplorer
+    # https://earthexplorer.usgs.gov  (free USGS ERS account) or the M2M API:
+    # https://m2m.cr.usgs.gov/
+related_datasets:
+- landsat-5-tm-l2
+- landsat-5-mss-l1
+- landsat-4-tm-l1
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Collection 2 Level-1 comes in Tier 1 (best geometric/radiometric quality, use for time series),
+  Tier 2 and Real-Time (RT). Prefer Tier 1.
+known_limitations: Pre-2000 coverage is uneven. Band 6 thermal is 120 m. Landsat 5 had a long 1990s-2000s
+  history of data gaps outside some ground stations.
+example_use_cases: Multi-decadal land cover change; urban growth; glacier retreat; historical burned area.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

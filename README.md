@@ -29,3 +29,15 @@ as a **static, zero-backend, zero-build site** published on GitHub Pages.
   fork+PR for you. New files are picked up automatically, nothing else to
   update. See `.github/PULL_REQUEST_TEMPLATE.md` for the full review
   checklist.
+
+## Code snippets and Colab notebooks
+
+Each record lists code examples as tabs (`snippets:` in the YAML: `title`, `lang`, optional `description`, `requirements`, `code`). Put the Python example first.
+Each `_satellite.yaml` can set `colab_notebook: notebooks/<satellite>.ipynb`. Notebooks are generated from the first Python snippet of each level:
+
+```bash
+python tools/build_notebooks.py          # regenerate
+python tools/build_notebooks.py --check  # fail if notebooks are stale
+```
+
+The "Open in Colab" button needs the repository to be public.

@@ -1,0 +1,43 @@
+mission_name: Sentinel-5P
+sensor_name: TROPOMI (TROPOspheric Monitoring Instrument)
+agency: ESA / Copernicus (with Netherlands Space Office)
+mission_family: Sentinel
+status: Active
+launch_year: 2017
+end_of_life_year: null
+short_description: Daily global mapping of NO2, O3, SO2, CO, CH4, HCHO, aerosols and clouds at about 5.5
+  x 3.5 km.
+long_description: Sentinel-5 Precursor carries TROPOMI, a nadir-viewing imaging spectrometer covering
+  the ultraviolet, visible, near-infrared and shortwave infrared. It was launched on 13 October 2017 and
+  observes the whole globe daily at a ground pixel of 7 x 3.5 km, reduced to 5.5 x 3.5 km from August
+  2019. It is the reference dataset for tropospheric NO2 and for satellite methane and carbon monoxide,
+  and serves the Copernicus Atmosphere Monitoring Service.
+instrument_type: Imaging spectrometer - UV/VIS/NIR/SWIR
+orbit_type: LEO - Sun-synchronous (13:30 ascending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- NO2
+- ozone
+- methane
+- CO
+- SO2
+- air quality
+- copernicus
+links:
+- label: Copernicus Data Space Ecosystem
+  url: https://dataspace.copernicus.eu
+- label: Sentinel Online (ESA)
+  url: https://sentiwiki.copernicus.eu
+- label: Sentinel-5P on Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/sentinel-5p
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2600 km
+radiometric_resolution: Not stated (hyperspectral)
+temporal_resolution: Daily (one overpass per day at about 13:30 local time)
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-5p-tropomi.ipynb
+last_updated_by: Alessandro Sebastianelli

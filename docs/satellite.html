@@ -22,7 +22,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 <script src="static/config.js?v=2"></script>
-<script src="static/catalog.js?v=5"></script>
+<script src="static/catalog.js?v=6"></script>
 <script>
 document.getElementById('repo-link').href = getRepoUrl();
 var folder = new URLSearchParams(window.location.search).get('folder');
@@ -61,6 +61,7 @@ if (!folder) {
         (sat.end_of_life_year ? ' \u2013 ' + sat.end_of_life_year : '') + '</p></div>' +
       '<div><span class="badge status-' + esc(sat.status).toLowerCase().replace(/ /g, '-') + '">' + esc(sat.status) + '</span></div></div>' +
       '<p class="short-desc-big">' + esc(sat.short_description) + '</p>' +
+      (getColabUrl(sat) ? '<p><a class="btn btn-small colab-btn" href="' + getColabUrl(sat) + '" target="_blank" rel="noopener">\u25b6 Try it in Google Colab</a> <span class="hint">example notebook with a runnable Python snippet for each processing level</span></p>' : '') +
       (sat.long_description ? '<section><h2>About this satellite</h2><div class="prose">' + esc(sat.long_description) + '</div></section>' : '') +
       '<section><h2>Available processing levels</h2>' +
       '<p class="hint">Pick a level to see full technical details, access info, and download scripts for that specific product.</p>' +

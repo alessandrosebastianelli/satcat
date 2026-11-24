@@ -1,0 +1,39 @@
+mission_name: Landsat 1
+sensor_name: MSS (Multispectral Scanner)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1972
+end_of_life_year: 1978
+short_description: Four-band multispectral scanner (green to near infrared) of Landsat 1, part of the
+  oldest continuous satellite land record.
+long_description: Landsat 1 (originally ERTS-1) was launched on 23 July 1972 and was the first satellite
+  dedicated to monitoring Earth's land. It carried the Multispectral Scanner (MSS, four bands from green
+  to near infrared at about 79 m) and the Return Beam Vidicon cameras, and operated until January 1978.
+instrument_type: Optical - Multispectral scanner (4 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- MSS
+- historical
+- land cover change
+- Landsat 1
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Quasi-global, limited by ground station visibility (no onboard recorder coverage
+  for many regions in early years)
+swath_width: 185 km
+radiometric_resolution: 6 bit (128 levels in band 7 for some products)
+temporal_resolution: 18 days
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-1-mss.ipynb
+last_updated_by: Alessandro Sebastianelli

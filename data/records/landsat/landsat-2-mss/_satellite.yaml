@@ -1,0 +1,38 @@
+mission_name: Landsat 2
+sensor_name: MSS (Multispectral Scanner)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1975
+end_of_life_year: 1982
+short_description: Four-band multispectral scanner (green to near infrared) of Landsat 2, part of the
+  oldest continuous satellite land record.
+long_description: Landsat 2 was launched on 22 January 1975 and continued the MSS record of Landsat 1
+  until it was retired in 1982.
+instrument_type: Optical - Multispectral scanner (4 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- MSS
+- historical
+- land cover change
+- Landsat 2
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Quasi-global, limited by ground station visibility (no onboard recorder coverage
+  for many regions in early years)
+swath_width: 185 km
+radiometric_resolution: 6 bit (128 levels in band 7 for some products)
+temporal_resolution: 18 days
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-2-mss.ipynb
+last_updated_by: Alessandro Sebastianelli

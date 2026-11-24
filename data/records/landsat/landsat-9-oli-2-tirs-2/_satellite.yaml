@@ -1,0 +1,39 @@
+mission_name: Landsat 9
+sensor_name: OLI-2 / TIRS-2
+agency: NASA / USGS
+mission_family: Landsat
+status: Active
+launch_year: 2021
+end_of_life_year: null
+short_description: Eleven-band optical and thermal imager at 30 m (thermal 100 m), the current reference
+  for medium-resolution land monitoring.
+long_description: Landsat 9 was launched on 27 September 2021 and is a near-copy of Landsat 8 with OLI-2
+  (14-bit radiometry, improving dynamic range over dark and bright targets) and TIRS-2 (improved stray-light
+  performance). Together with Landsat 8 it provides an 8-day global revisit.
+instrument_type: Optical - Multispectral + thermal (11 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- OLI
+- TIRS
+- NDVI
+- land surface temperature
+- Landsat 9
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Global land
+swath_width: 185 km
+radiometric_resolution: 14 bit (OLI-2), 12 bit (TIRS-2)
+temporal_resolution: 16 days (8 days combining Landsat 8 and 9)
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-9-oli-2-tirs-2.ipynb
+last_updated_by: Alessandro Sebastianelli

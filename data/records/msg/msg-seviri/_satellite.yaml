@@ -1,0 +1,53 @@
+mission_name: MSG (Meteosat Second Generation)
+sensor_name: SEVIRI (Spinning Enhanced Visible and InfraRed Imager)
+agency: EUMETSAT / ESA
+mission_family: MSG
+status: Active
+launch_year: 2002
+end_of_life_year: null
+short_description: '12-channel geostationary imager: a full-disc image every 15 minutes (3 km, HRV 1 km)
+  over Europe, Africa and the Atlantic, with 5-minute rapid scan and Indian Ocean coverage.'
+long_description: The Meteosat Second Generation satellites (Meteosat-8 launched 2002, -9 in 2005, -10
+  in 2012, -11 in 2015) carry SEVIRI, which scans the full Earth disc every 15 minutes in 12 channels
+  (11 at 3 km at the sub-satellite point and a 1 km high-resolution visible channel). A rapid scan service
+  repeats the northern third of the disc every 5 minutes, and the Indian Ocean Data Coverage (IODC) service
+  uses Meteosat-9 at 45.5 degrees east. Meteosat-8 was retired on 1 July 2022. Since Meteosat-12 (MTG-I1)
+  took over the prime service in 2025 the remaining MSG satellites act as rapid scan, backup and IODC
+  satellites, and their roles change over time, so check the EUMETSAT pages for the current configuration.
+  SEVIRI is the long-running source for nowcasting, cloud, fire, land surface temperature and climate
+  data records over Europe and Africa.
+instrument_type: Optical - Multispectral + thermal imager (12 channels, geostationary)
+orbit_type: GEO (0 degrees; rapid scan 9.5 E; IODC 45.5 E)
+internal_contact: Alessandro Sebastianelli
+tags:
+- geostationary
+- SEVIRI
+- MSG
+- nowcasting
+- cloud
+- fire
+- LST
+- Meteosat
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: MSG satellites (EUMETSAT)
+  url: https://www.eumetsat.int/meteosat-second-generation
+bbox_west: -80.0
+bbox_south: -80.0
+bbox_east: 80.0
+bbox_north: 80.0
+geographic_coverage: Full disc centred on 0 degrees longitude (about 80 degrees from the sub-satellite
+  point); Indian Ocean coverage from 45.5 E
+swath_width: Full Earth disc
+radiometric_resolution: 10 bit
+temporal_resolution: 15 minutes (full disc), 5 minutes (rapid scan over Europe and North Africa)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/msg-seviri.ipynb
+last_updated_by: Alessandro Sebastianelli
