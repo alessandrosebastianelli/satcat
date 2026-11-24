@@ -1,0 +1,49 @@
+mission_name: Metop-SG (Metop Second Generation)
+sensor_name: IASI-NG (Infrared Atmospheric Sounding Interferometer - New Generation)
+agency: EUMETSAT / ESA
+mission_family: Metop-SG
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: Next-generation hyperspectral infrared sounder with twice the spectral resolution and
+  about half the noise of IASI.
+long_description: IASI-NG, built by CNES, covers 645-2760 cm-1 with 0.25 cm-1 spectral resolution and
+  a 12 km footprint, improving vertical resolution and sensitivity to trace gases compared with IASI.
+  It flies on Metop-SG-A. Metop-SG-A1 was launched on 13 August 2025; Metop-SG-B1 is planned for launch
+  in late 2026 (check EUMETSAT for the current date). Product collections and formats are still being
+  introduced, so look them up in the Data Store.
+instrument_type: Hyperspectral infrared sounder (Fourier-transform interferometer)
+orbit_type: LEO sun-synchronous (about 830 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- IASI-NG
+- sounder
+- hyperspectral
+- temperature
+- humidity
+- trace gases
+- Metop-SG
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop-SG (EUMETSAT)
+  url: https://www.eumetsat.int/metop-sg
+- label: Metop-SG (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/MetOp-SG
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: Spectral resolution 0.25 cm-1
+temporal_resolution: Twice daily
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-sg-iasi-ng.ipynb
+last_updated_by: Alessandro Sebastianelli
