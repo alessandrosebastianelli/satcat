@@ -1,0 +1,48 @@
+mission_name: DMSP (Defense Meteorological Satellite Program)
+sensor_name: SSMIS (Special Sensor Microwave Imager/Sounder)
+agency: US Space Force / NOAA
+mission_family: DMSP
+status: Retired
+launch_year: 2003
+end_of_life_year: 2026
+short_description: 24-channel conical-scanning microwave imager/sounder (19-183 GHz) on DMSP F16-F19;
+  key source of passive microwave sea ice, wind and precipitation records. The programme is being retired.
+long_description: 'SSMIS combines imaging channels (19, 22, 37, 91 GHz) and sounding channels (50-60 GHz
+  temperature, 150/183 GHz humidity) with a 1700 km conical swath and continues the SSM/I record since
+  1987. DMSP data delivery has been progressively reduced: gaps began in 2025, and the Department of Defense
+  agreed to continue processing SSMIS data until the sensor fails or the programme formally ends, planned
+  for September 2026. Check NOAA, NASA and NSIDC notices for the current availability; sea-ice records
+  are being continued with AMSR2.'
+instrument_type: Passive microwave imager/sounder (24 channels, conical scan)
+orbit_type: LEO sun-synchronous (about 850 km, dawn-dusk / early morning orbits)
+internal_contact: Alessandro Sebastianelli
+tags:
+- DMSP
+- SSMIS
+- microwave
+- sea ice
+- passive microwave
+- retired
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+- label: NSIDC passive microwave data
+  url: https://nsidc.org
+- label: NASA GES DISC
+  url: https://disc.gsfc.nasa.gov
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 1700 km
+radiometric_resolution: 24 channels
+temporal_resolution: Daily polar coverage; about twice daily globally per satellite
+citation_doi: Acknowledge the data provider (NSIDC, NASA GES DISC or NOAA) and the DMSP/SSMIS product
+  used.
+colab_notebook: notebooks/dmsp-ssmis.ipynb
+last_updated_by: Alessandro Sebastianelli

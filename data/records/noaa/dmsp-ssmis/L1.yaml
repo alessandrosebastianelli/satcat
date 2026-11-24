@@ -1,0 +1,110 @@
+id: dmsp-ssmis-l1
+level: L1
+level_summary: 'Level 1: calibrated brightness temperatures (TDR/SDR, antenna and sensor temperatures)
+  and gridded polar brightness temperatures (NSIDC), plus intercalibrated products (GPM Level 1C).'
+bands:
+- name: 19.35 GHz (V, H)
+  wavelength_or_frequency: 19.35 GHz
+  spatial_resolution: about 45 x 73 km
+  resolution_m: 45000.0
+  frequency_ghz: 19.35
+  typical_use: Ocean wind, sea ice, rain
+- name: 22.235 GHz (V)
+  wavelength_or_frequency: 22.235 GHz
+  spatial_resolution: about 45 x 73 km
+  resolution_m: 45000.0
+  frequency_ghz: 22.235
+  typical_use: Water vapour
+- name: 37 GHz (V, H)
+  wavelength_or_frequency: 37 GHz
+  spatial_resolution: about 28 x 37 km
+  resolution_m: 28000.0
+  frequency_ghz: 37.0
+  typical_use: Sea ice, rain, cloud water
+- name: 50-60 GHz sounding
+  wavelength_or_frequency: 55 GHz
+  spatial_resolution: about 38 km
+  resolution_m: 38000.0
+  frequency_ghz: 55.0
+  typical_use: Temperature sounding
+- name: 91.655 GHz (V, H)
+  wavelength_or_frequency: 91.655 GHz
+  spatial_resolution: about 13 x 15 km
+  resolution_m: 13000.0
+  frequency_ghz: 91.655
+  typical_use: Ice, snow, precipitation
+- name: 150 and 183.31 GHz
+  wavelength_or_frequency: 183.31 GHz
+  spatial_resolution: about 13 km
+  resolution_m: 13000.0
+  frequency_ghz: 183.31
+  typical_use: Humidity, snowfall
+spatial_resolution_summary: 13-75 km depending on channel
+processing_level:
+- L1
+derivable_products:
+- Sea ice concentration
+- Snow
+- Ocean wind
+- Rain rate
+- Water vapour
+measured_variables:
+- Brightness temperature
+data_format:
+- HDF5
+- netCDF
+- Binary (NSIDC gridded)
+temporal_range_start: 2003
+temporal_range_end: 2026
+data_latency: Near real time while processed; archive otherwise
+access_url: https://nsidc.org/data/nsidc-0001
+requires_registration: true
+license_cost: Free (NASA Earthdata Login for NASA/NSIDC archives)
+api_type:
+- NASA CMR / earthaccess
+documentation_url: https://nsidc.org/data/user-resources/help-center
+snippets:
+- title: Python
+  lang: python
+  description: Lists the SSMIS brightness temperature collections available in NASA CMR (NSIDC and GES
+    DISC). Pick one and uncomment the search lines to download a granule. Reading depends on the product
+    format, so this record gives the search step only.
+  requirements:
+  - earthaccess
+  code: |
+    import earthaccess
+
+    earthaccess.login()                              # NASA Earthdata Login (free account), interactive
+    collections = earthaccess.search_datasets(keyword="SSMIS brightness temperature", count=20)
+    for c in collections:
+        print(c.summary()["short-name"], "|", c.get_umm("EntryTitle"))
+
+    # Pick a short name from the list above, then search and download granules, for example:
+    # results = earthaccess.search_data(short_name="NSIDC-0001", temporal=("2020-01-01", "2020-01-02"), count=1)
+    # files = earthaccess.download(results, "data")
+- title: Original Method
+  lang: bash
+  description: 'Official archives: NOAA CLASS, NSIDC, NASA GES DISC.'
+  code: |
+    # NOAA CLASS (https://www.class.noaa.gov) holds the SSMIS SDR/TDR archive.
+    # NSIDC distributes gridded polar brightness temperatures: https://nsidc.org/data/nsidc-0001 (SSM/I-SSMIS daily polar gridded Tb)
+    # Check the NSIDC and NASA notices on SSMIS availability before relying on near-real-time data.
+related_datasets:
+- jpss-atms-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Availability: gaps from 2025 and the formal end of the DMSP programme planned for September 2026:
+  check the NOAA, NASA and NSIDC notices. The record is kept as a historical source of passive microwave
+  data.'
+known_limitations: 'Data gaps since 2025; the product format depends on the archive (NSIDC binary/netCDF,
+  HDF5 swaths). The Python example does not read the data: it only finds the collection.'
+example_use_cases: Long records of sea ice extent and concentration; precipitation and wind studies.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

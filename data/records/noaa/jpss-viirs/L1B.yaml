@@ -1,0 +1,244 @@
+id: jpss-viirs-l1b
+level: L1B
+level_summary: 'Level 1B (NASA VNP02/VJ102/VJ202): calibrated radiances and reflectances for the M (VNP02MOD),
+  I (VNP02IMG) bands and DNB, with geolocation in VNP03.'
+bands:
+- name: I1
+  wavelength_or_frequency: 640 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 640
+  bandwidth_nm: 80.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: clouds, vegetation'
+- name: I2
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 865
+  bandwidth_nm: 39.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: vegetation, water'
+- name: I3
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: snow/ice, cloud phase'
+- name: I4
+  wavelength_or_frequency: 3.74 um
+  spatial_resolution: 375 m
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: fire, low cloud'
+- name: I5
+  wavelength_or_frequency: 11.45 um
+  spatial_resolution: 375 m
+  wavelength_nm: 11450
+  bandwidth_nm: 1900.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: cloud and surface temperature'
+- name: M1
+  wavelength_or_frequency: 412 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 412
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M2
+  wavelength_or_frequency: 445 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 445
+  bandwidth_nm: 18.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M3
+  wavelength_or_frequency: 488 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 488
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M4
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, vegetation
+- name: M5
+  wavelength_or_frequency: 672 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 672
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M6
+  wavelength_or_frequency: 746 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 746
+  bandwidth_nm: 15.0
+  resolution_m: 750.0
+  typical_use: Atmospheric correction
+- name: M7
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 865
+  bandwidth_nm: 39.0
+  resolution_m: 750.0
+  typical_use: Vegetation, ocean aerosol
+- name: M8
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Cloud particle size, snow
+- name: M9
+  wavelength_or_frequency: 1378 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1378
+  bandwidth_nm: 15.0
+  resolution_m: 750.0
+  typical_use: Cirrus
+- name: M10
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 750.0
+  typical_use: Snow/ice, cloud
+- name: M11
+  wavelength_or_frequency: 2250 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 750.0
+  typical_use: Cloud, aerosol
+- name: M12
+  wavelength_or_frequency: 3.7 um
+  spatial_resolution: 750 m
+  wavelength_nm: 3700
+  bandwidth_nm: 180.0
+  resolution_m: 750.0
+  typical_use: SST, fire
+- name: M13
+  wavelength_or_frequency: 4.05 um
+  spatial_resolution: 750 m
+  wavelength_nm: 4050
+  bandwidth_nm: 155.0
+  resolution_m: 750.0
+  typical_use: SST, fire
+- name: M14
+  wavelength_or_frequency: 8.55 um
+  spatial_resolution: 750 m
+  wavelength_nm: 8550
+  bandwidth_nm: 300.0
+  resolution_m: 750.0
+  typical_use: Cloud-top properties
+- name: M15
+  wavelength_or_frequency: 10.763 um
+  spatial_resolution: 750 m
+  wavelength_nm: 10763
+  bandwidth_nm: 1000.0
+  resolution_m: 750.0
+  typical_use: SST, LST, cloud top
+- name: M16
+  wavelength_or_frequency: 12.013 um
+  spatial_resolution: 750 m
+  wavelength_nm: 12013
+  bandwidth_nm: 950.0
+  resolution_m: 750.0
+  typical_use: Split window SST, LST
+- name: DNB
+  wavelength_or_frequency: 0.5-0.9 um (broadband)
+  spatial_resolution: 750 m
+  wavelength_nm: 700
+  bandwidth_nm: 385.0
+  resolution_m: 750.0
+  typical_use: 'Day/night band: night lights, moonlit clouds'
+spatial_resolution_summary: 375 m (I-bands), 750 m (M-bands, DNB)
+processing_level:
+- L1B
+derivable_products:
+- Reflectance
+- Brightness temperature
+- RGB imagery
+- Fire detection
+- Night lights
+measured_variables:
+- Radiance
+- Reflectance
+- Brightness temperature
+data_format:
+- netCDF4
+temporal_range_start: 2012
+temporal_range_end: null
+data_latency: NRT about 3 hours (LANCE); standard products days later
+access_url: https://www.earthdata.nasa.gov/data/instruments/viirs
+requires_registration: true
+license_cost: Free (NASA Earthdata Login for NASA products; NOAA data on AWS are anonymous)
+api_type:
+- NASA CMR / earthaccess
+- AWS S3 (anonymous)
+- Google Earth Engine
+documentation_url: https://viirsland.gsfc.nasa.gov/
+snippets:
+- title: Python
+  lang: python
+  description: Searches NASA CMR for one VIIRS L1B granule (Suomi NPP, VNP02MOD) over Rome, downloads
+    it with an Earthdata Login and plots M15. Use VJ102MOD for NOAA-20 and VJ202MOD for NOAA-21.
+  requirements:
+  - earthaccess
+  - xarray
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import earthaccess
+    import matplotlib.pyplot as plt
+    import xarray as xr
+
+    earthaccess.login()                              # NASA Earthdata Login (free account), interactive
+    results = earthaccess.search_data(short_name="VNP02MOD", temporal=("2024-06-01", "2024-06-01"),
+                                      bounding_box=(12.0, 41.0, 13.0, 42.5), count=1)
+    print(len(results), "granule(s)")
+    files = earthaccess.download(results, "data")
+
+    ds = xr.open_dataset(files[0], group="observation_data")
+    print(list(ds.data_vars)[:30])
+    da = ds["M15"]                                   # brightness temperature, 10.76 um (K)
+    da[::4, ::4].plot(cmap="gray_r", robust=True)
+    plt.title("VIIRS M15 brightness temperature")
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Collection 2 (5200) archive of VNP02MOD. VJ102MOD (NOAA-20) and VJ202MOD (NOAA-21) are
+    in the same archive.
+  code: |
+    # NASA LAADS DAAC (needs an Earthdata token: https://ladsweb.modaps.eosdis.nasa.gov/profile/#app-keys)
+    TOKEN="YOUR_EARTHDATA_TOKEN"
+    wget -e robots=off -m -np -nH --cut-dirs=4 -A ".nc" \
+      --header "Authorization: Bearer $TOKEN" \
+      "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/5200/VNP02MOD/2024/153/" -P data
+related_datasets:
+- jpss-viirs-l2
+- jpss-viirs-l3
+- modis-terra-l1b
+- metop-sg-metimage-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'NASA short names: VNP02MOD/VNP02IMG/VNP03MOD (Suomi NPP), VJ102MOD/VJ102IMG (NOAA-20), VJ202MOD/VJ202IMG
+  (NOAA-21). NOAA also distributes SDR/EDR on AWS (noaa-nesdis-*-pds).'
+known_limitations: Large granules (6 minutes each); the netCDF groups require group= when opening; Suomi
+  NPP data delivery ceased on 2 November 2026.
+example_use_cases: Fire detection; cloud and SST monitoring; night lights; continuation of MODIS.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

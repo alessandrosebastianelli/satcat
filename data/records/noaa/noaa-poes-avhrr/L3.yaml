@@ -1,0 +1,132 @@
+id: noaa-poes-avhrr-l3
+level: L3
+level_summary: 'Level 3: NOAA Climate Data Records from AVHRR: daily 0.05 degree surface reflectance and
+  NDVI (AVHRR Land CDR, 1981-present) and daily SST (OISST).'
+bands:
+- name: Ch1 - visible
+  wavelength_or_frequency: 0.58-0.68 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 630
+  bandwidth_nm: 100.0
+  resolution_m: 1100.0
+  typical_use: Clouds, vegetation, snow (daytime)
+- name: Ch2 - near infrared
+  wavelength_or_frequency: 0.725-1.0 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 862
+  bandwidth_nm: 275.0
+  resolution_m: 1100.0
+  typical_use: Vegetation, water/land contrast
+- name: Ch3a - shortwave infrared
+  wavelength_or_frequency: 1.58-1.64 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 1100.0
+  typical_use: Snow/ice and cloud phase (daytime)
+- name: Ch3b - mid infrared
+  wavelength_or_frequency: 3.55-3.93 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 1100.0
+  typical_use: Fires, night low cloud, SST
+- name: Ch4 - thermal infrared
+  wavelength_or_frequency: 10.3-11.3 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 10800
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: Cloud top and surface temperature
+- name: Ch5 - thermal infrared
+  wavelength_or_frequency: 11.5-12.5 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 12000
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: 'Split window: SST, dust, ash'
+spatial_resolution_summary: 0.05 degrees (about 5.5 km)
+processing_level:
+- L3
+derivable_products:
+- NDVI
+- Surface reflectance
+- BT
+- SST (OISST)
+measured_variables:
+- NDVI
+- Surface reflectance
+- Brightness temperature
+data_format:
+- netCDF4
+temporal_range_start: 1981
+temporal_range_end: null
+data_latency: Daily CDR with latency of days (the AVHRR record continues from Metop/other satellites)
+access_url: https://registry.opendata.aws/noaa-cdr-ndvi/
+requires_registration: false
+license_cost: Free and open (NOAA open data policy)
+api_type:
+- AWS S3 (anonymous)
+- Google Earth Engine
+documentation_url: https://www.ncei.noaa.gov/products/climate-data-records/normalized-difference-vegetation-index
+snippets:
+- title: Python
+  lang: python
+  description: Reads one daily NDVI file of the NOAA AVHRR Land CDR (global, 0.05 degrees) from the public
+    NOAA bucket on AWS (no credentials) and plots it.
+  requirements:
+  - s3fs
+  - xarray
+  - h5netcdf
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import s3fs
+    import xarray as xr
+
+    fs = s3fs.S3FileSystem(anon=True)                # public NOAA bucket, no credentials needed
+    BUCKET, YEAR, DAY = "noaa-cdr-ndvi-pds", 2020, "20200601"
+    files = [f for f in fs.ls("%s/data/%d/" % (BUCKET, YEAR)) if DAY in f]
+    print(files)
+    if not files:
+        raise SystemExit("No file for this day: list the prefix to see what is available")
+
+    with fs.open(files[0]) as fobj:
+        ds = xr.open_dataset(fobj, engine="h5netcdf").load()
+    print(ds)
+    ds["NDVI"].isel(time=0)[::5, ::5].plot(cmap="YlGn", vmin=0, vmax=1)
+    plt.title("NOAA CDR AVHRR NDVI, 1 June 2020 (0.05 degrees)")
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Mean AVHRR NDVI for one week. The raw NDVI is scaled by 0.0001.
+  code: |
+    // NOAA CDR AVHRR NDVI, daily, 0.05 degrees (1981 onwards)
+    var ndvi = ee.ImageCollection("NOAA/CDR/AVHRR/NDVI/V5").filterDate("2020-06-01", "2020-06-08").select("NDVI").mean();
+    Map.setCenter(12.5, 41.9, 5);
+    Map.addLayer(ndvi.multiply(0.0001), {min: 0, max: 1, palette: ["white", "green"]}, "AVHRR NDVI");
+- title: Original Method
+  lang: bash
+  description: 'Public bucket on AWS. Official source: NOAA NCEI climate data records.'
+  code: |
+    aws s3 ls --no-sign-request s3://noaa-cdr-ndvi-pds/data/2020/ | head
+related_datasets:
+- noaa-poes-avhrr-l1b
+- metop-avhrr-l1b
+- modis-terra-aqua-mcd-l3
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Earth Engine collection IDs: NOAA/CDR/AVHRR/NDVI/V5 and NOAA/CDR/AVHRR/SR/V5 (surface reflectance);
+  verify the version in the Earth Engine catalog.'
+known_limitations: Coarse resolution; cloud and aerosol contamination in daily data; sensor and orbit
+  differences between satellites.
+example_use_cases: Multi-decade vegetation trends; comparison with MODIS/VIIRS NDVI.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

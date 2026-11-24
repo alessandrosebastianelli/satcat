@@ -1,0 +1,48 @@
+mission_name: Metop-SG (Metop Second Generation)
+sensor_name: SCA (Scatterometer)
+agency: EUMETSAT / ESA
+mission_family: Metop-SG
+status: Planned
+launch_year: 2026
+end_of_life_year: null
+short_description: C-band (5.355 GHz) scatterometer for ocean winds and land backscatter, successor of
+  ASCAT, on Metop-SG-B.
+long_description: SCA flies on Metop-SG-B and uses six antennas in two swaths to improve coverage and
+  resolution relative to ASCAT, adding cross-polarised measurements that help retrieve strong winds in
+  storms. Metop-SG-A1 was launched on 13 August 2025; Metop-SG-B1 is planned for launch in late 2026 (check
+  EUMETSAT for the current date). Product collections and formats are still being introduced, so look
+  them up in the Data Store.
+instrument_type: Active microwave - C-band scatterometer
+orbit_type: LEO sun-synchronous (about 830 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- SCA
+- scatterometer
+- ocean winds
+- soil moisture
+- C-band
+- Metop-SG
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop-SG (EUMETSAT)
+  url: https://www.eumetsat.int/metop-sg
+- label: Metop-SG (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/MetOp-SG
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2 x 640 km
+radiometric_resolution: Backscatter in dB
+temporal_resolution: Daily global coverage
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-sg-sca.ipynb
+last_updated_by: Alessandro Sebastianelli

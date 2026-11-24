@@ -1,0 +1,39 @@
+mission_name: GOES-R series (GOES-16, -18, -19)
+sensor_name: GLM (Geostationary Lightning Mapper)
+agency: NOAA / NASA
+mission_family: GOES-R
+status: Active
+launch_year: 2016
+end_of_life_year: null
+short_description: Continuous optical lightning detection (777.4 nm) over the Americas and adjacent oceans
+  at about 8 km, 2 ms frame rate; reports events, groups and flashes.
+long_description: GLM detects total lightning (intracloud and cloud-to-ground) in the oxygen line near
+  777.4 nm, day and night, with a 1372 x 1300 pixel CCD at 500 frames per second. It flies on GOES-16,
+  -18 and -19. It complements the Lightning Imager on MTG.
+instrument_type: Optical - single-band lightning mapper (777.4 nm)
+orbit_type: GEO (GOES-East 75.2 W, GOES-West 137 W)
+internal_contact: Alessandro Sebastianelli
+tags:
+- GOES
+- GLM
+- lightning
+- nowcasting
+- geostationary
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+bbox_west: -165.0
+bbox_south: -52.0
+bbox_east: -15.0
+bbox_north: 52.0
+geographic_coverage: Americas and adjacent oceans (approximate, within about 52 degrees latitude)
+swath_width: Disc coverage
+radiometric_resolution: Event energy
+temporal_resolution: Continuous (2 ms frames); files every 20 seconds
+citation_doi: 'NOAA data are in the public domain: acknowledge NOAA/NESDIS and the product name and version.'
+colab_notebook: notebooks/goes-r-glm.ipynb
+last_updated_by: Alessandro Sebastianelli

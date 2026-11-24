@@ -1,0 +1,46 @@
+mission_name: Metop (EPS)
+sensor_name: ASCAT (Advanced Scatterometer)
+agency: EUMETSAT / ESA
+mission_family: Metop
+status: Active
+launch_year: 2006
+end_of_life_year: null
+short_description: C-band (5.255 GHz) real-aperture scatterometer measuring ocean wind vectors (12.5 and
+  25 km) and land backscatter for soil moisture, on Metop-A/B/C.
+long_description: ASCAT is a C-band, vertically polarised radar with six fan-beam antennas covering two
+  550 km swaths separated by a gap at nadir. It provides sea-surface wind speed and direction and, over
+  land, normalised backscatter used for soil moisture (H SAF), vegetation and ice mapping. Metop-A (launched
+  2006) was decommissioned in November 2021. Metop-B (2012) and Metop-C (2018) are operational; the Metop-SG
+  series is replacing them. The follow-on SCA flies on Metop-SG-B.
+instrument_type: Active microwave - C-band scatterometer
+orbit_type: LEO sun-synchronous (about 817 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- ASCAT
+- Metop
+- scatterometer
+- ocean winds
+- soil moisture
+- C-band
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop (EUMETSAT)
+  url: https://www.eumetsat.int/our-satellites/metop-series
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global (two 550 km swaths)
+swath_width: 2 x 550 km
+radiometric_resolution: Backscatter sigma0 in dB
+temporal_resolution: Daily global coverage (about 82 percent per day per satellite)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-ascat.ipynb
+last_updated_by: Alessandro Sebastianelli

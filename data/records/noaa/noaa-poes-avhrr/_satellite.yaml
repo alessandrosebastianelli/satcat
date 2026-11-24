@@ -1,0 +1,44 @@
+mission_name: NOAA POES (NOAA-15, -16, -17, -18, -19)
+sensor_name: AVHRR/3 (Advanced Very High Resolution Radiometer)
+agency: NOAA
+mission_family: NOAA POES
+status: Retired
+launch_year: 1998
+end_of_life_year: 2025
+short_description: Six-channel imager on the NOAA polar orbiters (1.1 km LAC/HRPT, 4 km GAC); the basis
+  of the 1981-2025 AVHRR climate record. POES was decommissioned in 2025.
+long_description: The NOAA POES series (NOAA-15 launched 1998, -16 2000, -17 2002, -18 2005, -19 2009)
+  carried AVHRR/3, which provides daily global imagery in visible, near-infrared and thermal channels
+  and underpins long records of SST, vegetation (NDVI), snow and cloud. NOAA-18 was decommissioned on
+  6 June 2025, NOAA-19 on 13 August 2025 and NOAA-15 on 19 August 2025, ending the POES programme. Historical
+  data remain in NOAA CLASS and in reprocessed NOAA climate data records; the observations continue on
+  Metop (AVHRR/3) and JPSS (VIIRS).
+instrument_type: Optical - Multispectral + thermal imager (6 channels)
+orbit_type: LEO sun-synchronous (about 850 km; afternoon and early-morning orbits)
+internal_contact: Alessandro Sebastianelli
+tags:
+- AVHRR
+- POES
+- NOAA
+- SST
+- NDVI
+- climate record
+- polar
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2900 km
+radiometric_resolution: 10 bit
+temporal_resolution: Daily global coverage (2 passes per satellite)
+citation_doi: 'NOAA data are in the public domain: acknowledge NOAA/NESDIS and the product name and version.'
+colab_notebook: notebooks/noaa-poes-avhrr.ipynb
+last_updated_by: Alessandro Sebastianelli

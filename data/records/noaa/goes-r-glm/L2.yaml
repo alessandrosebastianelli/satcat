@@ -1,0 +1,99 @@
+id: goes-r-glm-l2
+level: L2
+level_summary: 'Level 2 Lightning Cluster-Filter Algorithm (LCFA): events, groups and flashes with location,
+  time, energy and area, in 20-second netCDF files.'
+bands:
+- name: GLM optical pulse
+  wavelength_or_frequency: 777.4 nm
+  spatial_resolution: 8 km at nadir (up to 14 km at the edge)
+  wavelength_nm: 777.4
+  bandwidth_nm: 1.0
+  resolution_m: 8000.0
+  typical_use: Lightning detection
+spatial_resolution_summary: 8 km at nadir
+processing_level:
+- L2
+derivable_products:
+- Flash density
+- Flash extent density
+- Lightning jump indicators
+measured_variables:
+- Lightning events
+- Groups
+- Flashes
+- Energy
+data_format:
+- netCDF4
+temporal_range_start: 2018
+temporal_range_end: null
+data_latency: Real time (about 20 seconds to 1 minute)
+access_url: https://registry.opendata.aws/noaa-goes/
+requires_registration: false
+license_cost: Free and open (NOAA open data policy)
+api_type:
+- AWS S3 (anonymous)
+- Google Earth Engine
+documentation_url: https://www.goes-r.gov/products/baseline-lightning-detection.html
+snippets:
+- title: Python
+  lang: python
+  description: Reads one 20 s GLM flash file from the public NOAA bucket on AWS (no credentials) and plots
+    the flash locations coloured by energy.
+  requirements:
+  - s3fs
+  - xarray
+  - h5netcdf
+  - matplotlib
+  - numpy
+  code: |
+    import datetime as dt
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import s3fs
+    import xarray as xr
+
+    fs = s3fs.S3FileSystem(anon=True)                # public NOAA bucket, no credentials needed
+    BUCKET = "noaa-goes19"                               # noaa-goes16, noaa-goes18, noaa-goes19 (GOES-17 until 2023)
+    PRODUCT = "GLM-L2-LCFA"                             # F = full disk, C = CONUS, M = mesoscale
+    day = dt.datetime(2025, 6, 1, 12)
+    prefix = "%s/%s/%s/%s/%s/" % (BUCKET, PRODUCT, day.strftime("%Y"), day.strftime("%j"), day.strftime("%H"))
+    files = [f for f in fs.ls(prefix) if "_G19_" in f]
+    print(len(files), "files in", prefix)
+    if not files:
+        raise SystemExit("No files: check the bucket (satellite) and the date")
+
+    with fs.open(files[0]) as fobj:
+        ds = xr.open_dataset(fobj, engine="h5netcdf").load()
+    print(ds)
+
+    print(ds["flash_lat"].size, "flashes in this 20 s file")
+    plt.scatter(ds["flash_lon"], ds["flash_lat"], c=ds["flash_energy"], s=8, cmap="plasma")
+    plt.colorbar(label="flash energy (J)")
+    plt.xlabel("longitude"); plt.ylabel("latitude")
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: 'GLM files are 20 s long: one hour has about 180 files. The same prefix pattern applies
+    to noaa-goes16 and noaa-goes18.'
+  code: |
+    aws s3 ls --no-sign-request s3://noaa-goes19/GLM-L2-LCFA/2025/152/12/
+related_datasets:
+- goes-r-abi-l2
+- mtg-li-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Gridded GLM products (flash extent density) are derived by NOAA and by community tools such as
+  glmtools.
+known_limitations: Detection efficiency varies with location and cloud; parallax affects flash locations;
+  GLM files are small but numerous.
+example_use_cases: Severe storm nowcasting; lightning climatology; wildfire ignition from lightning.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

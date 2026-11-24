@@ -1,0 +1,125 @@
+id: noaa-poes-avhrr-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated counts, radiances and brightness temperatures per orbit
+  in LAC (1.1 km), GAC (4 km) or HRPT formats.'
+bands:
+- name: Ch1 - visible
+  wavelength_or_frequency: 0.58-0.68 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 630
+  bandwidth_nm: 100.0
+  resolution_m: 1100.0
+  typical_use: Clouds, vegetation, snow (daytime)
+- name: Ch2 - near infrared
+  wavelength_or_frequency: 0.725-1.0 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 862
+  bandwidth_nm: 275.0
+  resolution_m: 1100.0
+  typical_use: Vegetation, water/land contrast
+- name: Ch3a - shortwave infrared
+  wavelength_or_frequency: 1.58-1.64 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 1100.0
+  typical_use: Snow/ice and cloud phase (daytime)
+- name: Ch3b - mid infrared
+  wavelength_or_frequency: 3.55-3.93 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 1100.0
+  typical_use: Fires, night low cloud, SST
+- name: Ch4 - thermal infrared
+  wavelength_or_frequency: 10.3-11.3 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 10800
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: Cloud top and surface temperature
+- name: Ch5 - thermal infrared
+  wavelength_or_frequency: 11.5-12.5 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 12000
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: 'Split window: SST, dust, ash'
+spatial_resolution_summary: 1.1 km (LAC/HRPT), 4 km (GAC)
+processing_level:
+- L1B
+derivable_products:
+- SST
+- NDVI
+- Cloud mask
+- Snow cover
+- Fire detection
+measured_variables:
+- Radiance
+- Reflectance
+- Brightness temperature
+data_format:
+- NOAA KLM / AVHRR L1B binary
+- HRPT
+temporal_range_start: 1998
+temporal_range_end: 2025
+data_latency: Archive only (POES decommissioned in 2025)
+access_url: https://www.class.noaa.gov
+requires_registration: true
+license_cost: Free (NOAA CLASS account)
+api_type:
+- NOAA CLASS order
+documentation_url: https://www.star.nesdis.noaa.gov/mirs/documents/KLM_User_Guide.pdf
+snippets:
+- title: Python
+  lang: python
+  description: Reads a local AVHRR L1B (GAC/LAC) file ordered from NOAA CLASS with satpy and plots channel
+    4. Without a file in ./data it only prints instructions, because L1B data must be ordered first.
+  requirements:
+  - satpy
+  - pygac
+  - matplotlib
+  code: |
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    # AVHRR L1B files ordered from NOAA CLASS (or received by direct broadcast) go in ./data
+    files = sorted(glob("data/**/*", recursive=True))
+    files = [f for f in files if "NSS.GHRR" in f or "NSS.LHRR" in f or f.endswith(".l1b")]
+    if not files:
+        print("No AVHRR L1B file found in ./data: order one from NOAA CLASS (see the Original Method tab) and re-run")
+    else:
+        scn = Scene(filenames=files[:1], reader="avhrr_l1b_gaclac")
+        scn.load(["4"])
+        scn["4"].plot(cmap="gray_r")
+        plt.title("AVHRR channel 4 (10.8 um)")
+        plt.show()
+- title: Original Method
+  lang: bash
+  description: NOAA CLASS is the official archive for the POES L1B record.
+  code: |
+    # 1. Create a free account at https://www.class.noaa.gov and search "AVHRR" (GAC / LAC / HRPT, satellite NOAA-15..19)
+    # 2. Place the order (small orders are delivered by FTP/HTTPS) and download the files into ./data
+    # 3. GAC files can be read with pygac / satpy; reprocessed AVHRR GAC FCDRs are also available from CM SAF / NCEI
+related_datasets:
+- metop-avhrr-l1b
+- noaa-poes-avhrr-l3
+- jpss-viirs-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Reprocessed AVHRR GAC fundamental climate data records (for example from the CM SAF) are better
+  suited to time series than operational L1B.
+known_limitations: Orbit drift and sensor degradation create trends in long records; calibration changes
+  between satellites; archive requires an order.
+example_use_cases: Long SST, vegetation and snow records; cloud climatologies; bridging to MODIS and VIIRS.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

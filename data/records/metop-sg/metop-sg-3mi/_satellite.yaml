@@ -1,0 +1,48 @@
+mission_name: Metop-SG (Metop Second Generation)
+sensor_name: 3MI (Multi-viewing, Multi-channel, Multi-polarisation Imaging)
+agency: EUMETSAT / ESA
+mission_family: Metop-SG
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: Multi-angle, polarimetric imager in 12 channels (410-2130 nm) at 4 km, dedicated to
+  aerosol and cloud characterisation.
+long_description: 3MI observes each scene from up to 14 viewing angles in 12 channels, with polarisation
+  in 9 of them, to retrieve aerosol optical depth, type and size, and cloud properties. It flies on Metop-SG-A,
+  with a swath of about 2200 km. Metop-SG-A1 was launched on 13 August 2025; Metop-SG-B1 is planned for
+  launch in late 2026 (check EUMETSAT for the current date). Product collections and formats are still
+  being introduced, so look them up in the Data Store.
+instrument_type: Multi-angle polarimetric imager (12 channels)
+orbit_type: LEO sun-synchronous (about 830 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- 3MI
+- aerosol
+- polarimetry
+- multi-angle
+- cloud
+- Metop-SG
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop-SG (EUMETSAT)
+  url: https://www.eumetsat.int/metop-sg
+- label: Metop-SG (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/MetOp-SG
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: 12 channels, 14 views
+temporal_resolution: Daily global coverage
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-sg-3mi.ipynb
+last_updated_by: Alessandro Sebastianelli

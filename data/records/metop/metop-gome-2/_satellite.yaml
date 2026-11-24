@@ -1,0 +1,48 @@
+mission_name: Metop (EPS)
+sensor_name: GOME-2 (Global Ozone Monitoring Experiment-2)
+agency: EUMETSAT / ESA
+mission_family: Metop
+status: Active
+launch_year: 2006
+end_of_life_year: null
+short_description: UV-visible-NIR spectrometer (240-790 nm) for ozone, NO2, SO2, HCHO, BrO and clouds
+  on Metop-A/B/C; 1920 km swath, 40 x 40 km pixels.
+long_description: GOME-2 is a nadir-viewing grating spectrometer observing back-scattered and reflected
+  sunlight at 0.26-0.51 nm resolution. It delivers global total column ozone, tropospheric NO2, SO2, formaldehyde,
+  BrO, water vapour, cloud and aerosol information, with typical global coverage in about 1.5 days. Metop-A
+  (launched 2006) was decommissioned in November 2021. Metop-B (2012) and Metop-C (2018) are operational;
+  the Metop-SG series is replacing them. GOME-2 continues the line of GOME and SCIAMACHY and is succeeded
+  by Sentinel-5 on Metop-SG.
+instrument_type: Hyperspectral UV-visible-NIR spectrometer (4 channels)
+orbit_type: LEO sun-synchronous (about 817 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- GOME-2
+- Metop
+- ozone
+- NO2
+- SO2
+- air quality
+- UV-Vis
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop (EUMETSAT)
+  url: https://www.eumetsat.int/our-satellites/metop-series
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 1920 km (Metop-B/C)
+radiometric_resolution: Spectral resolution 0.26-0.51 nm
+temporal_resolution: Global coverage in about 1.5 days
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-gome-2.ipynb
+last_updated_by: Alessandro Sebastianelli

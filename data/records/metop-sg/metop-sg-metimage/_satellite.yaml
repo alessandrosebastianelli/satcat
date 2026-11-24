@@ -1,0 +1,48 @@
+mission_name: Metop-SG (Metop Second Generation)
+sensor_name: MetImage (Meteorological Imager)
+agency: EUMETSAT / ESA
+mission_family: Metop-SG
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: 20-channel visible-to-thermal imager (443 nm to 13.3 um) with 500 m sampling and a
+  2670 km swath, successor of AVHRR on Metop-SG-A.
+long_description: MetImage (also called VII) is the high-resolution imager of Metop-SG-A. It covers 443
+  nm to 13.3 um in 20 channels and provides clouds, SST, land surface and snow information; it continues
+  AVHRR and complements VIIRS. Metop-SG-A1 was launched on 13 August 2025; Metop-SG-B1 is planned for
+  launch in late 2026 (check EUMETSAT for the current date). Product collections and formats are still
+  being introduced, so look them up in the Data Store.
+instrument_type: Optical - Multispectral + thermal imager (20 channels)
+orbit_type: LEO sun-synchronous (about 830 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- MetImage
+- VII
+- imager
+- SST
+- cloud
+- Metop-SG
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop-SG (EUMETSAT)
+  url: https://www.eumetsat.int/metop-sg
+- label: Metop-SG (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/MetOp-SG
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2670 km
+radiometric_resolution: 20 channels
+temporal_resolution: Daily global coverage
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-sg-metimage.ipynb
+last_updated_by: Alessandro Sebastianelli

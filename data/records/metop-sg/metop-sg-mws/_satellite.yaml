@@ -1,0 +1,49 @@
+mission_name: Metop-SG (Metop Second Generation)
+sensor_name: MWS (Microwave Sounder)
+agency: EUMETSAT / ESA
+mission_family: Metop-SG
+status: Active
+launch_year: 2025
+end_of_life_year: null
+short_description: 24-channel microwave sounder (23.8-229 GHz) combining AMSU-A and MHS capabilities with
+  new 118 GHz and 229 GHz channels.
+long_description: 'MWS replaces AMSU-A and MHS on Metop-SG-A: it covers temperature sounding near 50-57
+  GHz and 118.75 GHz, humidity near 183 GHz, and window channels from 23.8 to 229 GHz in a 2200 km swath.
+  Metop-SG-A1 was launched on 13 August 2025; Metop-SG-B1 is planned for launch in late 2026 (check EUMETSAT
+  for the current date). Product collections and formats are still being introduced, so look them up in
+  the Data Store.'
+instrument_type: Passive microwave sounder (24 channels)
+orbit_type: LEO sun-synchronous (about 830 km, 09:30 descending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- MWS
+- microwave
+- sounder
+- temperature
+- humidity
+- ATOVS
+- Metop-SG
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: Metop-SG (EUMETSAT)
+  url: https://www.eumetsat.int/metop-sg
+- label: Metop-SG (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/MetOp-SG
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: 24 channels
+temporal_resolution: Twice daily
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/metop-sg-mws.ipynb
+last_updated_by: Alessandro Sebastianelli

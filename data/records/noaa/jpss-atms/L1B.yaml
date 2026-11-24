@@ -1,0 +1,115 @@
+id: jpss-atms-l1b
+level: L1B
+level_summary: 'Level 1B (SDR): calibrated, geolocated antenna and brightness temperatures for 22 channels.'
+bands:
+- name: Ch1-2 window (23.8, 31.4 GHz)
+  wavelength_or_frequency: 23.8 GHz
+  spatial_resolution: about 75 km
+  resolution_m: 75000.0
+  frequency_ghz: 23.8
+  typical_use: Surface, water vapour, cloud liquid water
+- name: Ch3-15 temperature sounding (50.3-57.3 GHz)
+  wavelength_or_frequency: 53.6 GHz
+  spatial_resolution: about 32 km
+  resolution_m: 32000.0
+  frequency_ghz: 53.6
+  typical_use: Temperature profiles
+- name: Ch16 window (88.2 GHz)
+  wavelength_or_frequency: 88.2 GHz
+  spatial_resolution: about 32 km
+  resolution_m: 32000.0
+  frequency_ghz: 88.2
+  typical_use: Clouds, precipitation
+- name: Ch17 (165.5 GHz)
+  wavelength_or_frequency: 165.5 GHz
+  spatial_resolution: about 16 km
+  resolution_m: 16000.0
+  frequency_ghz: 165.5
+  typical_use: Humidity, snowfall
+- name: Ch18-22 water vapour (183.31 GHz)
+  wavelength_or_frequency: 183.31 GHz
+  spatial_resolution: about 16 km
+  resolution_m: 16000.0
+  frequency_ghz: 183.31
+  typical_use: Humidity profiles
+spatial_resolution_summary: 16 km (high-frequency) to 75 km (23.8/31.4 GHz)
+processing_level:
+- L1B
+derivable_products:
+- Temperature profiles
+- Humidity profiles
+- Precipitation
+- Snowfall
+measured_variables:
+- Brightness temperature
+data_format:
+- netCDF4
+- HDF5
+temporal_range_start: 2012
+temporal_range_end: null
+data_latency: Real time (about 2-3 hours)
+access_url: https://registry.opendata.aws/collab/noaa/
+requires_registration: false
+license_cost: Free and open (NOAA open data policy)
+api_type:
+- AWS S3 (anonymous)
+- NASA CMR
+documentation_url: https://www.star.nesdis.noaa.gov/jpss/ATMS.php
+snippets:
+- title: Python
+  lang: python
+  description: Looks for the ATMS product prefix in the public NOAA-21 bucket on AWS (no credentials),
+    downloads the first file of a day and opens it. The layout is discovered at run time and the snippet
+    explains what it found.
+  requirements:
+  - s3fs
+  - xarray
+  - h5netcdf
+  code: |
+    import s3fs
+    import xarray as xr
+
+    fs = s3fs.S3FileSystem(anon=True)                # public NOAA bucket, no credentials needed
+    BUCKET = "noaa-nesdis-n21-pds"                    # noaa-nesdis-n20-pds (NOAA-20), noaa-nesdis-snpp-pds (S-NPP, until 2026)
+    prefixes = fs.ls(BUCKET)
+    print(len(prefixes), "top-level product prefixes")
+    match = [p for p in prefixes if "atms" in p.lower()]
+    print(match)
+    if not match:
+        raise SystemExit("No product prefix with 'atms': inspect the list above")
+
+    DAY = "2024/06/01"
+    files = fs.ls("%s/%s/" % (match[0], DAY))
+    print(len(files), "files on", DAY)
+    if not files:
+        print(fs.ls(match[0])[:10])
+        raise SystemExit("Nothing for this day: see the prefix listing above to adapt the date pattern")
+
+    fs.get(files[0], "data_" + files[0].split("/")[-1])
+    local = "data_" + files[0].split("/")[-1]
+    ds = xr.open_dataset(local, engine="h5netcdf")
+    print(ds)
+- title: Original Method
+  lang: bash
+  description: NOAA-21 (noaa-nesdis-n21-pds), NOAA-20 (noaa-nesdis-n20-pds), Suomi NPP (noaa-nesdis-snpp-pds).
+  code: |
+    aws s3 ls --no-sign-request s3://noaa-nesdis-n21-pds/ | grep -i atms
+related_datasets:
+- jpss-cris-l1b
+- metop-amsu-a-l1b
+- metop-mhs-l1b
+- metop-sg-mws-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: The Python example discovers product prefixes at run time because bucket layouts may change.
+known_limitations: 'Geometry of channels differs from AMSU-A/MHS: avoid mixing without remapping.'
+example_use_cases: NWP assimilation; precipitation and snowfall retrieval.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

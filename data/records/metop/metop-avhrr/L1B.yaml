@@ -1,0 +1,161 @@
+id: metop-avhrr-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated radiances/reflectances/brightness temperatures per orbit
+  (EPS native format), in 1.1 km (full resolution) and 4 km (GAC) products.'
+bands:
+- name: Ch1 - visible
+  wavelength_or_frequency: 0.58-0.68 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 630
+  bandwidth_nm: 100.0
+  resolution_m: 1100.0
+  typical_use: Clouds, vegetation, snow (daytime)
+- name: Ch2 - near infrared
+  wavelength_or_frequency: 0.725-1.0 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 862
+  bandwidth_nm: 275.0
+  resolution_m: 1100.0
+  typical_use: Vegetation, water/land contrast
+- name: Ch3a - shortwave infrared
+  wavelength_or_frequency: 1.58-1.64 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 1100.0
+  typical_use: Snow/ice and cloud phase (daytime)
+- name: Ch3b - mid infrared
+  wavelength_or_frequency: 3.55-3.93 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 1100.0
+  typical_use: Fires, night low cloud, SST
+- name: Ch4 - thermal infrared
+  wavelength_or_frequency: 10.3-11.3 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 10800
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: Cloud top and surface temperature
+- name: Ch5 - thermal infrared
+  wavelength_or_frequency: 11.5-12.5 um
+  spatial_resolution: 1.1 km
+  wavelength_nm: 12000
+  bandwidth_nm: 1000.0
+  resolution_m: 1100.0
+  typical_use: 'Split window: SST, dust, ash'
+spatial_resolution_summary: 1.1 km at nadir (LAC/HRPT/FRAC), 4 km (GAC); pixels widen toward the swath
+  edge
+processing_level:
+- L1B
+derivable_products:
+- SST
+- NDVI
+- Cloud mask
+- Snow cover
+- Fire detection
+measured_variables:
+- Radiance
+- Reflectance
+- Brightness temperature
+data_format:
+- EPS native (.nat)
+- HDF5 / netCDF (reprocessed)
+temporal_range_start: 2006
+temporal_range_end: null
+data_latency: Real time (about 1-3 hours via EUMETCast, minutes by direct broadcast)
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:METOP:AVHRRL1
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/avhrr-level-1b-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one AVHRR L1B granule from the EUMETSAT Data Store (free account and consumer
+    key/secret) and plots channel 4 with satpy.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  - defusedxml
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:METOP:AVHRRL1")
+
+    products = list(collection.search(dtstart=dt.datetime(2024, 6, 1, 12, 0), dtend=dt.datetime(2024, 6, 1, 12, 30)))
+    print(len(products), "AVHRR L1B products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # tens of MB per 3-minute granule
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    files = sorted(glob("data/**/*.nat", recursive=True))
+    print(len(files), "files")
+    scn = Scene(filenames=files, reader="avhrr_l1b_eps")
+    print(scn.available_dataset_names())
+    scn.load(["4"])
+    scn["4"].plot(cmap="gray_r")                   # channel 4 brightness temperature
+    plt.title("AVHRR channel 4 (10.8 um)")
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # AVHRR Level 1B (Metop global/FRAC). Check the Data Store for GAC and for the reprocessed collections.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:METOP:AVHRRL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:METOP:AVHRRL1 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- noaa-poes-avhrr-l1b
+- metop-sg-metimage-l1b
+- metop-iasi-l1c
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection ID shown is the operational global AVHRR L1B; verify it on data.eumetsat.int, as IDs
+  and versions evolve. Channel naming in satpy: 1, 2, 3a, 3b, 4, 5.'
+known_limitations: Native EPS format needs a dedicated reader (satpy, AAPP or EUMETSAT tools). Channel
+  3 switches between 3a and 3b along the orbit. No onboard calibration of the visible channels.
+example_use_cases: SST and vegetation climatologies; cloud and snow mapping; fire detection; bridging
+  NOAA POES and VIIRS records.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
