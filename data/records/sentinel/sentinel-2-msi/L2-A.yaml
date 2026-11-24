@@ -122,17 +122,96 @@ api_type:
 - Google Earth Engine
 - Python SDK
 documentation_url: https://sentiwiki.copernicus.eu/web/s2-mission
-download_snippet: "import ee\nee.Initialize()\n\ncollection = (\n    ee.ImageCollection(\"COPERNICUS/S2_SR_HARMONIZED\"\
-  )\n    .filterBounds(ee.Geometry.Point(12.5, 41.9))\n    .filterDate(\"2024-06-01\", \"2024-06-30\"\
-  )\n    .filter(ee.Filter.lt(\"CLOUDY_PIXEL_PERCENTAGE\", 20))\n)\nprint(collection.size().getInfo())\n"
-download_snippet_lang: python
-gee_snippet: "// Sentinel-2 Surface Reflectance, cloud-filtered, NDVI composite\nvar aoi = ee.Geometry.Point([12.5,\
-  \ 41.9]);\n\nvar collection = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')\n  .filterBounds(aoi)\n\
-  \  .filterDate('2024-06-01', '2024-08-31')\n  .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));\n\
-  \nvar addNDVI = function(img) {\n  var ndvi = img.normalizedDifference(['B8', 'B4']).rename('NDVI');\n\
-  \  return img.addBands(ndvi);\n};\n\nvar withNDVI = collection.map(addNDVI);\nvar ndviMedian = withNDVI.select('NDVI').median();\n\
-  \nMap.centerObject(aoi, 10);\nMap.addLayer(ndviMedian, {min: 0, max: 1, palette: ['white', 'green']},\
-  \ 'NDVI median');\n"
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed), picks the
+    least cloudy scene and plots NDVI from the surface-reflectance bands. For Sentinel-2 older than late
+    2021 or newer than the processing baseline change, remember that reflectance offsets differ (see notes).
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["sentinel-2-l2a"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-06-01/2024-06-30",
+        query={"eo:cloud_cover": {"lt": 20}},
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No scenes found - widen the dates or the bounding box")
+    item = min(items, key=lambda i: i.properties["eo:cloud_cover"])
+    print(len(items), "scenes found; using", item.id, item.datetime)
+
+    red = open_overview(item.assets["B04"].href, level=2) / 10000
+    nir = open_overview(item.assets["B08"].href, level=2) / 10000
+    ndvi = (nir - red) / (nir + red)
+    ndvi.plot(cmap="YlGn", vmin=-0.2, vmax=0.9)
+    plt.title("NDVI - " + item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Sentinel-2 Surface Reflectance, cloud-filtered, NDVI composite
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var collection = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED')
+      .filterBounds(aoi)
+      .filterDate('2024-06-01', '2024-08-31')
+      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20));
+
+    var addNDVI = function(img) {
+      var ndvi = img.normalizedDifference(['B8', 'B4']).rename('NDVI');
+      return img.addBands(ndvi);
+    };
+
+    var withNDVI = collection.map(addNDVI);
+    var ndviMedian = withNDVI.select('NDVI').median();
+
+    Map.centerObject(aoi, 10);
+    Map.addLayer(ndviMedian, {min: 0, max: 1, palette: ['white', 'green']}, 'NDVI median');
+- title: Original Method
+  lang: bash
+  description: Official Copernicus Data Space Ecosystem OData API; the same service is also reachable
+    from the browser Copernicus Browser.
+  code: |
+    # Sentinel-2 Level-2A
+    # 1) Search the catalogue (OData) - no login needed
+    curl -s -G "https://catalogue.dataspace.copernicus.eu/odata/v1/Products" \
+      --data-urlencode "\$filter=Collection/Name eq 'SENTINEL-2' and contains(Name,'MSIL2A') and ContentDate/Start gt 2024-06-01T00:00:00.000Z and ContentDate/Start lt 2024-06-03T00:00:00.000Z" \
+      --data-urlencode "\$top=3" | python3 -m json.tool
+
+    # 2) Get an access token (free account at dataspace.copernicus.eu)
+    TOKEN=$(curl -s -d "client_id=cdse-public" -d "username=YOUR_EMAIL" -d "password=YOUR_PASSWORD" \
+      -d "grant_type=password" \
+      "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['access_token'])")
+
+    # 3) Download a product by the Id found in step 1
+    curl -H "Authorization: Bearer $TOKEN" -L -o product.zip \
+      "https://download.dataspace.copernicus.eu/odata/v1/Products(PRODUCT_ID)/\$value"
 related_datasets:
 - sentinel-1-c-sar-l1
 - sentinel-2-msi-l1c

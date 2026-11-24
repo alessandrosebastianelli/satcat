@@ -35,4 +35,5 @@ swath_width: 290 km
 radiometric_resolution: 12 bit
 temporal_resolution: 5 days (with the two-satellite constellation, at equator)
 citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-2-msi.ipynb
 last_updated_by: Alessandro Sebastianelli
