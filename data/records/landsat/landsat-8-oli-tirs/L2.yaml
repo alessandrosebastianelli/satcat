@@ -1,0 +1,214 @@
+id: landsat-8-oli-tirs-l2
+level: L2
+level_summary: 'Level 2 (Collection 2 Science Products): surface reflectance (LaSRC) and surface temperature,
+  plus quality bands. Analysis-ready for most land applications.'
+bands:
+- name: B1 - Coastal aerosol
+  wavelength_or_frequency: 443 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 443
+  bandwidth_nm: 16.0
+  resolution_m: 30.0
+  typical_use: Coastal waters, aerosols
+- name: B2 - Blue
+  wavelength_or_frequency: 482 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 482
+  bandwidth_nm: 60.0
+  resolution_m: 30.0
+  typical_use: True colour, bathymetry
+- name: B3 - Green
+  wavelength_or_frequency: 562 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 562
+  bandwidth_nm: 57.0
+  resolution_m: 30.0
+  typical_use: True colour, vegetation vigour
+- name: B4 - Red
+  wavelength_or_frequency: 655 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 655
+  bandwidth_nm: 37.0
+  resolution_m: 30.0
+  typical_use: Chlorophyll absorption, NDVI red
+- name: B5 - NIR
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 865
+  bandwidth_nm: 28.0
+  resolution_m: 30.0
+  typical_use: Biomass, NDVI near-infrared
+- name: B6 - SWIR1
+  wavelength_or_frequency: 1609 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 1609
+  bandwidth_nm: 85.0
+  resolution_m: 30.0
+  typical_use: Vegetation and soil moisture, snow/cloud
+- name: B7 - SWIR2
+  wavelength_or_frequency: 2201 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 2201
+  bandwidth_nm: 187.0
+  resolution_m: 30.0
+  typical_use: Geology, burned area, moisture
+- name: B8 - Panchromatic
+  wavelength_or_frequency: 590 nm
+  spatial_resolution: 15 m
+  wavelength_nm: 590
+  bandwidth_nm: 173.0
+  resolution_m: 15.0
+  typical_use: Sharpening, fine detail
+- name: B9 - Cirrus
+  wavelength_or_frequency: 1373 nm
+  spatial_resolution: 30 m
+  wavelength_nm: 1373
+  bandwidth_nm: 21.0
+  resolution_m: 30.0
+  typical_use: Thin cirrus detection
+- name: B10 - TIRS 1
+  wavelength_or_frequency: 10.895 um
+  spatial_resolution: 100 m
+  wavelength_nm: 10895
+  bandwidth_nm: 590.0
+  resolution_m: 100.0
+  typical_use: Surface temperature (100 m, resampled to 30 m)
+- name: B11 - TIRS 2
+  wavelength_or_frequency: 12.005 um
+  spatial_resolution: 100 m
+  wavelength_nm: 12005
+  bandwidth_nm: 1010.0
+  resolution_m: 100.0
+  typical_use: Surface temperature, split-window
+spatial_resolution_summary: 30 m
+processing_level:
+- L2
+derivable_products:
+- Surface reflectance
+- NDVI/EVI/NBR
+- Land surface temperature
+- Evapotranspiration
+measured_variables:
+- Surface reflectance
+- Surface temperature
+data_format:
+- GeoTIFF
+- COG
+temporal_range_start: 2013
+temporal_range_end: null
+data_latency: About 1-2 days after Level-1 Tier 1 is available
+access_url: https://earthexplorer.usgs.gov
+requires_registration: true
+license_cost: Free (Open Data - USGS)
+api_type:
+- USGS M2M API
+- STAC API
+- Google Earth Engine
+- AWS S3 (requester pays)
+documentation_url: https://www.usgs.gov/landsat-missions/landsat-collection-2-level-2-science-products
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed), picks the
+    least cloudy scene and plots NDVI from the surface-reflectance bands.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["landsat-c2-l2"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2023-06-01/2023-08-31",
+        query={"platform": {"eq": "landsat-8"}, "eo:cloud_cover": {"lt": 30}},
+    )
+    items = search.item_collection()
+    if not items:
+        raise SystemExit("No scenes found - widen the dates or the bounding box")
+    item = min(items, key=lambda i: i.properties.get("eo:cloud_cover", 100))
+    print(len(items), "scenes found; using", item.id, item.datetime)
+    print("assets:", sorted(item.assets))
+
+    # Collection 2 Level-2 scale factors: reflectance = DN * 0.0000275 - 0.2
+    red = open_overview(item.assets["red"].href) * 0.0000275 - 0.2
+    nir = open_overview(item.assets["nir08"].href) * 0.0000275 - 0.2
+    ndvi = (nir - red) / (nir + red)
+    ndvi.plot(cmap="YlGn", vmin=-0.2, vmax=0.9)
+    plt.title("NDVI - " + item.id)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  code: |2
+            // Landsat 8 Collection 2 Level-2: surface reflectance and surface temperature
+            var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+            var collection = ee.ImageCollection('LANDSAT/LC08/C02/T1_L2')
+              .filterBounds(aoi)
+              .filterDate('2023-06-01', '2023-08-31')
+              .sort('CLOUD_COVER');
+
+            print('Scenes:', collection.size());
+            var image = ee.Image(collection.first());
+
+            // Collection 2 Level-2 scale factors
+            var optical = image.select('SR_B.').multiply(0.0000275).add(-0.2);
+            Map.centerObject(aoi, 9);
+            Map.addLayer(optical, {bands: ['SR_B4', 'SR_B3', 'SR_B2'], min: 0, max: 0.3}, 'Surface reflectance');
+    var st = image.select('ST_B10').multiply(0.00341802).add(149.0).subtract(273.15);
+    Map.addLayer(st, {min: 10, max: 50, palette: ['blue', 'white', 'red']}, 'Surface temperature (C)');
+- title: Original Method
+  lang: bash
+  description: Official USGS distribution. EarthExplorer and the M2M API need a free USGS account; the
+    AWS bucket is requester-pays.
+  code: |
+    # Landsat 8 OLI/TIRS Level-2
+    # USGS Collection 2 archive on AWS (requester-pays bucket: needs an AWS account).
+    # Path/row 191/031 is Rome (WRS-2) - find yours on https://landsat.usgs.gov/landsat_acq
+    aws s3 ls --request-payer requester s3://usgs-landsat/collection02/level-2/standard/oli-tirs/2023/191/031/
+    aws s3 cp --request-payer requester --recursive \
+      s3://usgs-landsat/collection02/level-2/standard/oli-tirs/2023/191/031/SCENE_ID/ ./SCENE_ID/
+
+    # Free alternative without AWS: search and download from EarthExplorer
+    # https://earthexplorer.usgs.gov  (free USGS ERS account) or the M2M API:
+    # https://m2m.cr.usgs.gov/
+related_datasets:
+- landsat-8-oli-tirs-l1
+- landsat-9-oli-2-tirs-2-l2
+- sentinel-2-msi-l2a
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Scale factors: reflectance = DN x 0.0000275 - 0.2; surface temperature (K) = DN x 0.00341802 +
+  149.0. Use QA_PIXEL to mask cloud, shadow and snow.'
+known_limitations: Surface temperature uses an emissivity estimate from ASTER GED and reanalysis profiles;
+  it is less accurate over bare soil and in humid conditions.
+example_use_cases: Vegetation indices; land surface temperature and urban heat; time series combined with
+  Sentinel-2 (harmonised).
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

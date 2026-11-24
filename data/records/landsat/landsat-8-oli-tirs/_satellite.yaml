@@ -1,0 +1,40 @@
+mission_name: Landsat 8
+sensor_name: OLI / TIRS
+agency: NASA / USGS
+mission_family: Landsat
+status: Active
+launch_year: 2013
+end_of_life_year: null
+short_description: Eleven-band optical and thermal imager at 30 m (thermal 100 m), the current reference
+  for medium-resolution land monitoring.
+long_description: Landsat 8 was launched on 11 February 2013 and carries the Operational Land Imager (OLI,
+  9 bands including a coastal aerosol and a cirrus band) and the Thermal Infrared Sensor (TIRS, 2 bands).
+  With Landsat 9 it provides a global revisit of 8 days. It is the backbone of current medium-resolution
+  land monitoring and is fully compatible with Sentinel-2 through harmonisation.
+instrument_type: Optical - Multispectral + thermal (11 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- OLI
+- TIRS
+- NDVI
+- land surface temperature
+- Landsat 8
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Global land
+swath_width: 185 km
+radiometric_resolution: 12 bit
+temporal_resolution: 16 days (8 days combining Landsat 8 and 9)
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-8-oli-tirs.ipynb
+last_updated_by: Alessandro Sebastianelli
