@@ -1,0 +1,365 @@
+id: modis-terra-l2
+level: L2
+level_summary: 'Level 2: geophysical swath products (granule level): aerosol (MOD04), water vapour (MOD05),
+  cloud (MOD06), atmospheric profiles (MOD07), cloud mask (MOD35), LST (MOD11_L2), fires (MOD14), sea
+  surface temperature and ocean colour.'
+bands:
+- name: B1 - Red
+  wavelength_or_frequency: 645 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 645
+  bandwidth_nm: 50.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI red
+- name: B2 - NIR
+  wavelength_or_frequency: 858.5 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 858.5
+  bandwidth_nm: 35.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI near-infrared
+- name: B3 - Blue
+  wavelength_or_frequency: 469 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 469
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B4 - Green
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B5 - SWIR 1.24
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B6 - SWIR 1.64
+  wavelength_or_frequency: 1640 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1640
+  bandwidth_nm: 24.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties, snow
+- name: B7 - SWIR 2.13
+  wavelength_or_frequency: 2130 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 2130
+  bandwidth_nm: 50.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B8 - Ocean colour 412
+  wavelength_or_frequency: 412.5 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 412.5
+  bandwidth_nm: 15.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour / phytoplankton / biogeochemistry
+- name: B9 - Ocean colour 443
+  wavelength_or_frequency: 443 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 443
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour / chlorophyll
+- name: B10 - Ocean colour 488
+  wavelength_or_frequency: 488 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 488
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour
+- name: B11 - Ocean colour 531
+  wavelength_or_frequency: 531 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 531
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour
+- name: B12 - Ocean colour 551
+  wavelength_or_frequency: 551 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 551
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour
+- name: B13 - Ocean colour 667
+  wavelength_or_frequency: 667 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 667
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Ocean colour, chlorophyll
+- name: B14 - Chlorophyll fluorescence 678
+  wavelength_or_frequency: 678 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 678
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Chlorophyll fluorescence
+- name: B15 - Ocean colour 748
+  wavelength_or_frequency: 748 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 748
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Aerosol, atmospheric correction
+- name: B16 - Ocean colour 869
+  wavelength_or_frequency: 869.5 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 869.5
+  bandwidth_nm: 15.0
+  resolution_m: 1000.0
+  typical_use: Aerosol, atmospheric correction
+- name: B17 - Water vapour 905
+  wavelength_or_frequency: 905 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 905
+  bandwidth_nm: 30.0
+  resolution_m: 1000.0
+  typical_use: Atmospheric water vapour
+- name: B18 - Water vapour 936
+  wavelength_or_frequency: 936 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 936
+  bandwidth_nm: 10.0
+  resolution_m: 1000.0
+  typical_use: Atmospheric water vapour
+- name: B19 - Water vapour 940
+  wavelength_or_frequency: 940 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 940
+  bandwidth_nm: 50.0
+  resolution_m: 1000.0
+  typical_use: Atmospheric water vapour
+- name: B20 - Thermal 3.75
+  wavelength_or_frequency: 3.75 um
+  spatial_resolution: 1 km
+  wavelength_nm: 3750
+  bandwidth_nm: 180.0
+  resolution_m: 1000.0
+  typical_use: Sea/land surface temperature, fires
+- name: B21 - Thermal 3.96 (high saturation)
+  wavelength_or_frequency: 3.959 um
+  spatial_resolution: 1 km
+  wavelength_nm: 3959
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Fire detection
+- name: B22 - Thermal 3.96
+  wavelength_or_frequency: 3.959 um
+  spatial_resolution: 1 km
+  wavelength_nm: 3959
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Sea/land surface temperature
+- name: B23 - Thermal 4.05
+  wavelength_or_frequency: 4.05 um
+  spatial_resolution: 1 km
+  wavelength_nm: 4050
+  bandwidth_nm: 60.0
+  resolution_m: 1000.0
+  typical_use: Surface temperature
+- name: B24 - Thermal 4.47
+  wavelength_or_frequency: 4.465 um
+  spatial_resolution: 1 km
+  wavelength_nm: 4465.5
+  bandwidth_nm: 65.0
+  resolution_m: 1000.0
+  typical_use: Atmospheric temperature
+- name: B25 - Thermal 4.52
+  wavelength_or_frequency: 4.516 um
+  spatial_resolution: 1 km
+  wavelength_nm: 4515.5
+  bandwidth_nm: 67.0
+  resolution_m: 1000.0
+  typical_use: Atmospheric temperature
+- name: B26 - Cirrus 1.375
+  wavelength_or_frequency: 1375 nm
+  spatial_resolution: 1 km
+  wavelength_nm: 1375
+  bandwidth_nm: 30.0
+  resolution_m: 1000.0
+  typical_use: Cirrus cloud detection
+- name: B27 - Water vapour 6.72
+  wavelength_or_frequency: 6.715 um
+  spatial_resolution: 1 km
+  wavelength_nm: 6715
+  bandwidth_nm: 360.0
+  resolution_m: 1000.0
+  typical_use: Mid-tropospheric humidity
+- name: B28 - Water vapour 7.33
+  wavelength_or_frequency: 7.325 um
+  spatial_resolution: 1 km
+  wavelength_nm: 7325
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Upper-tropospheric humidity
+- name: B29 - Thermal 8.55
+  wavelength_or_frequency: 8.55 um
+  spatial_resolution: 1 km
+  wavelength_nm: 8550
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Cloud properties, surface temperature
+- name: B30 - Ozone 9.73
+  wavelength_or_frequency: 9.73 um
+  spatial_resolution: 1 km
+  wavelength_nm: 9730
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Total ozone
+- name: B31 - Thermal 11.03
+  wavelength_or_frequency: 11.03 um
+  spatial_resolution: 1 km
+  wavelength_nm: 11030
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, cloud temperature
+- name: B32 - Thermal 12.02
+  wavelength_or_frequency: 12.02 um
+  spatial_resolution: 1 km
+  wavelength_nm: 12020
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, split-window
+- name: B33 - CO2 13.34
+  wavelength_or_frequency: 13.335 um
+  spatial_resolution: 1 km
+  wavelength_nm: 13335
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Cloud top altitude
+- name: B34 - CO2 13.64
+  wavelength_or_frequency: 13.635 um
+  spatial_resolution: 1 km
+  wavelength_nm: 13635
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Cloud top altitude
+- name: B35 - CO2 13.94
+  wavelength_or_frequency: 13.935 um
+  spatial_resolution: 1 km
+  wavelength_nm: 13935
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Cloud top altitude
+- name: B36 - CO2 14.24
+  wavelength_or_frequency: 14.235 um
+  spatial_resolution: 1 km
+  wavelength_nm: 14235
+  bandwidth_nm: 300.0
+  resolution_m: 1000.0
+  typical_use: Cloud top altitude
+spatial_resolution_summary: 1 km (aerosol 10 km, 3 km), 250 m-1 km for some products
+processing_level:
+- L2
+derivable_products:
+- Aerosol optical depth
+- Cloud mask
+- Cloud optical thickness
+- Total precipitable water
+- Land surface temperature (swath)
+- Active fire detections
+- Sea surface temperature
+- Chlorophyll-a
+measured_variables:
+- Aerosol
+- Cloud
+- Water vapour
+- Land surface temperature
+- Fire
+- Ocean colour
+data_format:
+- HDF4-EOS
+temporal_range_start: 2000
+temporal_range_end: null
+data_latency: Near-real-time within about 3 hours (LANCE); standard products within days
+access_url: https://ladsweb.modaps.eosdis.nasa.gov/missions-and-measurements/products/MOD11_L2/
+requires_registration: true
+license_cost: Free (Open Data - NASA)
+api_type:
+- NASA Earthdata (CMR/earthaccess)
+- LAADS DAAC HTTPS
+- STAC API
+- Google Earth Engine
+documentation_url: https://modis-atmosphere.gsfc.nasa.gov/
+snippets:
+- title: Python
+  lang: python
+  description: Searches NASA Earthdata for a MOD11_L2 (land surface temperature) granule over central
+    Italy, downloads it (needs a free Earthdata login, asked at run time) and plots the LST swath. HDF4
+    files are read with pyhdf.
+  requirements:
+  - earthaccess
+  - pyhdf
+  - matplotlib
+  - numpy
+  code: |
+    from pathlib import Path
+
+    import earthaccess
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from pyhdf.SD import SD, SDC
+
+    earthaccess.login()   # asks for a (free) NASA Earthdata Login the first time
+
+    results = earthaccess.search_data(
+        short_name="MOD11_L2",
+        version="061",
+        bounding_box=(12.0, 41.0, 13.0, 42.5),       # west, south, east, north (central Italy)
+        temporal=("2024-06-01", "2024-06-02"),
+    )
+    print(len(results), "granules found")
+    files = earthaccess.download(results[:1], "data")
+    path = Path(files[0])
+
+    hdf = SD(str(path), SDC.READ)
+    print(sorted(hdf.datasets()))
+
+    sds = hdf.select("LST")
+    raw = sds[:, :].astype("float32")
+    raw[raw == 0] = np.nan                           # fill / invalid values
+    data = raw * 0.02
+    plt.imshow(data, cmap="inferno")
+    plt.colorbar(label="land surface temperature (K)")
+    plt.title(path.name)
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official NASA LAADS DAAC archive. The same data can be searched in NASA Earthdata Search
+    or through the earthaccess Python library.
+  code: |
+    # Terra MODIS Level-2 land surface temperature granules
+    # 1) Create a token in your free NASA Earthdata profile: https://ladsweb.modaps.eosdis.nasa.gov/profile/#app-keys
+    TOKEN="YOUR_EARTHDATA_TOKEN"
+
+    # 2) Mirror one day of data (day-of-year 153 = 1 June 2024). Collection 6.1 is the "61" folder.
+    wget -e robots=off -m -np -nH --cut-dirs=4 -A "*.hdf" \
+      --header "Authorization: Bearer $TOKEN" -P data \
+      "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD11_L2/2024/153/"
+    # h18v04 is the sinusoidal tile that contains Rome; use the MODIS tile calculator for others
+related_datasets:
+- modis-terra-l1b
+- modis-terra-l3
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Atmosphere products (aerosol, cloud, water vapour) are distributed by LAADS DAAC, land swath products
+  by LP DAAC, ocean products by the NASA Ocean Biology DAAC.
+known_limitations: Swath geometry (not gridded), cloud-masked, files are separate per product and per
+  5-minute granule.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

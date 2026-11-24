@@ -1,0 +1,205 @@
+id: modis-terra-l3
+level: L3
+level_summary: 'Level 3: gridded daily, 8-day, 16-day and monthly land products on the sinusoidal grid:
+  surface reflectance (MOD09), LST (MOD11), vegetation indices (MOD13), snow (MOD10), thermal anomalies
+  (MOD14).'
+bands:
+- name: B1 - Red
+  wavelength_or_frequency: 645 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 645
+  bandwidth_nm: 50.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI red
+- name: B2 - NIR
+  wavelength_or_frequency: 858.5 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 858.5
+  bandwidth_nm: 35.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI near-infrared
+- name: B3 - Blue
+  wavelength_or_frequency: 469 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 469
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B4 - Green
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B5 - SWIR 1.24
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B6 - SWIR 1.64
+  wavelength_or_frequency: 1640 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1640
+  bandwidth_nm: 24.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties, snow
+- name: B7 - SWIR 2.13
+  wavelength_or_frequency: 2130 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 2130
+  bandwidth_nm: 50.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B31 - Thermal 11.03
+  wavelength_or_frequency: 11.03 um
+  spatial_resolution: 1 km
+  wavelength_nm: 11030
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, cloud temperature
+- name: B32 - Thermal 12.02
+  wavelength_or_frequency: 12.02 um
+  spatial_resolution: 1 km
+  wavelength_nm: 12020
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, split-window
+spatial_resolution_summary: 250 m, 500 m or 1 km depending on product
+processing_level:
+- L3
+derivable_products:
+- Surface reflectance
+- NDVI / EVI
+- Land surface temperature and emissivity
+- Snow cover
+- Burned area / thermal anomalies
+measured_variables:
+- Surface reflectance
+- Vegetation indices
+- Land surface temperature
+- Snow cover
+data_format:
+- HDF4-EOS
+- COG (Planetary Computer)
+- GeoTIFF
+temporal_range_start: 2000
+temporal_range_end: null
+data_latency: Near-real-time within about 3-6 hours (LANCE); standard products about a few days
+access_url: https://lpdaac.usgs.gov/product_search/?collections=Terra+MODIS&view=cards
+requires_registration: true
+license_cost: Free (Open Data - NASA)
+api_type:
+- NASA Earthdata (CMR/earthaccess)
+- LAADS DAAC HTTPS
+- STAC API
+- Google Earth Engine
+documentation_url: https://lpdaac.usgs.gov/data/
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed) for the daily
+    MOD11A1 land surface temperature tile over Rome and plots daytime LST in kelvin.
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["modis-11A1-061"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-07-01/2024-07-10",
+    )
+    items = [i for i in search.item_collection() if i.id.startswith("MOD11A1")]
+    if not items:
+        raise SystemExit("No tiles found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "tiles;", "using", item.id, item.datetime)
+    print("assets:", sorted(item.assets))
+
+    key = next((k for k in item.assets if "LST_Day" in k), None)
+    if key is None:
+        raise SystemExit("No asset containing 'LST_Day' - pick one from the list above")
+    data = open_overview(item.assets[key].href, level=1) * 0.02
+    data.plot(cmap="inferno" if "K" == "K" else "YlGn")
+    plt.title(item.id + " - " + key + " (land surface temperature (K))")
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Terra MODIS: daytime land surface temperature (MOD11A1/MYD11A1, 1 km) and NDVI (250 m, 16 day)
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var lst = ee.ImageCollection('MODIS/061/MOD11A1')
+      .filterDate('2024-07-01', '2024-07-31')
+      .select('LST_Day_1km')
+      .mean()
+      .multiply(0.02)
+      .subtract(273.15);            // kelvin to Celsius
+
+    var ndvi = ee.ImageCollection('MODIS/061/MOD13Q1')
+      .filterDate('2024-07-01', '2024-07-31')
+      .select('NDVI')
+      .mean()
+      .multiply(0.0001);
+
+    Map.centerObject(aoi, 7);
+    Map.addLayer(lst, {min: 15, max: 45, palette: ['blue', 'white', 'red']}, 'LST day (C)');
+    Map.addLayer(ndvi, {min: 0, max: 0.9, palette: ['white', 'green']}, 'NDVI');
+- title: Original Method
+  lang: bash
+  description: Official NASA LAADS DAAC archive. The same data can be searched in NASA Earthdata Search
+    or through the earthaccess Python library.
+  code: |
+    # Terra MODIS Level-3 daily land surface temperature tiles (LP DAAC mirror on LAADS)
+    # 1) Create a token in your free NASA Earthdata profile: https://ladsweb.modaps.eosdis.nasa.gov/profile/#app-keys
+    TOKEN="YOUR_EARTHDATA_TOKEN"
+
+    # 2) Mirror one day of data (day-of-year 153 = 1 June 2024). Collection 6.1 is the "61" folder.
+    wget -e robots=off -m -np -nH --cut-dirs=4 -A "*h18v04*" \
+      --header "Authorization: Bearer $TOKEN" -P data \
+      "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MOD11A1/2024/153/"
+    # h18v04 is the sinusoidal tile that contains Rome; use the MODIS tile calculator for others
+related_datasets:
+- modis-terra-l2
+- modis-terra-l4
+- modis-terra-aqua-mcd-l3
+- landsat-8-oli-tirs-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Scale factors differ per product: LST x 0.02 (K), NDVI/EVI and reflectance x 0.0001. Check the
+  quality (QC) layers: MODIS ships bit-packed QC bands for every science dataset. Collection 6.1 is the
+  current reprocessing.'
+known_limitations: 'Sinusoidal tiles of 10 degrees: mosaicking and reprojection are needed over large
+  areas. Terra and Aqua now have drifting overpass times, which affects daily LST and BRDF-sensitive products.'
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
