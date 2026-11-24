@@ -1,0 +1,49 @@
+mission_name: MTG-I (Meteosat Third Generation Imager)
+sensor_name: FCI (Flexible Combined Imager)
+agency: EUMETSAT / ESA
+mission_family: MTG
+status: Active
+launch_year: 2022
+end_of_life_year: null
+short_description: '16-channel geostationary imager succeeding SEVIRI: full disc every 10 minutes at 1-2
+  km, with a 2.5-minute rapid scan over Europe from the second MTG-I satellite.'
+long_description: The Flexible Combined Imager on the MTG-I satellites images the Earth in 16 channels
+  (8 solar, 8 thermal) with a 1 km (visible/near-infrared) and 2 km (infrared) sampling at the sub-satellite
+  point, and a 4-channel high-resolution mode at 0.5-1 km (HRFI). The first imager satellite MTG-I1 (Meteosat-12)
+  was launched on 13 December 2022 and became the prime EUMETSAT geostationary service in 2025, delivering
+  a full disc every 10 minutes. The second, MTG-I2 (Meteosat-14), was launched on 27 August 2026 and will
+  provide the rapid scan service over Europe every 2.5 minutes once commissioned. FCI continues and greatly
+  improves the SEVIRI record, and produces at least 50 times more data than MSG.
+instrument_type: Optical - Multispectral + thermal imager (16 channels, geostationary)
+orbit_type: GEO (0 degrees longitude)
+internal_contact: Alessandro Sebastianelli
+tags:
+- geostationary
+- FCI
+- MTG
+- Meteosat-12
+- nowcasting
+- cloud
+- fire
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: EUMETSAT user portal
+  url: https://user.eumetsat.int
+- label: EUMETSAT Python client (eumdac)
+  url: https://user.eumetsat.int/resources/user-guides/eumetsat-data-access-client-eumdac-guide
+- label: Satpy (reader library)
+  url: https://satpy.readthedocs.io
+- label: MTG programme (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Meteorological_missions/meteosat_third_generation
+bbox_west: -80.0
+bbox_south: -80.0
+bbox_east: 80.0
+bbox_north: 80.0
+geographic_coverage: Full disc centred on 0 degrees longitude; rapid scan over Europe (MTG-I2)
+swath_width: Full Earth disc
+radiometric_resolution: Not stated (high dynamic range, 12-14 bit class)
+temporal_resolution: 10 minutes (full disc), 2.5 minutes (rapid scan over Europe, MTG-I2)
+citation_doi: 'Contains EUMETSAT data. Acknowledge as: (c) EUMETSAT, with the product name and year.'
+colab_notebook: notebooks/mtg-fci.ipynb
+last_updated_by: Alessandro Sebastianelli
