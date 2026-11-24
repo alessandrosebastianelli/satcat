@@ -1,0 +1,245 @@
+id: jpss-viirs-l3
+level: L3
+level_summary: 'Level 3: gridded NASA products such as VNP13A1 vegetation indices (500 m, 16-day), VNP43
+  BRDF/albedo, VNP15 LAI/FPAR and VNP46 black marble night lights.'
+bands:
+- name: I1
+  wavelength_or_frequency: 640 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 640
+  bandwidth_nm: 80.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: clouds, vegetation'
+- name: I2
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 865
+  bandwidth_nm: 39.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: vegetation, water'
+- name: I3
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 375 m
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: snow/ice, cloud phase'
+- name: I4
+  wavelength_or_frequency: 3.74 um
+  spatial_resolution: 375 m
+  wavelength_nm: 3740
+  bandwidth_nm: 380.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: fire, low cloud'
+- name: I5
+  wavelength_or_frequency: 11.45 um
+  spatial_resolution: 375 m
+  wavelength_nm: 11450
+  bandwidth_nm: 1900.0
+  resolution_m: 375.0
+  typical_use: 'Imagery: cloud and surface temperature'
+- name: M1
+  wavelength_or_frequency: 412 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 412
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M2
+  wavelength_or_frequency: 445 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 445
+  bandwidth_nm: 18.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M3
+  wavelength_or_frequency: 488 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 488
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M4
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, vegetation
+- name: M5
+  wavelength_or_frequency: 672 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 672
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Ocean colour, aerosol
+- name: M6
+  wavelength_or_frequency: 746 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 746
+  bandwidth_nm: 15.0
+  resolution_m: 750.0
+  typical_use: Atmospheric correction
+- name: M7
+  wavelength_or_frequency: 865 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 865
+  bandwidth_nm: 39.0
+  resolution_m: 750.0
+  typical_use: Vegetation, ocean aerosol
+- name: M8
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 750.0
+  typical_use: Cloud particle size, snow
+- name: M9
+  wavelength_or_frequency: 1378 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1378
+  bandwidth_nm: 15.0
+  resolution_m: 750.0
+  typical_use: Cirrus
+- name: M10
+  wavelength_or_frequency: 1610 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 1610
+  bandwidth_nm: 60.0
+  resolution_m: 750.0
+  typical_use: Snow/ice, cloud
+- name: M11
+  wavelength_or_frequency: 2250 nm
+  spatial_resolution: 750 m
+  wavelength_nm: 2250
+  bandwidth_nm: 50.0
+  resolution_m: 750.0
+  typical_use: Cloud, aerosol
+- name: M12
+  wavelength_or_frequency: 3.7 um
+  spatial_resolution: 750 m
+  wavelength_nm: 3700
+  bandwidth_nm: 180.0
+  resolution_m: 750.0
+  typical_use: SST, fire
+- name: M13
+  wavelength_or_frequency: 4.05 um
+  spatial_resolution: 750 m
+  wavelength_nm: 4050
+  bandwidth_nm: 155.0
+  resolution_m: 750.0
+  typical_use: SST, fire
+- name: M14
+  wavelength_or_frequency: 8.55 um
+  spatial_resolution: 750 m
+  wavelength_nm: 8550
+  bandwidth_nm: 300.0
+  resolution_m: 750.0
+  typical_use: Cloud-top properties
+- name: M15
+  wavelength_or_frequency: 10.763 um
+  spatial_resolution: 750 m
+  wavelength_nm: 10763
+  bandwidth_nm: 1000.0
+  resolution_m: 750.0
+  typical_use: SST, LST, cloud top
+- name: M16
+  wavelength_or_frequency: 12.013 um
+  spatial_resolution: 750 m
+  wavelength_nm: 12013
+  bandwidth_nm: 950.0
+  resolution_m: 750.0
+  typical_use: Split window SST, LST
+- name: DNB
+  wavelength_or_frequency: 0.5-0.9 um (broadband)
+  spatial_resolution: 750 m
+  wavelength_nm: 700
+  bandwidth_nm: 385.0
+  resolution_m: 750.0
+  typical_use: 'Day/night band: night lights, moonlit clouds'
+spatial_resolution_summary: 500 m - 1 km (product dependent)
+processing_level:
+- L3
+derivable_products:
+- NDVI
+- EVI
+- LAI/FPAR
+- Albedo
+- Night lights
+measured_variables:
+- Vegetation indices
+- LAI
+- Albedo
+- Night light
+data_format:
+- HDF-EOS5
+- netCDF4
+- GeoTIFF (Earth Engine)
+temporal_range_start: 2012
+temporal_range_end: null
+data_latency: Days to weeks
+access_url: https://developers.google.com/earth-engine/datasets/catalog/NASA_VIIRS_002_VNP13A1
+requires_registration: true
+license_cost: Free (NASA Earthdata Login for NASA products; NOAA data on AWS are anonymous)
+api_type:
+- NASA CMR / earthaccess
+- AWS S3 (anonymous)
+- Google Earth Engine
+documentation_url: https://viirsland.gsfc.nasa.gov/
+snippets:
+- title: Python
+  lang: python
+  description: Annual NDVI time series at a point near Rome from the VIIRS VNP13A1 collection in Google
+    Earth Engine (needs a Google Cloud project with Earth Engine enabled).
+  requirements:
+  - earthengine-api
+  - pandas
+  - matplotlib
+  code: |
+    import ee
+    import matplotlib.pyplot as plt
+    import pandas as pd
+
+    ee.Authenticate()                                # opens a browser/Colab login the first time
+    PROJECT = input("Google Cloud project ID registered for Earth Engine: ")
+    ee.Initialize(project=PROJECT)
+
+    point = ee.Geometry.Point([12.5, 41.9])
+    ic = ee.ImageCollection("NASA/VIIRS/002/VNP13A1").filterDate("2023-01-01", "2023-12-31").select("NDVI")
+    feats = ic.map(lambda im: ee.Feature(None, {"date": im.date().format("YYYY-MM-dd"),
+                                                "ndvi": im.reduceRegion(ee.Reducer.mean(), point, 500).get("NDVI")}))
+    rows = [f["properties"] for f in feats.getInfo()["features"]]
+    df = pd.DataFrame(rows).dropna()
+    df["date"] = pd.to_datetime(df["date"])
+    df["ndvi"] = df["ndvi"] * 0.0001                 # scale factor
+    df.set_index("date")["ndvi"].plot(marker="o")
+    plt.title("VIIRS VNP13A1 NDVI, Rome, 2023")
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  description: Summer median NDVI from VNP13A1 (500 m, 8-day cadence, 16-day composites). NDVI is scaled
+    by 0.0001.
+  code: |
+    var ndvi = ee.ImageCollection("NASA/VIIRS/002/VNP13A1").filterDate("2023-06-01", "2023-09-01").select("NDVI").median();
+    Map.setCenter(12.5, 41.9, 6);
+    Map.addLayer(ndvi.multiply(0.0001), {min: 0, max: 0.9, palette: ["white", "green"]}, "VIIRS NDVI (summer 2023)");
+related_datasets:
+- jpss-viirs-l2
+- modis-terra-aqua-mcd-l3
+- noaa-poes-avhrr-l3
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Earth Engine IDs: NASA/VIIRS/002/VNP13A1 (bands NDVI, EVI, EVI2), others in the same NASA/VIIRS/002
+  group. VNP46 night-lights products come from the Black Marble team.'
+known_limitations: Composite products smooth short-lived events; check pixel reliability bands before
+  analysis.
+example_use_cases: Vegetation phenology; multi-sensor NDVI continuity with MODIS; night-light studies.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

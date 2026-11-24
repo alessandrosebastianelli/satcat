@@ -1,0 +1,48 @@
+mission_name: JPSS (Suomi NPP, NOAA-20, NOAA-21)
+sensor_name: VIIRS (Visible Infrared Imaging Radiometer Suite)
+agency: NOAA / NASA
+mission_family: JPSS
+status: Active
+launch_year: 2011
+end_of_life_year: null
+short_description: 22-band imager (0.41-12.0 um) at 375 m (I-bands) and 750 m (M-bands) with a day/night
+  band; successor of MODIS and AVHRR on the afternoon orbit.
+long_description: 'VIIRS flies on Suomi NPP, NOAA-20 and NOAA-21. It scans a 3040 km swath with 22 bands:
+  5 imagery bands at 375 m, 16 moderate-resolution bands at 750 m and a low-light day/night band. It provides
+  the standard NOAA and NASA products for clouds, fires, vegetation, SST, snow and ocean colour, and continues
+  the MODIS record. Suomi NPP (2011) data delivery ceased on 2 November 2026 per NASA Earthdata, so the
+  long-term records come from NOAA-20 (2017) and NOAA-21 (2022); JPSS-3 and JPSS-4 are planned.'
+instrument_type: Optical - Multispectral + thermal imager (22 bands)
+orbit_type: LEO sun-synchronous (about 824 km, 13:30 ascending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- VIIRS
+- JPSS
+- NOAA-20
+- NOAA-21
+- Suomi NPP
+- fire
+- vegetation
+- night lights
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+- label: JPSS (NOAA)
+  url: https://www.nesdis.noaa.gov/our-satellites/currently-flying/joint-polar-satellite-system
+- label: NOAA JPSS on AWS
+  url: https://registry.opendata.aws/collab/noaa/
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 3040 km
+radiometric_resolution: 12-14 bit
+temporal_resolution: Daily global coverage (twice daily at mid latitudes)
+citation_doi: 'NOAA data are in the public domain: acknowledge NOAA/NESDIS and the product name and version.'
+colab_notebook: notebooks/jpss-viirs.ipynb
+last_updated_by: Alessandro Sebastianelli
