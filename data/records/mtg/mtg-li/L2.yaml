@@ -1,0 +1,123 @@
+id: mtg-li-l2
+level: L2
+level_summary: 'Level 2: lightning events, groups and flashes (LFL, LGR), and accumulated products on
+  a regular grid (AF accumulated flashes, AFA accumulated flash area, AFR accumulated flash radiance).'
+bands:
+- name: LI - O I triplet
+  wavelength_or_frequency: 777.4 nm
+  spatial_resolution: about 4.5 km at nadir
+  wavelength_nm: 777.4
+  bandwidth_nm: 1.0
+  resolution_m: 4500.0
+  typical_use: Lightning optical emission detection
+spatial_resolution_summary: About 4.5 km at the sub-satellite point; accumulated products on a 2 km grid
+processing_level:
+- L2
+derivable_products:
+- Flash rate density
+- Lightning accumulation maps
+- Convective storm intensity indicators
+measured_variables:
+- Lightning flashes
+- Groups
+- Events
+- Flash radiance
+data_format:
+- NetCDF4
+temporal_range_start: 2023
+temporal_range_end: null
+data_latency: Real time (about 30-60 seconds for accumulated products)
+access_url: https://data.eumetsat.int/product/EO:EUM:DAT:0686
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides/mtg-li-level-2-data-guide
+snippets:
+- title: Python
+  lang: python
+  description: Downloads one LI accumulated-flashes product (EO:EUM:DAT:0686) from the EUMETSAT Data Store
+    (needs a free account and consumer key/secret, asked at run time) and plots the first dataset with
+    satpy.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collection = datastore.get_collection("EO:EUM:DAT:0686")
+
+    products = list(collection.search(dtstart=dt.datetime(2025, 6, 1, 15, 0), dtend=dt.datetime(2025, 6, 1, 15, 10)))
+    print(len(products), "LI accumulated flashes products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    # a few MB per product
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    from glob import glob
+
+    import matplotlib.pyplot as plt
+    from satpy import Scene
+
+    files = sorted(glob("data/**/*.nc", recursive=True))
+    print(len(files), "files")
+    scn = Scene(filenames=files, reader="li_l2_nc")
+    print(scn.available_dataset_names())
+    name = scn.available_dataset_names()[0]
+    scn.load([name])
+    scn[name].plot()
+    plt.title(name)
+    plt.show()
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # LI accumulated flashes. Other collections: AFA 0687, AFR 0688, LFL 0691.
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c EO:EUM:DAT:0686 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c EO:EUM:DAT:0686 -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- mtg-fci-l1c
+- mtg-fci-l2
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: 'Collection IDs: 0686 (AF), 0687 (AFA), 0688 (AFR), 0691 (LFL). Combine LI with FCI cloud-top temperature
+  to follow storm evolution.'
+known_limitations: Daytime detection is weaker than at night. Detection efficiency varies with viewing
+  angle and cloud optical thickness; no Level-1 product is distributed.
+example_use_cases: Severe weather nowcasting and warning; lightning climatology; wildfire ignition from
+  lightning; aviation hazard alerts.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
