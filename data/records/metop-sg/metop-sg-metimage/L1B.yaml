@@ -1,0 +1,137 @@
+id: metop-sg-metimage-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated radiances and brightness temperatures for the 20 channels.'
+bands:
+- name: VII visible / near infrared
+  wavelength_or_frequency: 0.443-0.914 um (several channels)
+  spatial_resolution: 500 m
+  wavelength_nm: 680
+  bandwidth_nm: 470.0
+  resolution_m: 500.0
+  typical_use: Clouds, aerosols, vegetation, snow
+- name: VII shortwave infrared
+  wavelength_or_frequency: 1.24-2.25 um (several channels)
+  spatial_resolution: 500 m
+  wavelength_nm: 1700
+  bandwidth_nm: 1000.0
+  resolution_m: 500.0
+  typical_use: Cloud phase, snow/ice, fires
+- name: VII mid / thermal infrared
+  wavelength_or_frequency: 3.7-13.3 um (several channels)
+  spatial_resolution: 500 m
+  wavelength_nm: 9500
+  bandwidth_nm: 9000.0
+  resolution_m: 500.0
+  typical_use: SST, LST, clouds, fires
+spatial_resolution_summary: 500 m sampling at nadir
+processing_level:
+- L1B
+derivable_products:
+- SST
+- Cloud mask
+- Snow
+- Fire
+- Vegetation indices
+measured_variables:
+- Radiance
+- Reflectance
+- Brightness temperature
+data_format:
+- netCDF
+temporal_range_start: 2025
+temporal_range_end: null
+data_latency: 'Real time (target: within about 1 hour)'
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free for registered users (EUMETSAT Data Policy); some real-time services are restricted
+  to licensed users
+api_type:
+- EUMETSAT Data Store API (eumdac)
+- EUMETCast
+documentation_url: https://user.eumetsat.int/resources/user-guides
+snippets:
+- title: Python
+  lang: python
+  description: Looks for MetImage L1B collections in the EUMETSAT Data Store (title search, prints the
+    matches) and downloads the first product of the window. Free account and consumer key/secret needed;
+    the collection may not be public yet.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "metimage" in str(c.title).lower()]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2026, 6, 1, 12, 0), dtend=dt.datetime(2026, 6, 1, 13, 0)))
+    print(len(products), "MetImage L1B products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+
+    import xarray as xr
+
+    files = sorted(out.rglob("*.nc"))
+    print(files[:3])
+    if files:
+        try:
+            ds = xr.open_dataset(files[0], engine="h5netcdf")
+            print(ds)
+        except Exception as exc:                      # some products need group="..." or another engine
+            print("Could not open directly:", exc)
+    else:
+        print("No .nc file: the product is in EPS native / BUFR / HDF5 format - read it with satpy, eccodes or the EUMETSAT tools")
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store client. The same data can be ordered from data.eumetsat.int
+    or received in real time through EUMETCast (satellite or terrestrial).
+  code: |
+    # MetImage L1B: look the collection ID up on data.eumetsat.int (search 'metimage')
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- metop-avhrr-l1b
+- jpss-viirs-l1b
+- metop-sg-iasi-ng-l1c
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Band rows summarise the 20 channels in three groups; check the product guide for exact channels.
+  Collection IDs are in the Data Store.
+known_limitations: Operational products are being phased in; early data may be pre-operational.
+example_use_cases: AVHRR continuity; cloud and SST monitoring; fire and snow mapping.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
