@@ -1,0 +1,181 @@
+id: modis-terra-aqua-mcd-l4
+level: L4
+level_summary: 'Level 4 combined: LAI and FPAR from both sensors (MCD15A2H 8-day, MCD15A3H 4-day) and
+  other merged model-based products.'
+bands:
+- name: B1 - Red
+  wavelength_or_frequency: 645 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 645
+  bandwidth_nm: 50.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI red
+- name: B2 - NIR
+  wavelength_or_frequency: 858.5 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 858.5
+  bandwidth_nm: 35.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI near-infrared
+- name: B3 - Blue
+  wavelength_or_frequency: 469 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 469
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B4 - Green
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B5 - SWIR 1.24
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B6 - SWIR 1.64
+  wavelength_or_frequency: 1640 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1640
+  bandwidth_nm: 24.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties, snow
+- name: B7 - SWIR 2.13
+  wavelength_or_frequency: 2130 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 2130
+  bandwidth_nm: 50.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B31 - Thermal 11.03
+  wavelength_or_frequency: 11.03 um
+  spatial_resolution: 1 km
+  wavelength_nm: 11030
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, cloud temperature
+- name: B32 - Thermal 12.02
+  wavelength_or_frequency: 12.02 um
+  spatial_resolution: 1 km
+  wavelength_nm: 12020
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, split-window
+spatial_resolution_summary: 500 m
+processing_level:
+- L4
+derivable_products:
+- LAI
+- FPAR
+- Vegetation phenology inputs
+measured_variables:
+- Leaf area index
+- FPAR
+data_format:
+- HDF4-EOS
+- GeoTIFF
+temporal_range_start: 2000
+temporal_range_end: null
+data_latency: Standard products, about days to a few weeks after acquisition
+access_url: https://lpdaac.usgs.gov/products/mcd15a3hv061/
+requires_registration: true
+license_cost: Free (Open Data - NASA)
+api_type:
+- NASA Earthdata (CMR/earthaccess)
+- LAADS DAAC HTTPS
+- STAC API
+- Google Earth Engine
+documentation_url: https://lpdaac.usgs.gov/products/mcd15a3hv061/
+snippets:
+- title: Python
+  lang: python
+  description: Searches NASA Earthdata for the combined MCD15A3H LAI tile over Rome, downloads it (needs
+    a free Earthdata login, asked at run time) and plots LAI. The tile is in sinusoidal projection (shown
+    in pixel coordinates).
+  requirements:
+  - earthaccess
+  - pyhdf
+  - matplotlib
+  - numpy
+  code: |
+    from pathlib import Path
+
+    import earthaccess
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from pyhdf.SD import SD, SDC
+
+    earthaccess.login()   # asks for a (free) NASA Earthdata Login the first time
+
+    results = earthaccess.search_data(
+        short_name="MCD15A3H",
+        version="061",
+        bounding_box=(12.2, 41.7, 12.8, 42.1),       # west, south, east, north (central Italy)
+        temporal=("2024-07-01", "2024-07-05"),
+    )
+    print(len(results), "granules found")
+    files = earthaccess.download(results[:1], "data")
+    path = Path(files[0])
+
+    hdf = SD(str(path), SDC.READ)
+    print(sorted(hdf.datasets()))
+
+    sds = hdf.select("Lai_500m")
+    raw = sds[:, :].astype("float32")
+    raw[raw > 100] = np.nan                           # fill / invalid values
+    data = raw * 0.1
+    plt.imshow(data, cmap="inferno")
+    plt.colorbar(label="LAI (m2/m2)")
+    plt.title(path.name)
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Combined Terra+Aqua 4-day LAI (MCD15A3H)
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var lai = ee.ImageCollection('MODIS/061/MCD15A3H')
+      .filterDate('2024-06-01', '2024-08-31')
+      .select('Lai')
+      .mean()
+      .multiply(0.1);
+
+    Map.centerObject(aoi, 7);
+    Map.addLayer(lai, {min: 0, max: 6, palette: ['white', 'green']}, 'LAI summer 2024');
+- title: Original Method
+  lang: bash
+  description: Official NASA LAADS DAAC archive. The same data can be searched in NASA Earthdata Search
+    or through the earthaccess Python library.
+  code: |
+    # Combined MODIS Level-4 LAI/FPAR 4-day (MCD15A3H)
+    # 1) Create a token in your free NASA Earthdata profile: https://ladsweb.modaps.eosdis.nasa.gov/profile/#app-keys
+    TOKEN="YOUR_EARTHDATA_TOKEN"
+
+    # 2) Mirror one day of data (day-of-year 153 = 1 June 2024). Collection 6.1 is the "61" folder.
+    wget -e robots=off -m -np -nH --cut-dirs=4 -A "*h18v04*" \
+      --header "Authorization: Bearer $TOKEN" -P data \
+      "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MCD15A3H/2024/153/"
+    # h18v04 is the sinusoidal tile that contains Rome; use the MODIS tile calculator for others
+related_datasets:
+- modis-terra-aqua-mcd-l3
+- modis-terra-l4
+- modis-aqua-l4
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: LAI/FPAR is retrieved from surface reflectance with a look-up-table algorithm and a backup empirical
+  NDVI relation when the main algorithm fails; check the FparLai_QC layer.
+known_limitations: Saturation of LAI at high canopy density; cloud contamination in humid regions.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli

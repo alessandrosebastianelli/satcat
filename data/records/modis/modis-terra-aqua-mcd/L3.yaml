@@ -1,0 +1,199 @@
+id: modis-terra-aqua-mcd-l3
+level: L3
+level_summary: 'Level 3 combined: BRDF/albedo and NBAR reflectance (MCD43A1/A3/A4), monthly burned area
+  (MCD64A1), yearly land cover (MCD12Q1), MAIAC aerosol (MCD19A2).'
+bands:
+- name: B1 - Red
+  wavelength_or_frequency: 645 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 645
+  bandwidth_nm: 50.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI red
+- name: B2 - NIR
+  wavelength_or_frequency: 858.5 nm
+  spatial_resolution: 250 m
+  wavelength_nm: 858.5
+  bandwidth_nm: 35.0
+  resolution_m: 250.0
+  typical_use: Land/cloud/aerosol boundaries, NDVI near-infrared
+- name: B3 - Blue
+  wavelength_or_frequency: 469 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 469
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B4 - Green
+  wavelength_or_frequency: 555 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 555
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B5 - SWIR 1.24
+  wavelength_or_frequency: 1240 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1240
+  bandwidth_nm: 20.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B6 - SWIR 1.64
+  wavelength_or_frequency: 1640 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 1640
+  bandwidth_nm: 24.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties, snow
+- name: B7 - SWIR 2.13
+  wavelength_or_frequency: 2130 nm
+  spatial_resolution: 500 m
+  wavelength_nm: 2130
+  bandwidth_nm: 50.0
+  resolution_m: 500.0
+  typical_use: Land/cloud/aerosol properties
+- name: B31 - Thermal 11.03
+  wavelength_or_frequency: 11.03 um
+  spatial_resolution: 1 km
+  wavelength_nm: 11030
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, cloud temperature
+- name: B32 - Thermal 12.02
+  wavelength_or_frequency: 12.02 um
+  spatial_resolution: 1 km
+  wavelength_nm: 12020
+  bandwidth_nm: 500.0
+  resolution_m: 1000.0
+  typical_use: Land/sea surface temperature, split-window
+spatial_resolution_summary: 500 m (MCD43, MCD64A1, MCD12Q1), 1 km (MCD19A2)
+processing_level:
+- L3
+derivable_products:
+- NBAR reflectance
+- Albedo
+- Burned area
+- Land cover (IGBP, LCCS)
+- MAIAC aerosol optical depth
+measured_variables:
+- Nadir BRDF-adjusted reflectance
+- Albedo
+- Burned area
+- Land cover
+data_format:
+- HDF4-EOS
+- COG (Planetary Computer)
+- GeoTIFF
+temporal_range_start: 2000
+temporal_range_end: null
+data_latency: Standard products, about 1-2 weeks after acquisition (MCD43 daily with a 16-day moving window)
+access_url: https://lpdaac.usgs.gov/product_search/?collections=Combined+MODIS&view=cards
+requires_registration: true
+license_cost: Free (Open Data - NASA)
+api_type:
+- NASA Earthdata (CMR/earthaccess)
+- LAADS DAAC HTTPS
+- STAC API
+- Google Earth Engine
+documentation_url: https://lpdaac.usgs.gov/data/
+snippets:
+- title: Python
+  lang: python
+  description: Searches the Microsoft Planetary Computer STAC catalogue (no account needed) for the daily
+    MCD43A4 nadir BRDF-adjusted reflectance tile over Rome and plots band 1 (red).
+  requirements:
+  - pystac-client
+  - planetary-computer
+  - rioxarray
+  - matplotlib
+  code: |
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import planetary_computer
+    import pystac_client
+    import rioxarray
+
+    catalog = pystac_client.Client.open(
+        "https://planetarycomputer.microsoft.com/api/stac/v1",
+        modifier=planetary_computer.sign_inplace,
+    )
+
+
+    def open_overview(href, level=2):
+        """Open a COG at reduced resolution (fast), falling back to full resolution."""
+        try:
+            return rioxarray.open_rasterio(href, overview_level=level, masked=True).squeeze()
+        except Exception:
+            return rioxarray.open_rasterio(href, masked=True).squeeze()
+
+    search = catalog.search(
+        collections=["modis-43A4-061"],
+        bbox=[12.4, 41.8, 12.6, 42.0],                      # Rome - change to your area
+        datetime="2024-07-01/2024-07-05",
+    )
+    items = [i for i in search.item_collection() if i.id.startswith("MCD43A4")]
+    if not items:
+        raise SystemExit("No tiles found - widen the dates or the bounding box")
+    item = items[0]
+    print(len(items), "tiles;", "using", item.id, item.datetime)
+    print("assets:", sorted(item.assets))
+
+    key = next((k for k in item.assets if "Band1" in k), None)
+    if key is None:
+        raise SystemExit("No asset containing 'Band1' - pick one from the list above")
+    data = open_overview(item.assets[key].href, level=1) * 0.0001
+    data.plot(cmap="inferno" if "V" == "K" else "YlGn")
+    plt.title(item.id + " - " + key + " (NBAR red reflectance)")
+    plt.show()
+- title: Google Earth Engine
+  lang: javascript
+  code: |
+    // Combined Terra+Aqua: yearly land cover (MCD12Q1) and monthly burned area (MCD64A1)
+    var aoi = ee.Geometry.Point([12.5, 41.9]);
+
+    var landCover = ee.ImageCollection('MODIS/061/MCD12Q1')
+      .filterDate('2022-01-01', '2022-12-31')
+      .first()
+      .select('LC_Type1');          // IGBP classification
+
+    var burned = ee.ImageCollection('MODIS/061/MCD64A1')
+      .filterDate('2023-07-01', '2023-08-31')
+      .select('BurnDate')
+      .max();
+
+    Map.centerObject(aoi, 6);
+    Map.addLayer(landCover, {min: 1, max: 17, palette: ['05450a', '086a10', '54a708', '78d203', '009900', 'c6b044', 'dcd159', 'dade48', 'fbff13', 'b6ff05', '27ff87', 'c24f44', 'a5a5a5', 'ff6d4c', '69fff8', 'f9ffa4', '1c0dff']}, 'Land cover IGBP');
+    Map.addLayer(burned.selfMask(), {palette: ['red']}, 'Burned area');
+- title: Original Method
+  lang: bash
+  description: Official NASA LAADS DAAC archive. The same data can be searched in NASA Earthdata Search
+    or through the earthaccess Python library.
+  code: |
+    # Combined MODIS Level-3 NBAR reflectance (MCD43A4)
+    # 1) Create a token in your free NASA Earthdata profile: https://ladsweb.modaps.eosdis.nasa.gov/profile/#app-keys
+    TOKEN="YOUR_EARTHDATA_TOKEN"
+
+    # 2) Mirror one day of data (day-of-year 153 = 1 June 2024). Collection 6.1 is the "61" folder.
+    wget -e robots=off -m -np -nH --cut-dirs=4 -A "*h18v04*" \
+      --header "Authorization: Bearer $TOKEN" -P data \
+      "https://ladsweb.modaps.eosdis.nasa.gov/archive/allData/61/MCD43A4/2024/153/"
+    # h18v04 is the sinusoidal tile that contains Rome; use the MODIS tile calculator for others
+related_datasets:
+- modis-terra-l3
+- modis-aqua-l3
+- modis-terra-aqua-mcd-l4
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: MCD43 uses a 16-day window centred on the day of interest, so it is temporally smooth but not strictly
+  a daily observation. Burned area (MCD64A1) is monthly and the standard for global fire statistics.
+known_limitations: The temporal window blurs rapid changes; MCD products end with the MODIS record; MCD12Q1
+  land cover is coarse (500 m) and class definitions are global.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
