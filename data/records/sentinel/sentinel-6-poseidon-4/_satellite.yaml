@@ -1,0 +1,39 @@
+mission_name: Sentinel-6
+sensor_name: Poseidon-4 (radar altimeter)
+agency: ESA / EUMETSAT / NASA / NOAA / Copernicus
+mission_family: Sentinel
+status: Active
+launch_year: 2020
+end_of_life_year: null
+short_description: 'Reference ocean topography mission continuing the Jason series: sea level to millimetre-level
+  accuracy from a 10-day repeat orbit.'
+long_description: Sentinel-6 is the Copernicus reference altimetry mission, built with NASA, NOAA, CNES
+  and EUMETSAT as the successor to the Jason series. Sentinel-6 Michael Freilich was launched in November
+  2020 and Sentinel-6B in November 2025, flying in sequence to extend the sea level record. The Poseidon-4
+  altimeter works at Ku-band (13.575 GHz) and C-band (5.41 GHz) in an interleaved mode giving both conventional
+  low-resolution (LRM) and high-resolution SAR measurements, and an AMR-C radiometer corrects for the
+  wet troposphere.
+instrument_type: Radar altimeter (Ku/C band, interleaved SAR and LRM)
+orbit_type: LEO - Non-sun-synchronous (1336 km, 66 degree inclination)
+internal_contact: Alessandro Sebastianelli
+tags:
+- altimetry
+- sea level
+- wave height
+- climate
+- copernicus
+links:
+- label: EUMETSAT Data Store
+  url: https://data.eumetsat.int
+- label: Sentinel-6 (ESA)
+  url: https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-6
+bbox_west: -180.0
+bbox_south: -66.0
+bbox_east: 180.0
+bbox_north: 66.0
+geographic_coverage: Global oceans between about 66 degrees north and south
+swath_width: Nadir profile (no swath)
+temporal_resolution: 10-day repeat cycle
+citation_doi: Contains modified Copernicus Sentinel data, processed by ESA.
+colab_notebook: notebooks/sentinel-6-poseidon-4.ipynb
+last_updated_by: Alessandro Sebastianelli
