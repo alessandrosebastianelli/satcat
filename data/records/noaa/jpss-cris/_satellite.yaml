@@ -1,0 +1,47 @@
+mission_name: JPSS (Suomi NPP, NOAA-20, NOAA-21)
+sensor_name: CrIS (Cross-track Infrared Sounder)
+agency: NOAA / NASA
+mission_family: JPSS
+status: Active
+launch_year: 2011
+end_of_life_year: null
+short_description: Hyperspectral infrared sounder (650-2550 cm-1, 2211 channels in full spectral resolution
+  mode) with a 14 km footprint, twice daily globally.
+long_description: CrIS is a Fourier-transform spectrometer measuring the infrared in three bands with
+  a 3 x 3 array of 14 km fields of view per field of regard. It provides temperature and water vapour
+  profiles that are key inputs to NWP, and trace gases (CO, CH4, NH3, O3). On NOAA-20 and NOAA-21 it operates
+  at full spectral resolution (2211 channels). Suomi NPP (2011) data delivery ceased on 2 November 2026
+  per NASA Earthdata, so the long-term records come from NOAA-20 (2017) and NOAA-21 (2022); JPSS-3 and
+  JPSS-4 are planned.
+instrument_type: Hyperspectral infrared sounder (Fourier-transform interferometer)
+orbit_type: LEO sun-synchronous (about 824 km, 13:30 ascending node)
+internal_contact: Alessandro Sebastianelli
+tags:
+- CrIS
+- JPSS
+- sounder
+- hyperspectral
+- temperature
+- humidity
+links:
+- label: NOAA NESDIS
+  url: https://www.nesdis.noaa.gov
+- label: NOAA CLASS archive
+  url: https://www.class.noaa.gov
+- label: NOAA NCEI
+  url: https://www.ncei.noaa.gov
+- label: JPSS (NOAA)
+  url: https://www.nesdis.noaa.gov/our-satellites/currently-flying/joint-polar-satellite-system
+- label: NOAA JPSS on AWS
+  url: https://registry.opendata.aws/collab/noaa/
+bbox_west: -180.0
+bbox_south: -90.0
+bbox_east: 180.0
+bbox_north: 90.0
+geographic_coverage: Global
+swath_width: 2200 km
+radiometric_resolution: Spectral resolution 0.625 / 0.625 / 0.625 cm-1 (full resolution mode)
+temporal_resolution: Twice daily
+citation_doi: 'NOAA data are in the public domain: acknowledge NOAA/NESDIS and the product name and version.'
+colab_notebook: notebooks/jpss-cris.ipynb
+last_updated_by: Alessandro Sebastianelli
