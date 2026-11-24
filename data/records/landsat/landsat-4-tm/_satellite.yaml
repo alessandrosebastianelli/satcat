@@ -1,0 +1,39 @@
+mission_name: Landsat 4
+sensor_name: TM (Thematic Mapper)
+agency: NASA / USGS
+mission_family: Landsat
+status: Decommissioned
+launch_year: 1982
+end_of_life_year: 2015
+short_description: 'Seven-band Thematic Mapper at 30 m (thermal 120 m): the workhorse of the Landsat archive
+  from the 1980s to the 2000s.'
+long_description: Landsat 4 was launched on 16 July 1982 and carried the first Thematic Mapper, with seven
+  bands at 30 m and a 120 m thermal band. TM data collection from Landsat 4 covers 1982 to about 1993
+  in the main archives, and the satellite was decommissioned in 2015.
+instrument_type: Optical - Multispectral + thermal (7 bands)
+orbit_type: LEO - Sun-synchronous
+internal_contact: Alessandro Sebastianelli
+tags:
+- TM
+- historical
+- NDVI
+- land surface temperature
+- Landsat 4
+links:
+- label: USGS Landsat Missions
+  url: https://www.usgs.gov/landsat-missions
+- label: USGS EarthExplorer
+  url: https://earthexplorer.usgs.gov
+- label: Landsat on Google Earth Engine
+  url: https://developers.google.com/earth-engine/datasets/catalog/landsat
+bbox_west: -180.0
+bbox_south: -82.0
+bbox_east: 180.0
+bbox_north: 82.0
+geographic_coverage: Quasi-global (Europe is covered through the Fucino ground station and other stations)
+swath_width: 185 km
+radiometric_resolution: 8 bit
+temporal_resolution: 16 days
+citation_doi: Landsat imagery courtesy of NASA Goddard Space Flight Center and U.S. Geological Survey.
+colab_notebook: notebooks/landsat-4-tm.ipynb
+last_updated_by: Alessandro Sebastianelli
