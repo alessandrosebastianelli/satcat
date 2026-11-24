@@ -297,3 +297,17 @@ button { cursor: pointer; }
 }
 .load-error-banner ul { margin: 6px 0 0; padding-left: 20px; max-height: 200px; overflow-y: auto; }
 .load-error-banner li { margin-bottom: 4px; }
+
+/* Tabbed code examples */
+.snippet-tablist { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 0; }
+.snippet-tab {
+  background: var(--panel-2); border: 1px solid var(--border); border-bottom: none;
+  border-radius: 8px 8px 0 0; padding: 6px 14px; font-size: 0.9rem; color: var(--muted); cursor: pointer;
+}
+.snippet-tab.active { background: var(--panel); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+.snippet-panel { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 12px; background: var(--panel); }
+.snippet-panel .code-block { margin: 0; }
+.snippet-desc { margin: 0 0 8px; }
+.snippet-codewrap { position: relative; }
+.snippet-copy { position: absolute; top: 8px; right: 8px; font-size: 0.75rem; padding: 2px 8px; z-index: 1; }
+.colab-btn { margin-left: 6px; }

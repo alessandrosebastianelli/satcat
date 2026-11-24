@@ -32,7 +32,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="static/config.js?v=2"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-<script src="static/catalog.js?v=5"></script>
+<script src="static/catalog.js?v=6"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 <script src="static/band-chart.js?v=10"></script>
@@ -56,6 +56,9 @@ function renderDataset(d, catalog, satFolder) {
     var r = catalog.find(function (x) { return x.id === rid; });
     return r ? '<li><a href="dataset.html?id=' + encodeURIComponent(r.id) + '">' + r.mission_name + '</a></li>' : '';
   }).join('');
+
+  var snippetList = getSnippets(d);
+  var colabUrl = getColabUrl(d);
 
   var bandsTable = '';
   if (d.bands.length) {
@@ -148,8 +151,9 @@ function renderDataset(d, catalog, satFolder) {
       '<tr><th>API type</th><td>' + fmtList(d.api_type) + '</td></tr>' +
       '<tr><th>Documentation</th><td>' + (d.documentation_url ? '<a href="' + d.documentation_url + '" target="_blank">' + d.documentation_url + '</a>' : '—') + '</td></tr>' +
       '<tr><th>Citation / DOI</th><td>' + (d.citation_doi||'—') + '</td></tr></table>' +
-      (d.download_snippet ? '<h3>Download snippet</h3><pre class="code-block"><code>' + d.download_snippet + '</code></pre>' : '') +
-      (d.gee_snippet ? '<h3>Google Earth Engine script</h3><pre class="code-block"><code>' + d.gee_snippet + '</code></pre>' : '') +
+      (snippetList.length ? '<h3>Code examples</h3>' +
+        (colabUrl ? '<p class="hint">The first tab is a ready-to-run Python example. <a class="btn btn-small colab-btn" href="' + colabUrl + '" target="_blank" rel="noopener">\u25b6 Open in Google Colab</a></p>' : '') +
+        '<div class="snippet-tabs" id="snippet-tabs"></div>' : '') +
     '</section>' +
     ((d.example_use_cases || d.known_limitations) ? '<section class="grid-2col">' +
       (d.example_use_cases ? '<div><h2>Example use cases</h2><div class="prose">' + d.example_use_cases + '</div></div>' : '') +
@@ -173,6 +177,8 @@ function renderDataset(d, catalog, satFolder) {
     changelogSection +
     '<footer class="meta-footer">Last updated: ' + (d.last_updated||'—') + (d.last_updated_by ? ' by ' + d.last_updated_by : '') +
       ' · <a href="' + repo + '/commits/main/data/records/' + (d._relpath || (d.id + '.yaml')) + '" target="_blank">Full history on GitHub</a></footer>';
+
+  renderSnippetTabs(document.getElementById('snippet-tabs'), snippetList);
 
   // Map
   try {
