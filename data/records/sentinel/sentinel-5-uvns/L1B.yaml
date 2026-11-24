@@ -1,0 +1,138 @@
+id: sentinel-5-uvns-l1b
+level: L1B
+level_summary: 'Level 1B: calibrated, geolocated radiances and solar irradiance for all spectral bands.'
+bands:
+- name: UV1 - 270-300 nm
+  wavelength_or_frequency: 270-300 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 285
+  bandwidth_nm: 30.0
+  resolution_m: 7500.0
+  typical_use: Ozone profile
+- name: UV2 - 300-370 nm
+  wavelength_or_frequency: 300-370 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 335
+  bandwidth_nm: 70.0
+  resolution_m: 7500.0
+  typical_use: Ozone, SO2
+- name: VIS - 370-500 nm
+  wavelength_or_frequency: 370-500 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 435
+  bandwidth_nm: 130.0
+  resolution_m: 7500.0
+  typical_use: NO2, HCHO, glyoxal, aerosols
+- name: NIR - 685-773 nm
+  wavelength_or_frequency: 685-773 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 729
+  bandwidth_nm: 88.0
+  resolution_m: 7500.0
+  typical_use: O2 A-band, cloud, aerosol layer
+- name: SWIR1 - 1590-1675 nm
+  wavelength_or_frequency: 1590-1675 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 1632.5
+  bandwidth_nm: 85.0
+  resolution_m: 7500.0
+  typical_use: Methane
+- name: SWIR3 - 2305-2385 nm
+  wavelength_or_frequency: 2305-2385 nm
+  spatial_resolution: 7.5 km
+  wavelength_nm: 2345
+  bandwidth_nm: 80.0
+  resolution_m: 7500.0
+  typical_use: CO, methane
+spatial_resolution_summary: About 7.5 km x 7.5 km
+processing_level:
+- L1B
+derivable_products:
+- Trace gas retrievals
+measured_variables:
+- Radiance
+- Irradiance
+data_format:
+- NetCDF4
+temporal_range_start: 2025
+temporal_range_end: null
+data_latency: Not yet defined (operational release pending)
+access_url: https://data.eumetsat.int
+requires_registration: true
+license_cost: Free (Open Data - Copernicus)
+api_type:
+- EUMETSAT Data Store API
+- Copernicus Data Space
+documentation_url: https://www.eumetsat.int/metop-sg
+snippets:
+- title: Python
+  lang: python
+  description: Looks for Sentinel-5 collections in the EUMETSAT Data Store and downloads the first product
+    of the window. Requires a free Data Store account; collections appear once the data are released.
+  requirements:
+  - eumdac
+  - satpy
+  - netCDF4
+  - h5netcdf
+  - matplotlib
+  code: |
+    import datetime as dt
+    import getpass
+    import shutil
+    import zipfile
+    from pathlib import Path
+
+    import eumdac
+
+    # Free consumer key / secret: https://api.eumetsat.int/api-key (EUMETSAT Data Store account)
+    token = eumdac.AccessToken((input("EUMETSAT consumer key: "), getpass.getpass("EUMETSAT consumer secret: ")))
+    datastore = eumdac.DataStore(token)
+    collections = [c for c in datastore.collections if "Sentinel-5" in str(c.title)]
+    print([(c.collection_id, str(c.title)) for c in collections])
+    if not collections:
+        raise SystemExit("Collection not found in the Data Store yet - check data.eumetsat.int")
+    collection = collections[0]
+
+    products = list(collection.search(dtstart=dt.datetime(2026, 6, 1, 10, 0), dtend=dt.datetime(2026, 6, 1, 12, 0)))
+    print(len(products), "Sentinel-5 products found")
+    if not products:
+        raise SystemExit("Nothing in this time window - try another one")
+    product = products[0]
+    print(product)
+
+    out = Path("data")
+    out.mkdir(exist_ok=True)
+    with product.open() as src, open(out / src.name, "wb") as dst:
+        shutil.copyfileobj(src, dst)
+    for z in out.glob("*.zip"):                     # some collections arrive zipped
+        with zipfile.ZipFile(z) as zf:
+            zf.extractall(out / z.stem)
+    print(list(out.rglob('*.nc'))[:5])
+- title: Original Method
+  lang: bash
+  description: Official EUMETSAT Data Store command line client. The data can also be ordered from data.eumetsat.int
+    or received live through EUMETCast.
+  code: |
+    # Replace the collection ID with the Sentinel-5 one listed on data.eumetsat.int once released
+    pip install eumdac
+    eumdac set-credentials YOUR_CONSUMER_KEY YOUR_CONSUMER_SECRET   # https://api.eumetsat.int/api-key
+    eumdac search -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00
+    eumdac download -c <COLLECTION_ID_FROM_DATA_STORE> -s 2024-06-01T12:00:00 -e 2024-06-01T12:30:00 -o data
+related_datasets:
+- sentinel-5-uvns-l2
+- sentinel-5p-tropomi-l1b
+internal_projects: Not yet used in a specific internal project - flag here once it is.
+notes: Band limits are the nominal instrument ranges; check the product user guide for the exact spectral
+  windows.
+known_limitations: Data release was still being phased in at the time of writing. Availability, collection
+  IDs and file formats may change.
+qa: []
+changelog:
+- date: 2026-11-24 12:00 UTC
+  user: Alessandro Sebastianelli
+  note: Record created
+verification_status: unverified
+verified_by: ''
+verified_at: ''
+last_updated: 2026-11-24 12:00 UTC
+last_updated_by: Alessandro Sebastianelli
